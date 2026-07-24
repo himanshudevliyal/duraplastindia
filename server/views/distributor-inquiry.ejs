@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Distributor Inquiry Confirmation - Bdseducation.in</title>
+
+  <style>
+    body, table, td, p, a, li, blockquote {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      height: auto;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+    }
+
+    /* Header */
+    .header {
+      background: #ffffff;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .logo-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-img {
+      width: 200px;
+      margin: 20px auto 10px auto;
+      display: block;
+    }
+
+    /* Main Content */
+    .content {
+      background-color: #ffffff;
+      padding: 40px 30px;
+    }
+
+    .greeting {
+      color: #1f2d3d;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+    }
+
+    .intro-text {
+      color: #3c4858;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Inquiry Details Box */
+    .inquiry-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #39A935;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 4px;
+    }
+
+    .inquiry-detail {
+      margin-bottom: 18px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .inquiry-detail:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: #39A935;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      color: #3c4858;
+      font-size: 15px;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    /* Support text */
+    .support-text {
+      font-size: 15px;
+      color: #4a5568;
+      margin: 30px 0 10px;
+    }
+
+    .support-email {
+      color: #00AEEF;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .timeline-text {
+      color: #6c757d;
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #eef3f8;
+      border-radius: 4px;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #39A935;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .footer-text {
+      color: #eaf6e8;
+      font-size: 14px;
+      margin: 0 0 10px 0;
+    }
+
+    .footer-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .email-container { width: 100% !important; }
+      .content { padding: 30px 20px !important; }
+      .inquiry-box { padding: 15px !important; }
+    }
+  </style>
+</head>
+
+<body style="margin: 0; padding: 0; background-color: #eef3f8;">
+  <div class="email-container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-wrapper">
+        <img
+          src="https://bdseducation.in/_next/image?url=%2Fimages%2Flogo.png&w=256&q=75"
+          class="logo-img"
+          alt="BDS Education"
+        />
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <h2 class="greeting">Hello <%= first_name %>,</h2>
+
+      <p class="intro-text">
+        Thank you for your interest in becoming a distributor with BDS Education! We have received your distributor application and appreciate your desire to partner with us.
+      </p>
+
+      <p class="intro-text">
+        Here's a summary of the information you submitted:
+      </p>
+
+      <!-- Inquiry Details -->
+      <div class="inquiry-box">
+        <div class="inquiry-detail">
+          <div class="detail-label">👤 Full Name</div>
+          <div class="detail-value"><%= first_name %> <%= last_name || '' %></div>
+        </div>
+
+        <div class="inquiry-detail">
+          <div class="detail-label">📧 Email Address</div>
+          <div class="detail-value"><%= email %></div>
+        </div>
+
+        <div class="inquiry-detail">
+          <div class="detail-label">📞 Phone Number</div>
+          <div class="detail-value"><%= phone %></div>
+        </div>
+
+        <div class="inquiry-detail">
+          <div class="detail-label">🏙️ City</div>
+          <div class="detail-value"><%= city %></div>
+        </div>
+
+        <% if (message) { %>
+        <div class="inquiry-detail">
+          <div class="detail-label">💬 Business Details</div>
+          <div class="detail-value"><%= message %></div>
+        </div>
+        <% } %>
+
+        <div class="inquiry-detail">
+          <div class="detail-label">🕐 Submitted On</div>
+          <div class="detail-value"><%= submittedDate %></div>
+        </div>
+      </div>
+
+      <p class="intro-text">
+        Our distributor partnership team will carefully review your application. We look for dedicated partners who share our commitment to quality education and student success.
+      </p>
+
+      <p class="intro-text">
+        Our team will reach out to you within 2-3 business days to discuss the partnership opportunity and answer any questions you may have.
+      </p>
+
+      <p class="support-text">
+        In the meantime, feel free to explore our educational offerings at our website. If you have any urgent questions, you can contact our distributor team at
+        <a href="mailto:distributors@bdseducation.in" class="support-email">
+          distributors@bdseducation.in
+        </a>.
+      </p>
+
+      <p class="timeline-text">
+        ✓ Your distributor inquiry has been recorded and assigned a reference ID for tracking purposes.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p class="footer-text">Best regards,</p>
+      <p class="footer-text"><strong>Distributor Partnership Team</strong></p>
+      <p class="footer-text"><strong>BDS Education</strong></p>
+      <p class="footer-text">
+        <a href="https://bdseducation.in/" class="footer-link">
+          www.bdseducation.in
+        </a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

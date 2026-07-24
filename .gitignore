@@ -1,0 +1,13 @@
+/client/web/node_modules
+/client/web/.env.local
+/client/web/.next
+
+/client/dashboard/node_modules
+/client/dashboard/.env.local
+/client/dashboard/.next
+
+/server/node_modules
+/server/.env
+/server/public
+/server/uploads
+/server/app/logs

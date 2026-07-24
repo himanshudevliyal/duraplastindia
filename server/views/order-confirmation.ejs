@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Order <%= order.id %></title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        font-size: 14px;
+        color: #111827;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      .order-details {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f3f4f6;
+        border-radius: 6px;
+      }
+      .order-details p {
+        margin: 8px 0;
+      }
+      .items-count {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      ul {
+        margin-left: 20px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Order Confirmation</h1>
+
+    <div class="order-details">
+      <p><strong>Order No.:</strong> <%= order.order_number %></p>
+      <p><strong>Items Count:</strong> <%= items.length %></p>
+    </div>
+
+    <h3>Items:</h3>
+    <ul>
+      <% items.forEach((item) => { %>
+        <li><%= item.title %></li>
+      <% }) %>
+    </ul>
+
+    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <!-- Billing Address -->
+      <div style="padding: 15px; background-color: #f3f4f6; border-radius: 6px;">
+        <h4 style="margin-bottom: 10px;">Billing Address</h4>
+        <p style="margin: 4px 0;">
+          <strong><%= order.billing_address.fullname %></strong><br />
+          <%= order.billing_address.house %><br />
+          <%= order.billing_address.street %><br />
+          <%= order.billing_address.city %>, <%= order.billing_address.state %> - <%= order.billing_address.postal_code %><br />
+          Phone: <%= order.billing_address.phone %>
+        </p>
+      </div>
+
+      <!-- Shipping Address -->
+      <div style="padding: 15px; background-color: #f3f4f6; border-radius: 6px;">
+        <h4 style="margin-bottom: 10px;">Shipping Address</h4>
+        <p style="margin: 4px 0;">
+          <strong><%= order.shipping_address.fullname %></strong><br />
+          <%= order.shipping_address.house %><br />
+          <%= order.shipping_address.street %><br />
+          <%= order.shipping_address.city %>, <%= order.shipping_address.state %> - <%= order.shipping_address.postal_code %><br />
+          Phone: <%= order.shipping_address.phone %>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
