@@ -36,17 +36,18 @@ import { toast } from "sonner";
 import TextEditor from "../editor";
 import CustomCommandMenu from "../custom-command-menu";
 import { useFormattedCategories } from "@/hooks/use-categories";
-import z from "zod";
+import { z } from "zod";
 import {
   useCreateProductPage,
   useProductPage,
   useUpdateProductPage,
 } from "@/hooks/use-product-pages";
+import CustomMultiSelect from "../custom-multi-select";
 
 const defaultValues = {
   pictures: [],
   title: "",
-  city: "",
+  city: [],
   description: "",
   content: "",
   category_id: null,
@@ -99,12 +100,62 @@ const defaultValues = {
   meta_keywords: "",
   jsonld_schema: "",
 };
-
+const cityOptions = [
+  { label: "India", value: "India" },
+  { label: "Australia", value: "Australia" },
+  { label: "United States", value: "United States" },
+  { label: "United Kingdom", value: "United Kingdom" },
+  { label: "Canada", value: "Canada" },
+  { label: "Germany", value: "Germany" },
+  { label: "France", value: "France" },
+  { label: "Italy", value: "Italy" },
+  { label: "Spain", value: "Spain" },
+  { label: "Netherlands", value: "Netherlands" },
+  { label: "Belgium", value: "Belgium" },
+  { label: "Sweden", value: "Sweden" },
+  { label: "Norway", value: "Norway" },
+  { label: "Denmark", value: "Denmark" },
+  { label: "Switzerland", value: "Switzerland" },
+  { label: "Austria", value: "Austria" },
+  { label: "Poland", value: "Poland" },
+  { label: "Czech Republic", value: "Czech Republic" },
+  { label: "Turkey", value: "Turkey" },
+  { label: "Russia", value: "Russia" },
+  { label: "China", value: "China" },
+  { label: "Japan", value: "Japan" },
+  { label: "South Korea", value: "South Korea" },
+  { label: "Singapore", value: "Singapore" },
+  { label: "Malaysia", value: "Malaysia" },
+  { label: "Thailand", value: "Thailand" },
+  { label: "Indonesia", value: "Indonesia" },
+  { label: "Vietnam", value: "Vietnam" },
+  { label: "Philippines", value: "Philippines" },
+  { label: "UAE", value: "UAE" },
+  { label: "Saudi Arabia", value: "Saudi Arabia" },
+  { label: "Qatar", value: "Qatar" },
+  { label: "Oman", value: "Oman" },
+  { label: "Kuwait", value: "Kuwait" },
+  { label: "Bahrain", value: "Bahrain" },
+  { label: "South Africa", value: "South Africa" },
+  { label: "Nigeria", value: "Nigeria" },
+  { label: "Kenya", value: "Kenya" },
+  { label: "Egypt", value: "Egypt" },
+  { label: "Brazil", value: "Brazil" },
+  { label: "Mexico", value: "Mexico" },
+  { label: "Argentina", value: "Argentina" },
+  { label: "New Zealand", value: "New Zealand" },
+  { label: "Sri Lanka", value: "Sri Lanka" },
+  { label: "Bangladesh", value: "Bangladesh" },
+  { label: "Nepal", value: "Nepal" },
+  { label: "Pakistan", value: "Pakistan" },
+];
 export const schema = z.object({
   title: z.string().trim().min(1, "Title is required."),
 
-  city: z.string().optional().nullable(),
-
+  city: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .min(1, "Atleast 1 city is required.")
+    .transform((data) => data.map((d) => d.value)),
   description: z.string().optional().nullable(),
 
   content: z.string().optional().nullable(),
@@ -204,6 +255,8 @@ export default function ProductPageForm({ id, type }) {
 
   const [files, setFiles] = useState({
     pictures: [],
+    applications: {},
+    benefits: {},
   });
   const [fileUrls, setFileUrls] = useState({
     picture_urls: [],
@@ -219,6 +272,7 @@ export default function ProductPageForm({ id, type }) {
     formState: { errors },
     reset,
     setError,
+    watch,
     control,
   } = methods;
   const {
@@ -292,18 +346,35 @@ export default function ProductPageForm({ id, type }) {
     }
 
     const formData = new FormData();
-    Object.entries(files).forEach(([key, value]) => {
-      value?.forEach((file) => {
-        formData.append(key, file);
+
+    // Product Images
+    files.pictures.forEach((file) => {
+      formData.append("pictures", file);
+    });
+
+    // Application Images
+    Object.entries(files.applications).forEach(([index, fileList]) => {
+      fileList?.forEach((file) => {
+        formData.append(`applications_image_${index}`, file);
       });
     });
 
-    Object.entries(data).forEach(([key, value]) => {
-      typeof value === "object"
-        ? formData.append(key, JSON.stringify(value))
-        : formData.append(key, value);
+    // Benefit Images
+    Object.entries(files.benefits).forEach(([index, fileList]) => {
+      fileList?.forEach((file) => {
+        formData.append(`benefits_image_${index}`, file);
+      });
     });
 
+    // Other Form Data
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(
+        key,
+        typeof value === "object" ? JSON.stringify(value) : value,
+      );
+    });
+
+    // Existing Images (Edit Mode)
     if (type === "edit") {
       Object.entries(fileUrls).forEach(([key, values]) => {
         formData.append(key, JSON.stringify(values));
@@ -327,17 +398,36 @@ export default function ProductPageForm({ id, type }) {
         ...prev,
         picture_urls: data?.pictures ?? [],
       }));
+
       reset({
         ...data,
-        // related_products: productOptions.filter((i) =>
-        //   data?.related_products?.includes(i.value),
-        // ),
+        city: cityOptions.filter((item) => data?.city?.includes(item.value)),
       });
     }
-  }, [data, type, reset, id]);
+  }, [data, type, reset]);
 
   const handlePictureChange = useCallback((data) => {
     setFiles((prev) => ({ ...prev, pictures: data }));
+  }, []);
+
+  const handleApplicationImage = useCallback((index, newFiles) => {
+    setFiles((prev) => ({
+      ...prev,
+      applications: {
+        ...prev.applications,
+        [index]: newFiles,
+      },
+    }));
+  }, []);
+
+  const handleBenefitImage = useCallback((index, newFiles) => {
+    setFiles((prev) => ({
+      ...prev,
+      benefits: {
+        ...prev.benefits,
+        [index]: newFiles,
+      },
+    }));
   }, []);
 
   useEffect(() => {
@@ -439,16 +529,30 @@ export default function ProductPageForm({ id, type }) {
 
             {/* city */}
             <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                {...register("city")}
-                className={cn({ "border-red-500": errors.city })}
-                placeholder="Enter city"
+              <Label>Countries</Label>
+
+              <Controller
+                control={control}
+                name="city"
+                render={({ field }) => (
+                  <CustomMultiSelect
+                    options={cityOptions}
+                    value={field.value || []}
+                    onChange={(value) => {
+                      console.log({ value });
+                      field.onChange(value);
+                    }}
+                    placeholder="Select Countries"
+                    className={cn({
+                      "border-red-500": errors.city,
+                    })}
+                  />
+                )}
               />
+
               {errors?.city && (
                 <span className="text-xs text-red-500">
-                  {errors.city?.message}
+                  {errors.city.message}
                 </span>
               )}
             </div>
@@ -762,8 +866,40 @@ export default function ProductPageForm({ id, type }) {
                         multiple={false}
                         maxFiles={1}
                         initialFiles={[]}
-                        onFileChange={(files) => {}}
+                        onFileChange={(files) =>
+                          handleApplicationImage(index, files)
+                        }
                       />
+
+                      {type === "edit" &&
+                        watch(`applications.features.${index}.img`) && (
+                          <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
+                            <div className="bg-accent relative aspect-square w-24 rounded-md">
+                              <Image
+                                src={`${config.file_base}/${watch(`applications.features.${index}.img`)}`}
+                                width={200}
+                                height={200}
+                                className="size-full rounded-[inherit] object-cover"
+                                alt={`application-${index}`}
+                                unoptimized
+                              />
+
+                              <Button
+                                type="button"
+                                size="icon"
+                                className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
+                                onClick={() =>
+                                  methods.setValue(
+                                    `applications.features.${index}.img`,
+                                    "",
+                                  )
+                                }
+                              >
+                                <XIcon className="size-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </div>
                 ))}
@@ -854,10 +990,40 @@ export default function ProductPageForm({ id, type }) {
                         multiple={false}
                         maxFiles={1}
                         initialFiles={[]}
-                        onFileChange={(files) => {
-                          // set image file
-                        }}
+                        onFileChange={(files) =>
+                          handleBenefitImage(index, files)
+                        }
                       />
+
+                      {type === "edit" &&
+                        watch(`benefits.features.${index}.img`) && (
+                          <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
+                            <div className="bg-accent relative aspect-square w-24 rounded-md">
+                              <Image
+                                src={`${config.file_base}/${watch(`benefits.features.${index}.img`)}`}
+                                width={200}
+                                height={200}
+                                className="size-full rounded-[inherit] object-cover"
+                                alt={`benefit-${index}`}
+                                unoptimized
+                              />
+
+                              <Button
+                                type="button"
+                                size="icon"
+                                className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
+                                onClick={() =>
+                                  methods.setValue(
+                                    `benefits.features.${index}.img`,
+                                    "",
+                                  )
+                                }
+                              >
+                                <XIcon className="size-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </div>
                 ))}
@@ -1015,15 +1181,21 @@ function PricingItem({ index, removePricing, showStateDeleteButton }) {
             "border-red-500": errors?.pricing?.[index]?.name,
           })}
         />
-        <Input
-          type="number"
-          placeholder="Base Price"
-          {...register(`pricing.${index}.price`, {
-            valueAsNumber: true,
-          })}
-          className={cn({
-            "border-red-500": errors?.pricing?.[index]?.price,
-          })}
+        <Controller
+          control={control}
+          name={`pricing.${index}.cities.${cityIndex}.name`}
+          render={({ field }) => (
+            <CustomMultiSelect
+              options={cityOptions}
+              value={field.value || []}
+              onChange={field.onChange}
+              placeholder="Select Countries"
+              className={cn({
+                "border-red-500":
+                  errors?.pricing?.[index]?.cities?.[cityIndex]?.name,
+              })}
+            />
+          )}
         />
       </div>
 
@@ -1067,9 +1239,15 @@ function PricingItem({ index, removePricing, showStateDeleteButton }) {
         <Button
           type="button"
           size="sm"
-          onClick={() => appendCity({ id: "", name: "", price_modifier: "" })}
+          onClick={() =>
+            appendCity({
+              id: "",
+              name: [],
+              price_modifier: "",
+            })
+          }
           className="mt-2"
-          variant={"outline"}
+          variant="outline"
         >
           <Plus className="h-4 w-4" /> Add City
         </Button>

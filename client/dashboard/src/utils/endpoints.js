@@ -19,4 +19,5 @@ export const endpoints = {
   cityBlogs: { getAll: "/city-blogs" },
   categories: { getAll: "/categories" },
   productPages: { getAll: "/product-pages" },
+  channelPartners: { getAll: "/channel-partners" },
 };

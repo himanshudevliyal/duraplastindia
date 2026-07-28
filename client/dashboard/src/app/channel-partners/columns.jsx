@@ -1,4 +1,5 @@
 "use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-
 import { Button } from "@/components/ui/button";
 import moment from "moment";
 import Link from "next/link";
@@ -16,58 +16,48 @@ import { ArrowUpDown } from "lucide-react";
 
 export const columns = (openModal, setId) => [
   {
-    accessorKey: "title",
+    accessorKey: "company",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title <ArrowUpDown />
+          Company <ArrowUpDown />
         </Button>
       );
     },
     cell: ({ row }) => {
+      const company = row.getValue("company");
       const slug = row.original.slug;
-      const title = row.getValue("title");
+
       return (
         <a
           target="_blank"
-          href={`${slug}`}
+          href={`https://timeskrane.com/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >
-          {title ?? "-"}
+          {company}
         </a>
       );
     },
   },
+
   {
-    accessorKey: "product_page_slug",
+    accessorKey: "country",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Product slug <ArrowUpDown />
+          Country <ArrowUpDown />
         </Button>
       );
     },
-    cell: ({ row }) => {
-      const slug = row.getValue("product_page_slug");
-      return (
-        <a
-          target="_blank"
-          href={`https://timeskrane.com/crane/${slug}`}
-          referrerPolicy="no-referrer"
-          className="hover:text-primary underline"
-        >
-          {slug ?? "-"}
-        </a>
-      );
-    },
   },
+
   {
     accessorKey: "created_at",
     header: ({ column }) => {
@@ -80,18 +70,17 @@ export const columns = (openModal, setId) => [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      return (
-        <div>{moment(row.getValue("created_at")).format("DD/MM/YYYY")}</div>
-      );
-    },
+    cell: ({ row }) => (
+      <div>{moment(row.getValue("created_at")).format("DD/MM/YYYY")}</div>
+    ),
   },
+
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
       const id = row.original.id;
-      const role = row.original.role;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -100,15 +89,20 @@ export const columns = (openModal, setId) => [
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem>
-              <Link href={`/product-pages/${id}/edit`} className="w-full">
+              <Link href={`/channel-partners/${id}/edit`} className="w-full">
                 Edit
               </Link>
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onClick={() => {
                 setId(id);

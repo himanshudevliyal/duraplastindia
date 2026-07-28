@@ -48,7 +48,9 @@ export function NavUser({}) {
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate text-xs">{user?.email}</span>
+              {/* <span className="truncate text-xs">
+                {user?.email || user.fullname}
+              </span> */}
             </div>
           </div>
         </DropdownMenuLabel>

@@ -1,14 +1,27 @@
-// /frontend/schemas/product.ts
 import { z } from "zod";
 
 export const ProductFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
+
   price: z.coerce
     .number({ message: "Enter valid price." })
     .min(1, { message: "Price required." }),
-  // pictures: z.array(z.any()).default([]),
+
   description: z.string().optional(),
+
   min_age: z.number().int().nonnegative(),
+
+  category_id: z.string().optional(),
+
+  city: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string(),
+      }),
+    )
+    .default([]),
+
   features: z
     .array(
       z.object({
@@ -18,11 +31,17 @@ export const ProductFormSchema = z.object({
       }),
     )
     .default([]),
+
   youtube_urls: z
-    .array(z.object({ url: z.union([z.null(), z.string().url()]) })) // Array of objects with url field
-    .transform((data) => data.map((d) => d.url).filter((url) => url !== null)) // Transform to array of URLs, excluding nulls
-    .default([]) // Default to empty array if no youtube_urls provided
+    .array(
+      z.object({
+        url: z.union([z.null(), z.string().url()]),
+      }),
+    )
+    .transform((data) => data.map((d) => d.url).filter((url) => url !== null))
+    .default([])
     .optional(),
+
   specifications: z
     .array(
       z.object({
@@ -31,8 +50,9 @@ export const ProductFormSchema = z.object({
       }),
     )
     .default([]),
+
   content: z.string().nullable().optional(),
-  category_id: z.string().optional(),
+
   meta_title: z.string().optional(),
   meta_description: z.string().optional(),
   meta_keywords: z.string().optional(),

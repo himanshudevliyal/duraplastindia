@@ -42,10 +42,8 @@ export default function FileUpload({
   });
 
   useEffect(() => {
-    if (onFileChange) {
-      onFileChange(files.map(({ file }) => file));
-    }
-  }, [files, onFileChange]);
+    onFileChange?.(files.map(({ file }) => file));
+  }, [files]);
 
   return (
     <div className="flex flex-col gap-2">

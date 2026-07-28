@@ -119,6 +119,28 @@ export const sidebarData = [
       },
     ],
   },
+
+  {
+    title: "Channel Partners",
+    url: "/channel-partners?page=1&limit=10",
+    icon: BookOpenText,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [
+      {
+        title: "Create",
+        url: "/channel-partners/create",
+        roles: [ROLES.ADMIN],
+        isVisible: true,
+      },
+      {
+        title: "Edit",
+        url: "/channel-partners/:id/edit",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+    ],
+  },
   {
     title: "Profile Overview",
     url: "/profile",
