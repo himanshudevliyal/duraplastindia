@@ -31,7 +31,7 @@ export default function Listing() {
     <div className="border-input w-full rounded-lg">
       <DataTable
         columns={columns(openModal, setId)}
-        data={data?.products ?? []}
+        data={data?.blogs ?? []}
         totalItems={data?.total ?? 0}
       />
       <DeleteDialog
