@@ -13,7 +13,7 @@ import { defineRouting } from "next-intl/routing";
 export const routing = defineRouting({
   locales: ["in", "au", "nz", "us", "gb", "ae"],
   defaultLocale: "in",
-  localePrefix: "as-needed",
+  localePrefix: "always",
   localeCookie: {
     name: "Dura_Plast",
     maxAge: 60 * 60 * 24 * 365,

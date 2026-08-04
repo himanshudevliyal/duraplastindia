@@ -31,7 +31,13 @@ export default function LanguageSwitcher({ className, align = "end" }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-
+  console.log({
+    locale,
+    pathname,
+    href: searchParams.toString()
+      ? `${pathname}?${searchParams.toString()}`
+      : pathname,
+  });
   const handleSelect = (nextLocale) => {
     if (nextLocale === locale || isPending) return;
 

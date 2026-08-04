@@ -93,8 +93,6 @@ export function OurSolutions() {
   const { data: productResponse, isLoading } = useProductPages();
   const { data: categoryResponse } = useCategories();
 
-  console.log(productResponse);
-
   const products = productResponse?.products ?? [];
 
   const categories =

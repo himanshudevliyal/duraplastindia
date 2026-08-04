@@ -151,6 +151,7 @@ const updateById = async (req, res) => {
       lower: true,
       strict: true,
     });
+    const documentsToDelete = [];
 
     // Handle application feature images
     if (req.body.applications?.features) {
@@ -190,8 +191,6 @@ const updateById = async (req, res) => {
 
     // Validate
     schema.parse(req.body);
-
-    const documentsToDelete = [];
 
     // Product Pictures
     const existingPictures = record.pictures || [];
