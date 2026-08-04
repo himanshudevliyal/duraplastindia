@@ -16,6 +16,11 @@ export async function POST(request) {
       body: data.body,
     });
     const json = await res.json();
+
+    // console.log({
+    //   token: moment(json.expire_time).format(),
+    //   refresh: moment(json.refresh_expire_time).format(),
+    // });
     if (res.ok) {
       cookieStore.set("token", json.token, {
         path: "/",

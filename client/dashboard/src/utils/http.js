@@ -1,6 +1,8 @@
 import { handleLogout } from "@/providers/auth-provider";
 import axios from "axios";
+
 const API_ROOT = process.env.NEXT_PUBLIC_API_URL;
+let tokenRefreshPromise = null;
 
 const http = (headerType = "json", baseURL = API_ROOT) => {
   // Create the axios instance
@@ -9,8 +11,21 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
     headers: {
       "Content-Type": "application/json",
     },
-    withCredentials: true,
+    withCredentials: true, // Send cookies for cross-origin
   });
+
+  // Request interceptor to add token from localStorage if available
+  client.interceptors.request.use(
+    (config) => {
+      // Get token from localStorage (set by refresh-token endpoint)
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error),
+  );
 
   client.interceptors.response.use(handleSuccess, handleError);
 
@@ -20,23 +35,45 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
 
   async function handleError(error) {
     const originalRequest = error.config;
+
+    // Only retry on 401 (unauthorized - token expired)
+    // and only once per request
     if (error.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
       try {
-        const response = await axios.post("/api/refresh-token");
-        if (response.statusText === "OK") {
-          const token = response.data.token;
-          client.defaults.headers["Authorization"] = `Bearer ${token}`;
-          originalRequest.headers["Authorization"] = `Bearer ${token}`;
+        // Prevent multiple simultaneous refresh requests
+        if (!tokenRefreshPromise) {
+          tokenRefreshPromise = axios.post(
+            "/api/refresh-token",
+            {},
+            { withCredentials: true },
+          );
+        }
+
+        const response = await tokenRefreshPromise;
+        tokenRefreshPromise = null;
+
+        if (response.status === 200 && response.data.token) {
+          const newToken = response.data.token;
+
+          // Store token in localStorage
+          localStorage.setItem("token", newToken);
+
+          // Update header for retry
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+          // Retry the original request
           return client(originalRequest);
         } else {
           handleLogout();
           return Promise.reject(error);
         }
       } catch (refreshError) {
+        tokenRefreshPromise = null;
         handleLogout();
-        console.error("Error refreshing token:", refreshError);
-        return Promise.reject(error);
+        console.error("Token refresh failed:", refreshError);
+        return Promise.reject(refreshError);
       }
     }
 
@@ -47,22 +84,12 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
     return client.get(path).then((response) => response.data);
   }
 
-  async function post(path, payload, isFormData = false, responseType = null) {
+  async function post(path, payload, isFormData = false) {
     let config = {};
-
     if (isFormData) {
       config.headers = { "Content-Type": "multipart/form-data" };
     }
-
-    if (responseType) {
-      config.responseType = responseType;
-      // Don't transform binary responses
-      config.transformResponse = [(data) => data];
-    }
-
-    return client.post(path, payload, config).then((response) => {
-      return response.data;
-    });
+    return client.post(path, payload, config).then((response) => response.data);
   }
 
   async function put(path, payload, isFormData = false) {

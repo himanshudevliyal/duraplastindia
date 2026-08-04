@@ -13,7 +13,7 @@ export async function POST(request) {
     console.log("Error logging out in:", err);
     return NextResponse.json(
       { message: "Something went wrong" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
