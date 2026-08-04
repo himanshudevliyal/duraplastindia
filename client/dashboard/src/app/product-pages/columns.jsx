@@ -59,7 +59,7 @@ export const columns = (openModal, setId) => [
       return (
         <a
           target="_blank"
-          href={`https://timeskrane.com/crane/${slug}`}
+          href={`https://duraplast.bwdemo.in/blog/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >

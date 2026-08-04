@@ -64,7 +64,10 @@ export const columns = (openModal, setId) => [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/blogs/${id}/edit`} className="w-full">
+              <Link
+                href={`https://duraplastdb.bwdemo.in/blog/${id}/edit`}
+                className="w-full"
+              >
                 Edit
               </Link>
             </DropdownMenuItem>
