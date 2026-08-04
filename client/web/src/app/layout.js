@@ -39,6 +39,7 @@ export function generateStaticParams() {
 // Root Layout
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;
+  console.log({ locale });
 
   // Validate locale
   // if (!hasLocale(routing.locales, locale)) {

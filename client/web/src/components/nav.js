@@ -139,7 +139,7 @@ export function SiteHeader() {
               height={200}
               src="/logo.png"
               alt="Dura Plast"
-              className="w-[95px]"
+              className="w-23.75"
             />
           </Link>
 
@@ -164,7 +164,7 @@ export function SiteHeader() {
                     top-10
                     left-2/1
                     -translate-x-1/2
-                    w-[900px]
+                    w-225
                     bg-white
                     rounded-3xl
                     shadow-xl
@@ -214,7 +214,7 @@ export function SiteHeader() {
               +91 9350803033
             </a>
 
-            <LanguageSwitcher></LanguageSwitcher>
+            <LanguageSwitcher />
             <Link
               href={`${prefix}/contact`}
               className="bg-red-700 text-white px-7 py-3 rounded-full font-semibold"
