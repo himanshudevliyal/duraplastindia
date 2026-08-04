@@ -44,7 +44,7 @@ export function ProductCard({ product, prefix }) {
         </p>
 
         <Link
-          href={`${prefix}/products/${product.product_page_slug}`}
+          href={`${prefix}/product/${product.slug}`}
           className="mt-8 inline-flex items-center gap-3 font-semibold text-primary"
         >
           <span className="relative">

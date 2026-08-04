@@ -5,7 +5,7 @@ export default function Blogs(params) {
   return (
     <>
       <BreadcrumbBanner
-        title="Our BLogs"
+        title="Our Blogs"
         // backgroundImage="/img/banner/contact-banner.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "blogs" }]}
       />

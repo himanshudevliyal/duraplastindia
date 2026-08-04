@@ -25,17 +25,16 @@ export const footerContact = {
 };
 
 export const footerUsefulLinks = [
-  { label: "About Us", href: "/about.php" },
-  { label: "Our Customers", href: "/patrons.php" },
-  { label: "Contact Us", href: "/contact.php" },
-  { label: "Blogs", href: "/blog.php" },
-  { label: "Career", href: "/career.php" },
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Channel Partners", href: "/channel-partners" },
+
+  { label: "Blogs", href: "/blog" },
+  { label: "Career", href: "/career" },
 ];
 
 // Not provided yet — placeholder links, safe to edit/replace later.
 export const footerQuickLinks = [
-  { label: "Our Solutions", href: "/#solutions" },
-  { label: "Certifications", href: "/certifications" },
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Sitemap", href: "/sitemap" },

@@ -192,7 +192,7 @@ export function SiteHeader() {
                                 <Link
                                   key={product.id}
                                   href={`${prefix}/product/${product.product_page_slug}`}
-                                  className="block text-gray-600 hover:text-red-600"
+                                  className="block text-sm text-gray-600 hover:text-red-600"
                                 >
                                   {product.title}
                                 </Link>

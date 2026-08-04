@@ -36,11 +36,22 @@ export default function BenefitsSection({ benefits }) {
               rounded-3xl
               
               transition-all
+              p-8
               duration-300
               hover:-translate-y-1
             `}
           >
-            <div className="p-4">
+            <div className="relative ">
+              <Image
+                src={`${process.env.NEXT_PUBLIC_FILE_BASE}${item.img}`}
+                alt={item.heading}
+                width={400}
+                height={400}
+                className=" object-cover w-[60px]"
+              />
+            </div>
+
+            <div className="mt-4">
               <h3 className="text-xl font-bold leading-tight text-gray-900">
                 {item.heading}
               </h3>
@@ -48,15 +59,6 @@ export default function BenefitsSection({ benefits }) {
               <p className="mt-4 line-clamp-3 text-sm leading-6 text-gray-700">
                 {item.paragraph}
               </p>
-            </div>
-
-            <div className="relative mt-8 h-[220px] w-full">
-              <Image
-                src={`${process.env.NEXT_PUBLIC_FILE_BASE}${item.img}`}
-                alt={item.heading}
-                fill
-                className="rounded-t-2xl object-cover"
-              />
             </div>
           </div>
         ))}

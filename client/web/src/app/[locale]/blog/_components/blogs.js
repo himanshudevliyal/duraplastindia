@@ -5,6 +5,7 @@ import { useBlogs } from "@/hooks/use-blogs";
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/layout/section";
+import { ArrowUpRight } from "lucide-react";
 
 // Normalizes a raw picture path coming from the API (Windows-style
 // backslashes, "public/images/..." prefix) into a clean web path, then
@@ -58,54 +59,48 @@ export default function BlogsPage() {
 }
 
 function BlogCard({ blog }) {
-  const src = blog?.pictures?.[0] ? resolveImageSrc(blog.pictures[0]) : null;
+  const src = blog?.pictures?.[0]
+    ? resolveImageSrc(blog.pictures[0])
+    : "/img/hero-1.png";
+
   return (
-    <article className="group rounded-2xl overflow-hidden bg-white border border-red-100 shadow-[0_8px_30px_rgba(220,38,38,0.12)] hover:shadow-[0_12px_40px_rgba(220,38,38,0.25)] transition-shadow duration-300 h-full">
-      <div className="relative overflow-hidden">
-        {src && (
-          <Image
-            src={src}
-            alt={blog.title}
-            width={200}
-            height={200}
-            className="object-cover w-full h-52 group-hover:scale-105 transition-transform duration-300"
-          />
-        )}
+    <div className="h-full gap-6 overflow-hidden p-0 shadow-none">
+      <div className="relative aspect-[4/3] w-full">
+        <Image
+          src={src}
+          alt={blog?.title || "Blog Image"}
+          fill
+          sizes="(min-width: 1024px) 33vw, 90vw"
+          className="object-cover rounded-[10px]"
+        />
       </div>
-      <div className="p-4">
-        <span className="text-sm text-red-600 font-medium">
-          {formatDate(blog.date)}
-        </span>
-        <h3 className="font-bold mt-2 mb-3 text-lg text-gray-900">
+
+      <div className="bg-none pt-5">
+        <h3 className="font-display text-xl font-bold leading-snug text-foreground">
           {blog.title}
         </h3>
-        <p className="mb-4 text-gray-600">
-          {blog.description?.length > 130
-            ? `${blog.description.substring(0, 130)}...`
-            : blog.description}
+
+        <p className="mt-2 text-md leading-relaxed text-muted-foreground  line-clamp-3">
+          {blog.description}
         </p>
-        <Link
-          href={`/blog/${blog.slug}`}
-          className="inline-flex items-center gap-2 text-red-600 font-semibold hover:gap-3 transition-all duration-300"
-        >
-          Read more
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </Link>
       </div>
-    </article>
+
+      {blog.slug && (
+        <div className=" mt-4">
+          <Link
+            href={`/blog/${blog.slug}`}
+            className="group flex items-center gap-3 text-sm font-semibold text-foreground"
+          >
+            Read More
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+            </span>
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
-
 function LoadingState() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
