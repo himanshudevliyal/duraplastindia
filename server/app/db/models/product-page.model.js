@@ -18,7 +18,7 @@ const init = async (sequelize) => {
         allowNull: false,
         unique: {
           args: true,
-          slug: "City exist with this title.",
+          msg: "Product with this slug already exists.",
         },
       },
       title: {
@@ -26,8 +26,8 @@ const init = async (sequelize) => {
         allowNull: false,
       },
       city: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
       },
       pictures: {
         type: DataTypes.JSONB,
@@ -121,20 +121,28 @@ const bulkCreate = async (bulkData, transaction) => {
   const options = {};
   if (transaction) options.transaction = transaction;
 
-  const data = await ProductPageModel.bulkCreate(bulkData, options);
+  // Ensure city is array for each record
+  const processedData = bulkData.map((item) => ({
+    ...item,
+    city: Array.isArray(item.city) ? item.city : item.city ? [item.city] : [],
+  }));
 
-  return data.dataValues;
+  const data = await ProductPageModel.bulkCreate(processedData, options);
+
+  return data.map((d) => d.dataValues);
 };
 
 const create = async (req, transaction) => {
   const options = {};
   if (transaction) options.transaction = transaction;
 
+  // Ensure city is array
+
   const data = await ProductPageModel.create(
     {
       city: req.body.city,
       slug: req.body.slug,
-      pictures: req.body.pictures,
+      pictures: req.body.pictures || [],
       title: req.body.title,
       description: req.body.description,
       content: req.body.content,
@@ -144,12 +152,24 @@ const create = async (req, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
-      faq: req.body.faq,
+      faq: req.body.faq || [],
 
-      overview: req.body.overview,
-      why_choose: req.body.why_choose,
-      applications: req.body.applications,
-      benefits: req.body.benefits,
+      overview: req.body.overview || { heading: "", paragraphs: [] },
+      why_choose: req.body.why_choose || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
+      applications: req.body.applications || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
+      benefits: req.body.benefits || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
     },
     options,
   );
@@ -170,7 +190,7 @@ const update = async (req, id, transaction) => {
     {
       city: req.body.city,
       slug: req.body.slug,
-      pictures: req.body.pictures,
+      pictures: req.body.pictures || [],
       title: req.body.title,
       description: req.body.description,
       content: req.body.content,
@@ -180,12 +200,24 @@ const update = async (req, id, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
-      faq: req.body.faq,
+      faq: req.body.faq || [],
 
-      overview: req.body.overview,
-      why_choose: req.body.why_choose,
-      applications: req.body.applications,
-      benefits: req.body.benefits,
+      overview: req.body.overview || { heading: "", paragraphs: [] },
+      why_choose: req.body.why_choose || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
+      applications: req.body.applications || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
+      benefits: req.body.benefits || {
+        heading: "",
+        short_paragraph: "",
+        features: [],
+      },
     },
     options,
   );
@@ -194,6 +226,7 @@ const update = async (req, id, transaction) => {
 const get = async (req) => {
   const whereConditions = [];
   const queryParams = {};
+
   const q = req.query.q ? req.query.q : null;
   if (q) {
     whereConditions.push(
@@ -205,6 +238,13 @@ const get = async (req) => {
   const isMain = req.query.main || null;
   if (isMain === "true") {
     whereConditions.push("prdp.product_page_slug IS NULL");
+  }
+
+  // Filter by city
+  const cities = req.query.cities ? req.query.cities.split(".") : null;
+  if (cities?.length) {
+    whereConditions.push(`prdp.city && :cities::text[]`);
+    queryParams.cities = cities;
   }
 
   const categories = req.query.categories
@@ -222,7 +262,7 @@ const get = async (req) => {
   }
 
   const page = req.query.page ? Number(req.query.page) : 1;
-  const limit = req.query.limit ? Number(req.query.limit) : null;
+  const limit = req.query.limit ? Number(req.query.limit) : 10;
   const offset = (page - 1) * limit;
 
   let whereClause = "";
@@ -233,7 +273,7 @@ const get = async (req) => {
   const query = `
   SELECT 
       prdp.id, prdp.slug, prdp.title, prdp.city, prdp.product_page_slug, 
-      prdp.pictures, prdp.description, prdp.created_at
+      prdp.pictures, prdp.description, prdp.created_at , category_id
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = prdp.category_id
     ${whereClause}
@@ -248,7 +288,6 @@ const get = async (req) => {
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = prdp.category_id
     ${whereClause}
   `;
-  // LEFT JOIN ${constants.models.PACKAGE_TABLE} pkg ON pkg.id IN (SELECT jsonb_array_elements_text(cat.packages)::uuid)
 
   const products = await ProductPageModel.sequelize.query(query, {
     replacements: { ...queryParams, limit, offset },

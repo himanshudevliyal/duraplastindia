@@ -37,7 +37,7 @@ const init = async (sequelize) => {
     {
       createdAt: "created_at",
       updatedAt: "updated_at",
-    }
+    },
   );
 
   return UserModel;
@@ -59,7 +59,7 @@ const create = async (req, transaction) => {
       fullname: req.body?.fullname,
       role: req.body?.role,
     },
-    options
+    options,
   );
 
   return data.dataValues;
@@ -72,7 +72,7 @@ const get = async (req) => {
 
   if (q) {
     whereConditions.push(
-      `(usr.fullname ILIKE :query OR usr.username ILIKE :query)`
+      `(usr.fullname ILIKE :query OR usr.username ILIKE :query)`,
     );
     queryParams.query = `%${q}%`;
   }
@@ -182,7 +182,7 @@ const update = async (req, id, transaction = null) => {
       fullname: req.body?.fullname,
       role: req.body?.role,
     },
-    options
+    options,
   );
 };
 
@@ -190,14 +190,14 @@ const updatePassword = async (req, user_id) => {
   const hash_password = hash.encrypt(req.body.password);
   return await UserModel.update(
     { password: hash_password },
-    { where: { id: req.params?.id || user_id } }
+    { where: { id: req.params?.id || user_id } },
   );
 };
 
 const updateUsername = async (req, user_id) => {
   return await UserModel.update(
     { username: req.body.username },
-    { where: { id: req.params?.id || user_id } }
+    { where: { id: req.params?.id || user_id } },
   );
 };
 

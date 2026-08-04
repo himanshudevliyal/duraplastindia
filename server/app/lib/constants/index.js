@@ -47,6 +47,7 @@ const constants = {
     CATEGORY_TABLE: "categories",
     CITY_BLOG_TABLE: "city_blogs",
     PRODUCT_PAGE_TABLE: "product_pages",
+    CHANNEL_PARTNER_TABLE: "channel_partners",
   },
   bcrypt: {
     SALT_ROUNDS: 10,

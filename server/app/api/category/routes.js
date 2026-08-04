@@ -9,7 +9,7 @@ export default async function routes(fastify, options) {
       preHandler: async (req, res) =>
         multipartPreHandler(req, res, ["packages"]),
     },
-    controller.create
+    controller.create,
   );
   fastify.put(
     "/:id",
@@ -17,7 +17,7 @@ export default async function routes(fastify, options) {
       preHandler: async (req, res) =>
         multipartPreHandler(req, res, ["packages", "picture_urls"]),
     },
-    controller.updateById
+    controller.updateById,
   );
   fastify.delete("/:id", {}, controller.deleteById);
   fastify.get("/:id", {}, controller.getById);
@@ -25,4 +25,5 @@ export default async function routes(fastify, options) {
 
 export async function categoryPublicRoutes(fastify, opt) {
   fastify.get("/", {}, controller.get);
+  fastify.get("/:id/related-products", {}, controller.getRelatedProducts);
 }

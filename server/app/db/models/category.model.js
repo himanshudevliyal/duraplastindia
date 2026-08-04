@@ -43,7 +43,7 @@ const init = async (sequelize) => {
           using: "GIN",
         },
       ],
-    }
+    },
   );
 
   return CategoryModel;
@@ -65,7 +65,7 @@ const create = async (req, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
     },
-    options
+    options,
   );
 
   return data.dataValues;
@@ -86,7 +86,7 @@ const update = async (req, id) => {
       where: { id: req?.params?.id || id },
       returning: true,
       raw: true,
-    }
+    },
   );
 };
 
@@ -169,6 +169,40 @@ const deleteById = async (req, id) => {
   });
 };
 
+const getRelatedProducts = async (categoryId, country) => {
+  const query = `
+    SELECT 
+      prdp.id,
+      prdp.slug,
+      prdp.title,
+      prdp.city,
+      prdp.product_page_slug,
+      prdp.pictures,
+      prdp.description,
+      prdp.category_id
+
+    FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
+
+    WHERE 
+      prdp.category_id = :categoryId
+      AND :country = ANY(prdp.city)
+
+    ORDER BY prdp.created_at DESC
+
+    LIMIT 10
+  `;
+
+  const products = await CategoryModel.sequelize.query(query, {
+    replacements: {
+      categoryId,
+      country,
+    },
+    type: QueryTypes.SELECT,
+  });
+
+  return products;
+};
+
 export default {
   init: init,
   create: create,
@@ -176,4 +210,5 @@ export default {
   getById: getById,
   deleteById: deleteById,
   get: get,
+  getRelatedProducts: getRelatedProducts,
 };

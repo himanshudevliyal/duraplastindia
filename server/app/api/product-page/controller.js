@@ -10,7 +10,7 @@ import { z } from "zod";
 export const schema = z.object({
   title: z.string().trim().min(1, "Title is required"),
 
-  city: z.string().optional().nullable(),
+  city: z.array(z.string()).min(1, "Atleast 1 city is required."),
 
   description: z.string().optional().nullable(),
 
@@ -101,10 +101,29 @@ export const schema = z.object({
 
 const create = async (req, res) => {
   try {
-    let slug = slugify(req.body.title, { lower: true });
-    req.body.slug = slug;
-    throw new Error("erjgerjk");
+    // Generate slug from title
+    req.body.slug = slugify(req.body.title, {
+      lower: true,
+      strict: true,
+    });
+
+    // Handle application feature images
+    if (req.body.applications?.features) {
+      req.body.applications.features.forEach((feature, index) => {
+        feature.img = req.body[`applications_image_${index}`]?.[0] || "";
+      });
+    }
+
+    // Handle benefit feature images
+    if (req.body.benefits?.features) {
+      req.body.benefits.features.forEach((feature, index) => {
+        feature.img = req.body[`benefits_image_${index}`]?.[0] || "";
+      });
+    }
+
+    // Validate incoming data against schema
     const validateData = schema.parse(req.body);
+    // Convert CustomMultiSelect objects -> string array for city field
 
     await table.ProductPageModel.create(req);
 
@@ -118,35 +137,82 @@ const create = async (req, res) => {
 
 const updateById = async (req, res) => {
   const transaction = await sequelize.transaction();
+
   try {
     const record = await table.ProductPageModel.getById(req, req.params.id);
+
     if (!record) {
       return res
         .code(StatusCodes.NOT_FOUND)
         .send({ message: "Product page not found!" });
     }
 
-    let slug = slugify(req.body.title, { lower: true, strict: true });
-    req.body.slug = slug;
+    req.body.slug = slugify(req.body.title, {
+      lower: true,
+      strict: true,
+    });
+
+    // Handle application feature images
+    if (req.body.applications?.features) {
+      const oldApplications = record.applications?.features || [];
+
+      req.body.applications.features.forEach((feature, index) => {
+        const newImage = req.body[`applications_image_${index}`]?.[0];
+
+        if (newImage) {
+          if (oldApplications[index]?.img) {
+            documentsToDelete.push(oldApplications[index].img);
+          }
+          feature.img = newImage;
+        } else {
+          feature.img = oldApplications[index]?.img || "";
+        }
+      });
+    }
+
+    // Handle benefit feature images
+    if (req.body.benefits?.features) {
+      const oldBenefits = record.benefits?.features || [];
+
+      req.body.benefits.features.forEach((feature, index) => {
+        const newImage = req.body[`benefits_image_${index}`]?.[0];
+
+        if (newImage) {
+          if (oldBenefits[index]?.img) {
+            documentsToDelete.push(oldBenefits[index].img);
+          }
+          feature.img = newImage;
+        } else {
+          feature.img = oldBenefits[index]?.img || "";
+        }
+      });
+    }
+
+    // Validate
+    schema.parse(req.body);
 
     const documentsToDelete = [];
 
-    const existingPictures = record.pictures;
-    const updatedPictures = req.body.picture_urls;
-    if (updatedPictures) {
-      req.body.pictures = [...(req.body?.pictures ?? []), ...updatedPictures];
-      documentsToDelete.push(
-        ...getItemsToDelete(existingPictures, updatedPictures),
-      );
-    }
+    // Product Pictures
+    const existingPictures = record.pictures || [];
+    const updatedPictures = req.body.picture_urls || [];
 
-    await table.ProductPageModel.update(req, 0, transaction);
+    req.body.pictures = [...(req.body.pictures || []), ...updatedPictures];
+
+    documentsToDelete.push(
+      ...getItemsToDelete(existingPictures, updatedPictures),
+    );
+
+    await table.ProductPageModel.update(req, req.params.id, transaction);
+
     await cleanupFiles(documentsToDelete);
 
     await transaction.commit();
-    res
-      .code(StatusCodes.OK)
-      .send({ status: true, message: "Product page updated." });
+
+    res.code(StatusCodes.OK).send({
+      status: true,
+      message: "Product page updated.",
+    });
   } catch (error) {
     await transaction.rollback();
     throw error;

@@ -56,27 +56,27 @@ export const sidebarData = [
       },
     ],
   },
-  {
-    title: "City pages",
-    url: "/cities?page=1&limit=10",
-    icon: Box,
-    roles: [ROLES.ADMIN],
-    isVisible: true,
-    items: [
-      {
-        title: "Create",
-        url: "/cities/create",
-        roles: [ROLES.ADMIN],
-        isVisible: true,
-      },
-      {
-        title: "Edit",
-        url: "/cities/:id/edit",
-        roles: [ROLES.ADMIN],
-        isVisible: false,
-      },
-    ],
-  },
+  // {
+  //   title: "City pages",
+  //   url: "/cities?page=1&limit=10",
+  //   icon: Box,
+  //   roles: [ROLES.ADMIN],
+  //   isVisible: true,
+  //   items: [
+  //     {
+  //       title: "Create",
+  //       url: "/cities/create",
+  //       roles: [ROLES.ADMIN],
+  //       isVisible: true,
+  //     },
+  //     {
+  //       title: "Edit",
+  //       url: "/cities/:id/edit",
+  //       roles: [ROLES.ADMIN],
+  //       isVisible: false,
+  //     },
+  //   ],
+  // },
   {
     title: "Product pages",
     url: "/product-pages?page=1&limit=10",

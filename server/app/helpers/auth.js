@@ -27,7 +27,7 @@ function generateRefreshToken(userData) {
 const verifyToken = async (req, res) => {
   const authHeader = req.headers["authorization"] ?? req.cookies.token;
   if (!authHeader) {
-    res.code(401).send({ message: "unauthorized!" });
+    return res.code(401).send({ message: "unauthorized!" });
   }
   const token = authHeader.startsWith("Bearer")
     ? authHeader.split(" ")[1]
@@ -45,6 +45,7 @@ const verifyToken = async (req, res) => {
     req.user_data = userData;
     req.decoded = decoded;
   } catch (error) {
+    throw error;
     return res.code(401).send({ message: "Invalid token or token expired" });
   }
   return;
@@ -61,6 +62,7 @@ const verifyRefreshToken = async (req, res) => {
     const [jwtToken, time] = generateAccessToken(decoded.user);
     return res.send({ token: jwtToken, expire_time: Date.now() + time });
   } catch (error) {
+    throw error;
     return res.code(401).send({
       status: false,
       message: "Invalid refresh token or a refresh token is expired",

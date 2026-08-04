@@ -43,7 +43,7 @@ const updateById = async (req, res) => {
     if (updatedPictures) {
       req.body.pictures = [...(req.body?.pictures ?? []), ...updatedPictures];
       documentsToDelete.push(
-        ...getItemsToDelete(existingPictures, updatedPictures)
+        ...getItemsToDelete(existingPictures, updatedPictures),
       );
     }
 
@@ -73,6 +73,19 @@ const getById = async (req, res) => {
     const data = await table.CategoryModel.getById(req);
 
     res.code(StatusCodes.OK).send({ status: true, data: data });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getRelatedProducts = async (req, res) => {
+  try {
+    const records = await table.CategoryModel.getRelatedProducts(
+      req.params.id,
+      req.query.country,
+    );
+
+    res.code(StatusCodes.OK).send({ status: true, data: records });
   } catch (error) {
     throw error;
   }
@@ -119,4 +132,5 @@ export default {
   getById: getById,
   get: get,
   deleteById: deleteById,
+  getRelatedProducts: getRelatedProducts,
 };

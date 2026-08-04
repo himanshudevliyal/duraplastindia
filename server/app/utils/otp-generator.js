@@ -8,6 +8,6 @@ export const otpGenerator = () => {
   } else {
     otp = crypto.randomInt(100000, 999999);
   }
-  console.log({ otp });
+  // console.log({ otp });
   return otp;
 };

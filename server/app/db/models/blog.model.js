@@ -56,7 +56,7 @@ const init = async (sequelize) => {
       createdAt: "created_at",
       updatedAt: "updated_at",
       indexes: [{ fields: ["title"] }, { fields: ["category_id"] }],
-    }
+    },
   );
   return BlogModel;
 };
@@ -87,7 +87,7 @@ const create = async (req, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
     },
-    options
+    options,
   );
 
   return data.dataValues;
@@ -115,7 +115,7 @@ const update = async (req, id, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
     },
-    options
+    options,
   );
 };
 
@@ -164,7 +164,7 @@ const get = async (req) => {
   `;
   // LEFT JOIN ${constants.models.PACKAGE_TABLE} pkg ON pkg.id IN (SELECT jsonb_array_elements_text(cat.packages)::uuid)
 
-  const products = await BlogModel.sequelize.query(query, {
+  const blogs = await BlogModel.sequelize.query(query, {
     replacements: { ...queryParams, limit, offset },
     type: QueryTypes.SELECT,
     raw: true,
@@ -177,7 +177,7 @@ const get = async (req) => {
     plain: true,
   });
 
-  return { products, total: count?.total ?? 0 };
+  return { blogs, total: count?.total ?? 0 };
 };
 
 const getById = async (req, id) => {

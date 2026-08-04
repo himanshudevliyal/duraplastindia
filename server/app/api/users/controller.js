@@ -87,7 +87,7 @@ const updatePassword = async (req, res) => {
 
     const verify_old_password = await hash.verify(
       req.body.old_password,
-      record.password
+      record.password,
     );
 
     if (!verify_old_password) {
