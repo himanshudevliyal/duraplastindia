@@ -273,7 +273,7 @@ const get = async (req) => {
   const query = `
   SELECT 
       prdp.id, prdp.slug, prdp.title, prdp.city, prdp.product_page_slug, 
-      prdp.pictures, prdp.description, prdp.created_at , category_id
+      prdp.pictures, prdp.description, prdp.created_at , prdp.category_id
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = prdp.category_id
     ${whereClause}

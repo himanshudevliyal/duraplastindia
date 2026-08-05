@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Listing from "./_component/listing";
 import TableActions from "./_component/table-actions";
+import CategoryFilter from "../product-pages/_component/category-filter";
 
 export const metadata = {
   title: "Blogs",
@@ -34,6 +35,7 @@ export default async function Blogs({ searchParams }) {
         </Link>
       </div>
       <TableActions />
+      <CategoryFilter></CategoryFilter>
       <Suspense
         key={key}
         fallback={<DataTableSkeleton columnCount={4} rowCount={10} />}

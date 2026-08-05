@@ -7,11 +7,13 @@ import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+
 import Listing from "./_component/listing";
 import TableActions from "./_component/table-actions";
+import CategoryFilter from "./_component/category-filter";
 
 export const metadata = {
-  title: "Product ages",
+  title: "Product Pages",
 };
 
 export default async function ProductPages({ searchParams }) {
@@ -22,18 +24,27 @@ export default async function ProductPages({ searchParams }) {
     <PageContainer>
       <div className="flex items-start justify-between gap-2">
         <Heading
-          title="Products page"
-          description="Manage product (Create, Update, Delete)."
+          title="Products Page"
+          description="Manage product pages (Create, Update, Delete)."
         />
 
         <Link
-          href={"/product-pages/create"}
+          href="/product-pages/create"
           className={cn(buttonVariants({ size: "sm" }))}
         >
-          <Plus /> Add
+          <Plus className="mr-2 h-4 w-4" />
+          Add
         </Link>
       </div>
-      <TableActions />
+
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <TableActions />
+
+        <div className="w-full md:w-72">
+          <CategoryFilter />
+        </div>
+      </div>
+
       <Suspense
         key={key}
         fallback={<DataTableSkeleton columnCount={4} rowCount={10} />}

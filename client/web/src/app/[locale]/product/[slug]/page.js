@@ -16,10 +16,8 @@ export default async function ProductDetailsPage({ params }) {
   const { slug } = await params;
 
   const data = await fetchProductPageBySlug(slug);
-  console.log(data);
-
+  console.log("data", data);
   const product = data;
-
   if (!product) {
     return <div className="py-20 text-center">Product not found</div>;
   }

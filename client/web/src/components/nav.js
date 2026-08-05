@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useLocale } from "next-intl";
 
@@ -9,7 +10,6 @@ import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
 import { getCountryFromLocale } from "@/utils/country-mapping";
 import LanguageSwitcher from "./ui/language-switcher";
-import Image from "next/image";
 
 export function SiteHeader() {
   const locale = useLocale();
@@ -19,6 +19,7 @@ export function SiteHeader() {
 
   const [showNav, setShowNav] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -31,23 +32,26 @@ export function SiteHeader() {
         setShowNav(true);
       } else if (currentScrollY > lastScrollY.current) {
         setShowNav(false);
-      } else if (currentScrollY < lastScrollY.current) {
+      } else {
         setShowNav(true);
       }
 
       lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const country = getCountryFromLocale(locale) || "India";
 
-  // Products API
+  // Products
   const { data: productResponse, isLoading } = useProductPages();
 
-  // Categories API
+  // Categories
   const { data: categoryResponse } = useCategories();
 
   const products = productResponse?.products ?? [];
@@ -58,21 +62,26 @@ export function SiteHeader() {
   const prefix = locale ? `/${locale}` : "/in";
 
   const navItems = useMemo(() => {
-    const filteredProducts = products.filter((product) =>
-      product.city?.includes(country),
-    );
+    const filteredProducts = products.filter((product) => {
+      if (!product.city) return false;
 
-    const productCategories = categories
-      .map((category) => ({
+      return Array.isArray(product.city)
+        ? product.city.includes(country)
+        : product.city === country;
+    });
+
+    const productCategories = categories.map((category) => {
+      const categoryProducts = filteredProducts.filter(
+        (product) => String(product.category_id) === String(category.id),
+      );
+
+      return {
         id: category.id,
         title: category.title,
-        products: filteredProducts.filter(
-          (product) =>
-            product.category_id === category.id ||
-            product.category?.id === category.id,
-        ),
-      }))
-      .filter((category) => category.products.length > 0);
+        slug: category.slug,
+        products: categoryProducts,
+      };
+    });
 
     return [
       {
@@ -115,74 +124,92 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${
         showNav ? "translate-y-0" : "-translate-y-full"
       } ${isScrolled ? "bg-black/90 backdrop-blur-sm" : "bg-transparent"}`}
     >
       <div className="px-4 md:px-6 lg:px-10">
-        <div className="flex items-center justify-between h-20 lg:h-24">
-          {/* LOGO */}
-          <Link href={prefix} className="shrink-0">
+        <div className="flex h-20 lg:h-24 items-center justify-between">
+          {/* Logo */}
+          <Link href={prefix}>
             <Image
-              width={200}
-              height={200}
               src="/logo.png"
               alt="Dura Plast"
-              className="w-20 lg:w-23.75"
+              width={200}
+              height={200}
+              className="w-20 lg:w-24"
             />
           </Link>
 
-          {/* DESKTOP NAV */}
+          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
             {navItems.map((item) => (
               <div key={item.id} className="relative group">
                 <Link
                   href={item.href}
-                  className="flex items-center gap-1 text-white font-medium tracking-widest uppercase text-sm whitespace-nowrap"
+                  className="flex items-center gap-1 text-white font-medium uppercase tracking-widest text-sm whitespace-nowrap"
                 >
                   {item.label}
+
                   {item.categories?.length > 0 && <ChevronDown size={15} />}
                 </Link>
 
-                {/* PRODUCTS DROPDOWN */}
+                {/* Product Dropdown */}
                 {item.categories?.length > 0 && (
                   <div
                     className="
-                    absolute
-                    top-10
-                    left-2/1
-                    -translate-x-1/2
-                    w-[95vw]
-                    max-w-5xl
-                    bg-white
-                    rounded-3xl
-                    shadow-xl
-                    p-6
-                    lg:p-8
-                    opacity-0
-                    invisible
-                    group-hover:opacity-100
-                    group-hover:visible
-                    transition-all
-                    duration-300
-                  "
+                      absolute
+                      top-10
+                      left-3/1
+                      -translate-x-1/2
+                      w-[95vw]
+                      max-w-6xl
+                      bg-white
+                      rounded-3xl
+                      shadow-xl
+                      p-8
+                      opacity-0
+                      invisible
+                      group-hover:opacity-100
+                      group-hover:visible
+                      transition-all
+                      duration-300
+                    "
                   >
                     {isLoading ? (
                       <p>Loading...</p>
                     ) : (
-                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-8">
                         {item.categories.map((category) => (
                           <div key={category.id}>
-                            <div className="inline-flex text-sm rounded-full bg-red-50 text-red-600 px-5 py-2 font-semibold uppercase mb-4">
+                            {/* Category */}
+                            <Link
+                              href={`${prefix}/product?categories=${category.id}`}
+                              className="
+                                inline-flex
+                                rounded-full
+                                bg-red-50
+                                px-5
+                                py-2
+                                text-sm
+                                font-semibold
+                                uppercase
+                                text-red-600
+                                transition
+                                hover:bg-red-600
+                                hover:text-white
+                              "
+                            >
                               {category.title}
-                            </div>
+                            </Link>
 
-                            <div className="space-y-3">
+                            {/* Products */}
+                            <div className="mt-4 space-y-3">
                               {category.products.map((product) => (
                                 <Link
                                   key={product.id}
                                   href={`${prefix}/product/${product.slug}`}
-                                  className="block text-sm text-gray-600 hover:text-red-600"
+                                  className="block text-sm text-gray-600 transition hover:text-red-600"
                                 >
                                   {product.title}
                                 </Link>
@@ -198,26 +225,26 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          {/* RIGHT SIDE */}
+          {/* Right Side */}
           <div className="flex items-center gap-3 lg:gap-5">
             <a
               href="tel:+919350803033"
-              className="hidden xl:block text-white whitespace-nowrap"
+              className="hidden whitespace-nowrap text-white xl:block"
             >
               +91 9350803033
             </a>
 
-            <LanguageSwitcher className="border border-white  text-white  hover:border-primary" />
+            <LanguageSwitcher className="border border-white text-white hover:border-primary" />
 
             <Link
               href={`${prefix}/contact`}
-              className="hidden lg:block bg-red-700 text-white px-7 py-3 rounded-full font-semibold whitespace-nowrap"
+              className="hidden rounded-full bg-red-700 px-7 py-3 font-semibold text-white lg:block"
             >
               Get a Quote
             </Link>
 
             <button
-              className="lg:hidden text-white"
+              className="text-white lg:hidden"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X /> : <Menu />}
@@ -225,33 +252,37 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* MOBILE MENU */}
+        {/* Mobile Menu */}
         {isOpen && (
-          <div className="lg:hidden bg-white rounded-xl p-5 max-h-[80vh] overflow-y-auto">
+          <div className="max-h-[80vh] overflow-y-auto rounded-xl bg-white p-5 lg:hidden">
             {navItems.map((item) => (
               <div key={item.id}>
-                <div className="flex justify-between items-center py-3 border-b">
+                <div className="flex items-center justify-between border-b py-3">
                   <Link href={item.href} onClick={() => setIsOpen(false)}>
                     {item.label}
                   </Link>
 
                   {item.categories?.length > 0 && (
                     <ChevronDown
-                      onClick={() => toggleMobileMenu(item.id)}
                       className={`cursor-pointer transition-transform ${
                         expandedMenu === item.id ? "rotate-180" : ""
                       }`}
+                      onClick={() => toggleMobileMenu(item.id)}
                     />
                   )}
                 </div>
 
                 {expandedMenu === item.id && item.categories && (
-                  <div className="pl-4 py-2">
+                  <div className="py-2 pl-4">
                     {item.categories.map((category) => (
                       <div key={category.id} className="mb-4">
-                        <div className="font-semibold text-red-600 mb-2 uppercase">
+                        <Link
+                          href={`${prefix}/product?categories=${category.id}`}
+                          className="mb-2 block font-semibold uppercase text-red-600"
+                          onClick={() => setIsOpen(false)}
+                        >
                           {category.title}
-                        </div>
+                        </Link>
 
                         {category.products.map((product) => (
                           <Link
@@ -270,11 +301,10 @@ export function SiteHeader() {
               </div>
             ))}
 
-            {/* GET A QUOTE - MOBILE */}
             <Link
               href={`${prefix}/contact`}
               onClick={() => setIsOpen(false)}
-              className="block text-center bg-red-700 text-white px-7 py-3 rounded-full font-semibold mt-4"
+              className="mt-4 block rounded-full bg-red-700 px-7 py-3 text-center font-semibold text-white"
             >
               Get a Quote
             </Link>

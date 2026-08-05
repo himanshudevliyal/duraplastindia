@@ -9,7 +9,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "bdsapi.bwdemo.in",
+        hostname: "duraplastapi.bwdemo.in",
         port: "",
       },
       {
