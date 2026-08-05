@@ -227,7 +227,7 @@ const get = async (req) => {
   const whereConditions = [];
   const queryParams = {};
 
-  const q = req.query.q ? req.query.q : null;
+  const q = req.query.q || null;
   if (q) {
     whereConditions.push(
       `(prdp.title ILIKE :query OR prdp.product_page_slug ILIKE :query)`,
@@ -247,62 +247,92 @@ const get = async (req) => {
     queryParams.cities = cities;
   }
 
+  // Filter by category
   const categories = req.query.categories
     ? req.query.categories.split(".")
     : null;
+
   if (categories?.length) {
     whereConditions.push(`prdp.category_id = ANY(:categories)`);
     queryParams.categories = `{${categories.join(",")}}`;
   }
 
-  const productPageSlug = req.query.page_slug ? req.query.page_slug : null;
+  // Filter by page slug
+  const productPageSlug = req.query.page_slug || null;
   if (productPageSlug) {
     whereConditions.push(`prdp.product_page_slug = :productPageSlug`);
     queryParams.productPageSlug = productPageSlug;
   }
 
-  const page = req.query.page ? Number(req.query.page) : 1;
-  const limit = req.query.limit ? Number(req.query.limit) : 10;
+  const whereClause = whereConditions.length
+    ? `WHERE ${whereConditions.join(" AND ")}`
+    : "";
+
+  // Pagination
+  const isPagination =
+    req.query.page !== undefined || req.query.limit !== undefined;
+
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
   const offset = (page - 1) * limit;
 
-  let whereClause = "";
-  if (whereConditions.length) {
-    whereClause = `WHERE ${whereConditions.join(" AND ")}`;
-  }
-
-  const query = `
-  SELECT 
-      prdp.id, prdp.slug, prdp.title, prdp.city, prdp.product_page_slug, 
-      prdp.pictures, prdp.description, prdp.created_at , prdp.category_id
+  let query = `
+    SELECT
+      prdp.id,
+      prdp.slug,
+      prdp.title,
+      prdp.city,
+      prdp.product_page_slug,
+      prdp.pictures,
+      prdp.description,
+      prdp.created_at,
+      prdp.category_id
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
-    LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = prdp.category_id
+    LEFT JOIN ${constants.models.CATEGORY_TABLE} cat
+      ON cat.id = prdp.category_id
     ${whereClause}
     ORDER BY prdp.created_at DESC
-    LIMIT :limit OFFSET :offset
   `;
 
+  if (isPagination) {
+    query += `
+      LIMIT :limit
+      OFFSET :offset
+    `;
+  }
+
   const countQuery = `
-  SELECT 
-     COUNT(prdp.id) OVER()::integer as total
+    SELECT COUNT(prdp.id)::integer AS total
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
-    LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = prdp.category_id
+    LEFT JOIN ${constants.models.CATEGORY_TABLE} cat
+      ON cat.id = prdp.category_id
     ${whereClause}
   `;
 
+  const replacements = { ...queryParams };
+
+  if (isPagination) {
+    replacements.limit = limit;
+    replacements.offset = offset;
+  }
+
   const products = await ProductPageModel.sequelize.query(query, {
-    replacements: { ...queryParams, limit, offset },
+    replacements,
     type: QueryTypes.SELECT,
     raw: true,
   });
 
   const count = await ProductPageModel.sequelize.query(countQuery, {
-    replacements: { ...queryParams },
+    replacements: queryParams,
     type: QueryTypes.SELECT,
     raw: true,
     plain: true,
   });
 
-  return { products, total: count?.total ?? 0 };
+  return {
+    products,
+    total: count?.total ?? 0,
+  };
 };
 
 const getById = async (req, id) => {

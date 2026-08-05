@@ -70,19 +70,20 @@ export function SiteHeader() {
         : product.city === country;
     });
 
-    const productCategories = categories.map((category) => {
-      const categoryProducts = filteredProducts.filter(
-        (product) => String(product.category_id) === String(category.id),
-      );
+    const productCategories = categories
+      .map((category) => {
+        const categoryProducts = filteredProducts.filter(
+          (product) => String(product.category_id) === String(category.id),
+        );
 
-      return {
-        id: category.id,
-        title: category.title,
-        slug: category.slug,
-        products: categoryProducts,
-      };
-    });
-
+        return {
+          id: category.id,
+          title: category.title,
+          slug: category.slug,
+          products: categoryProducts,
+        };
+      })
+      .filter((category) => category.products.length > 0);
     return [
       {
         id: "home",
