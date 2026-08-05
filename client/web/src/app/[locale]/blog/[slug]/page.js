@@ -95,10 +95,10 @@ export default async function BlogDetailPage({ params }) {
       `}</style>
 
       <BreadcrumbBanner
-        title="Our Blogs"
+        title={blog.title}
         breadcrumbs={[
           { label: "Home", href: "/" },
-          { label: "blogs", href: "/blogs" },
+          { label: "blog", href: "/blog" },
           { label: blog.title },
         ]}
       />
@@ -165,7 +165,7 @@ export default async function BlogDetailPage({ params }) {
               <div className="border-t border-red-100 my-12" />
 
               <Link
-                href="/blogs"
+                href="/blog"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-red-700 hover:gap-3 transition-all"
               >
                 <ArrowLeft className="w-4 h-4" />

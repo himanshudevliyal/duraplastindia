@@ -181,7 +181,7 @@ export function SiteHeader() {
                               {category.products.map((product) => (
                                 <Link
                                   key={product.id}
-                                  href={`${prefix}/product/${product.product_page_slug}`}
+                                  href={`${prefix}/product/${product.slug}`}
                                   className="block text-sm text-gray-600 hover:text-red-600"
                                 >
                                   {product.title}
@@ -207,7 +207,7 @@ export function SiteHeader() {
               +91 9350803033
             </a>
 
-            <LanguageSwitcher />
+            <LanguageSwitcher className="border border-white  text-white  hover:border-primary" />
 
             <Link
               href={`${prefix}/contact`}
@@ -256,7 +256,7 @@ export function SiteHeader() {
                         {category.products.map((product) => (
                           <Link
                             key={product.id}
-                            href={`${prefix}/product/${product.product_page_slug}`}
+                            href={`${prefix}/product/${product.slug}`}
                             className="block py-2 text-gray-600"
                             onClick={() => setIsOpen(false)}
                           >

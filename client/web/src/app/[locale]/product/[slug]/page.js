@@ -36,7 +36,7 @@ export default async function ProductDetailsPage({ params }) {
   return (
     <>
       <BreadcrumbBanner
-        title="POLYCARBONATE FLAT SHEETS"
+        title={product.title}
         // backgroundImage="/img/banner/about-banner.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: product.title }]}
       />
