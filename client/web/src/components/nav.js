@@ -159,60 +159,127 @@ export function SiteHeader() {
                 {item.categories?.length > 0 && (
                   <div
                     className="
-                      absolute
-                      top-10
-                      left-3/1
-                      -translate-x-1/2
-                      w-[95vw]
-                      max-w-6xl
-                      bg-white
-                      rounded-3xl
-                      shadow-xl
-                      p-8
-                      opacity-0
-                      invisible
-                      group-hover:opacity-100
-                      group-hover:visible
-                      transition-all
-                      duration-300
-                    "
+absolute
+top-12
+left-3/1
+-translate-x-1/2
+w-[96vw]
+max-w-7xl
+bg-white
+rounded-[24px]
+border
+border-gray-200
+shadow-[0_30px_80px_rgba(0,0,0,.12)]
+p-10
+
+max-h-[80vh]
+overflow-y-auto
+
+opacity-0
+invisible
+translate-y-3
+group-hover:opacity-100
+group-hover:visible
+group-hover:translate-y-0
+transition-all
+duration-300
+z-50
+"
                   >
                     {isLoading ? (
-                      <p>Loading...</p>
+                      <div className="py-10 text-center text-gray-500">
+                        Loading...
+                      </div>
                     ) : (
-                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-8">
-                        {item.categories.map((category) => (
-                          <div key={category.id}>
-                            {/* Category */}
+                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-12 gap-y-10">
+                        {item.categories.map((category, index) => (
+                          <div
+                            key={category.id}
+                            className={`
+              ${index % 3 !== 2 ? "xl:border-r xl:border-gray-200 xl:pr-8" : ""}
+            `}
+                          >
+                            {/* Heading */}
                             <Link
                               href={`${prefix}/product?categories=${category.id}`}
-                              className="
-                                inline-flex
-                                rounded-full
-                                bg-red-50
-                                px-5
-                                py-2
-                                text-sm
-                                font-semibold
-                                uppercase
-                                text-red-600
-                                transition
-                                hover:bg-red-600
-                                hover:text-white
-                              "
+                              className="group/title inline-block"
                             >
-                              {category.title}
+                              <h3
+                                className="
+                  relative
+                  inline-block
+                  pb-3
+                  text-[18px]
+                  font-bold
+                  uppercase
+                  tracking-wide
+                  text-red-600
+                  transition
+                  after:absolute
+                  after:left-0
+                  after:bottom-0
+                  after:h-[2px]
+                  after:w-12
+                  after:bg-red-600
+                  after:transition-all
+                  group-hover/title:after:w-full
+                "
+                              >
+                                {category.title}
+                              </h3>
                             </Link>
 
                             {/* Products */}
-                            <div className="mt-4 space-y-3">
+                            <div className="mt-5 space-y-1">
                               {category.products.map((product) => (
                                 <Link
                                   key={product.id}
                                   href={`${prefix}/product/${product.slug}`}
-                                  className="block text-sm text-gray-600 transition hover:text-red-600"
+                                  className="
+                    group
+                    flex
+                    items-center
+                    justify-between
+                    rounded-xl
+                    px-3
+                    py-3
+                    text-[15px]
+                    font-medium
+                    text-gray-700
+                    transition-all
+                    duration-200
+                    hover:bg-red-50
+                    hover:text-red-600
+                  "
                                 >
-                                  {product.title}
+                                  <span className="truncate pr-3">
+                                    {product.title}
+                                  </span>
+
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="
+                      h-4
+                      w-4
+                      text-red-600
+                      opacity-0
+                      -translate-x-2
+                      transition-all
+                      duration-200
+                      group-hover:opacity-100
+                      group-hover:translate-x-0
+                    "
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M9 5l7 7-7 7"
+                                    />
+                                  </svg>
                                 </Link>
                               ))}
                             </div>
