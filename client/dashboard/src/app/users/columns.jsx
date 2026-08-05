@@ -45,14 +45,7 @@ export const columns = (updateMutation, setUserId, openModal) => [
     },
     cell: ({ row }) => {
       const role = row.getValue("role");
-      return (
-        <Badge
-          variant={role === "doctor" ? "doctor" : "patient"}
-          className={cn("capitalize")}
-        >
-          {role}
-        </Badge>
-      );
+      return <Badge className={cn("capitalize")}>{role}</Badge>;
     },
   },
   {

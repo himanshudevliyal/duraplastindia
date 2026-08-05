@@ -80,6 +80,7 @@ export const useUpdateUser = (id, callback) => {
 
   return useMutation({
     mutationFn: (data) => user.update(id, data),
+
     onSuccess: () => {
       toast("User updated successfully.");
       queryClient.invalidateQueries(["users"]);

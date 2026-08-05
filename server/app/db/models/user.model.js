@@ -33,6 +33,12 @@ const init = async (sequelize) => {
         }),
         defaultValue: "user",
       },
+
+      is_active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
     },
     {
       createdAt: "created_at",
@@ -58,6 +64,7 @@ const create = async (req, transaction) => {
       password: hash_password,
       fullname: req.body?.fullname,
       role: req.body?.role,
+      is_active: req.body.is_active ?? true,
     },
     options,
   );
@@ -94,7 +101,8 @@ const get = async (req) => {
 
   const query = `
   SELECT 
-    usr.id, usr.fullname, usr.username, usr.role, usr.created_at
+    usr.id, usr.fullname, usr.username, usr.role,   usr.is_active,
+ usr.created_at
   FROM ${constants.models.USER_TABLE} usr
   ${whereClause}
   ORDER BY usr.created_at DESC
@@ -181,6 +189,7 @@ const update = async (req, id, transaction = null) => {
       username: req.body.username,
       fullname: req.body?.fullname,
       role: req.body?.role,
+      is_active: req.body.is_active,
     },
     options,
   );
