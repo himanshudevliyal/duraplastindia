@@ -29,7 +29,7 @@ export default function RelativeProducts({ categoryId }) {
 
   if (!products.length) return null;
   return (
-    <Section id="realative-products" className="bg-gray-50">
+    <>
       <Heading
         eyebrow="Products"
         heading="Related Products"
@@ -43,6 +43,6 @@ export default function RelativeProducts({ categoryId }) {
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-    </Section>
+    </>
   );
 }

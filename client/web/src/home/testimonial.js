@@ -156,23 +156,23 @@ export function Testimonials() {
   const firstRow = testimonials.slice(0, Math.ceil(testimonials.length / 2));
   const secondRow = testimonials.slice(Math.ceil(testimonials.length / 2));
   return (
-    <Section id="testimonials" className="bg-white p-0  py-0 ">
-      <div className="grid grid-cols-2 gap-6">
-        <div className="sticky top-25 self-start">
+    <Section id="testimonials" className="bg-white p-0 py-0">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="lg:sticky lg:top-25 lg:self-start">
           <Heading
             eyebrow="Testimonials"
             heading="Hear It from Our Happy Clients"
             subheading="See how our skylighting, glazing, and ventilation systems have helped builders bring in more daylight, better airflow, and lasting roof protection."
-            className="ml-auto text-left  py-16"
+            className="text-left py-10 lg:ml-auto lg:py-16"
             eyebrowClassName="justify-start"
-            headingClassName="text-3xl sm:text-4xl text-start lg:text-5xl"
-            subheadingClassName=" mt-5  max-w-2xl"
+            headingClassName="text-3xl text-start sm:text-4xl lg:text-5xl"
+            subheadingClassName="mt-5 max-w-2xl"
           />
         </div>
 
-        <div className=" grid h-[700px] grid-cols-1 gap-6 overflow-hidden lg:grid-cols-2  relative">
+        <div className="relative grid h-[500px] grid-cols-1 gap-6 overflow-hidden sm:h-[600px] md:grid-cols-2 lg:h-[700px]">
           <Marquee vertical pauseOnHover className="h-full [--duration:40s]">
-            {firstRow.map((item, index) => (
+            {firstRow.map((item) => (
               <div key={item.id} className="mb-6">
                 <TestimonialCard item={item} />
               </div>
@@ -182,19 +182,19 @@ export function Testimonials() {
             vertical
             reverse
             pauseOnHover
-            className="h-full [--duration:40s]"
+            className="hidden h-full [--duration:40s] md:flex"
           >
-            {secondRow.map((item, index) => (
+            {secondRow.map((item) => (
               <div key={item.id} className="mb-6">
                 <TestimonialCard item={item} />
               </div>
             ))}
           </Marquee>
           {/* Top Fade */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-24 bg-gradient-to-b from-white via-white/90 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-white via-white/90 to-transparent sm:h-24" />
 
           {/* Bottom Fade */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-white via-white/90 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 bg-gradient-to-t from-white via-white/90 to-transparent sm:h-24" />
         </div>
       </div>
     </Section>

@@ -29,7 +29,7 @@ export default async function ProductDetailsPage({ params }) {
     { id: "why-choose-us", label: "Why Choose Us" },
     { id: "benefits", label: "Benefits" },
     { id: "applications", label: "Applications" },
-    { id: "realative-products", label: "Relative Products" },
+    { id: "relative-products", label: "Relative Products" },
     { id: "faq", label: "FAQ" },
   ];
 
@@ -121,9 +121,9 @@ export default async function ProductDetailsPage({ params }) {
           ))}
         </div>
       </Section>
-
-      <RelativeProducts categoryId={product.category_id} />
-
+      <Section className="bg-gray-50" id="relative-products">
+        <RelativeProducts categoryId={product.category_id} />
+      </Section>
       <FAQSection faq={product.faq} />
     </>
   );

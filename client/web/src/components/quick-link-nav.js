@@ -139,6 +139,7 @@ export function SectionNav({
 
     setActiveId(id);
   };
+
   return (
     <nav
       className={cn(
@@ -151,7 +152,8 @@ export function SectionNav({
           "translate-y-0 opacity-100": hidden && scrolled,
 
           // Header Visible -> Section Nav Below Header
-          "top-[75px] translate-y-0 opacity-100": !hidden && scrolled,
+          "top-[70px] translate-y-0 opacity-100 sm:top-[75px]":
+            !hidden && scrolled,
         },
         className,
       )}
@@ -160,29 +162,33 @@ export function SectionNav({
     >
       <div
         ref={navRef}
-        className="relative mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-6 py-3 [&::-webkit-scrollbar]:hidden"
+        className="relative mx-auto flex max-w-7xl flex-nowrap items-center gap-1 overflow-x-auto scroll-smooth px-3 py-2 sm:gap-2 sm:px-6 sm:py-3 [&::-webkit-scrollbar]:hidden"
+        style={{
+          scrollSnapType: "x proximity",
+          WebkitOverflowScrolling: "touch",
+        }}
       >
         {/* Active Pill */}
         <span
-          className="absolute top-1/2 z-0 h-10 -translate-y-1/2 rounded-full border border-primary/20 bg-primary/20 transition-all duration-300"
+          className="absolute top-1/2 z-0 h-8 -translate-y-1/2 rounded-full border border-primary/20 bg-primary/20 transition-all duration-300 sm:h-10"
           style={{
             left: indicator.left,
             width: indicator.width,
           }}
         />
 
-        {sections.map((section) => (
+        {sections.map((section, i) => (
           <button
             key={section.id}
             ref={(el) => {
-              if (el) {
-                buttonRefs.current.set(section.id, el);
-              }
+              if (el) buttonRefs.current.set(section.id, el);
             }}
             onClick={(e) => handleClick(e, section.id)}
             aria-current={activeId === section.id ? "true" : undefined}
+            style={{ scrollSnapAlign: "start" }}
             className={cn(
-              "relative z-10 shrink-0 rounded-full px-5 py-2.5 text-[13px] font-semibold uppercase tracking-[0.08em] transition-all duration-300",
+              "relative z-10 shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] transition-all duration-300 sm:px-5 sm:py-2.5 sm:text-[13px] sm:tracking-[0.08em]",
+              i === sections.length - 1 && "mr-3 sm:mr-6",
               activeId === section.id
                 ? "text-primary"
                 : "text-slate-600 hover:text-primary",

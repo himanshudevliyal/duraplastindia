@@ -17,7 +17,7 @@ export function ProductCard({ product, prefix }) {
   return (
     <article className="group p-4 flex h-full flex-col rounded-[20px] overflow-hidden border border-gray-200 bg-white transition-all duration-500">
       <Link
-        href={`${prefix}/products/${product.product_page_slug}`}
+        href={`/product/${product.slug}`}
         className="relative block overflow-hidden"
       >
         <div className="relative rounded-[20px] h-80 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
@@ -44,7 +44,7 @@ export function ProductCard({ product, prefix }) {
         </p>
 
         <Link
-          href={`${prefix}/product/${product.slug}`}
+          href={`/product/${product.slug}`}
           className="mt-8 inline-flex items-center gap-3 font-semibold text-primary"
         >
           <span className="relative">

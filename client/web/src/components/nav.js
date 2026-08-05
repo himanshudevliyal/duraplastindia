@@ -17,10 +17,6 @@ export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState(null);
 
-  // NAV SCROLL BEHAVIOR
-  // showNav -> false jab scroll down (nav hide)
-  // showNav -> true jab scroll up ho hlka sa (nav visible)
-  // isScrolled -> true jab top se hlka sa niche aaye (bg black), top pe transparent
   const [showNav, setShowNav] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
@@ -29,17 +25,13 @@ export function SiteHeader() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // top par transparent, thoda sa bhi niche gaye to black bg
       setIsScrolled(currentScrollY > 20);
 
       if (currentScrollY <= 20) {
-        // top par hamesha nav visible
         setShowNav(true);
       } else if (currentScrollY > lastScrollY.current) {
-        // scrolling down -> nav hide
         setShowNav(false);
       } else if (currentScrollY < lastScrollY.current) {
-        // hlka sa upar scroll -> nav visible
         setShowNav(true);
       }
 
@@ -60,7 +52,6 @@ export function SiteHeader() {
 
   const products = productResponse?.products ?? [];
 
-  // Change this if your hook returns data.categories
   const categories =
     categoryResponse?.categories ?? categoryResponse?.data?.categories ?? [];
 
@@ -75,9 +66,6 @@ export function SiteHeader() {
       .map((category) => ({
         id: category.id,
         title: category.title,
-
-        // IMPORTANT:
-        // Replace this line according to your product response.
         products: filteredProducts.filter(
           (product) =>
             product.category_id === category.id ||
@@ -124,35 +112,35 @@ export function SiteHeader() {
   const toggleMobileMenu = (id) => {
     setExpandedMenu(expandedMenu === id ? null : id);
   };
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         showNav ? "translate-y-0" : "-translate-y-full"
       } ${isScrolled ? "bg-black/90 backdrop-blur-sm" : "bg-transparent"}`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-24">
+      <div className="px-4 md:px-6 lg:px-10">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           {/* LOGO */}
-          <Link href={prefix}>
+          <Link href={prefix} className="shrink-0">
             <Image
               width={200}
               height={200}
               src="/logo.png"
               alt="Dura Plast"
-              className="w-23.75"
+              className="w-20 lg:w-23.75"
             />
           </Link>
 
           {/* DESKTOP NAV */}
-          <nav className="hidden lg:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
             {navItems.map((item) => (
               <div key={item.id} className="relative group">
                 <Link
                   href={item.href}
-                  className="flex items-center gap-1 text-white font-medium tracking-widest uppercase text-sm"
+                  className="flex items-center gap-1 text-white font-medium tracking-widest uppercase text-sm whitespace-nowrap"
                 >
                   {item.label}
-
                   {item.categories?.length > 0 && <ChevronDown size={15} />}
                 </Link>
 
@@ -164,11 +152,13 @@ export function SiteHeader() {
                     top-10
                     left-2/1
                     -translate-x-1/2
-                    w-225
+                    w-[95vw]
+                    max-w-5xl
                     bg-white
                     rounded-3xl
                     shadow-xl
-                    p-8
+                    p-6
+                    lg:p-8
                     opacity-0
                     invisible
                     group-hover:opacity-100
@@ -180,10 +170,10 @@ export function SiteHeader() {
                     {isLoading ? (
                       <p>Loading...</p>
                     ) : (
-                      <div className="grid grid-cols-3 gap-8">
+                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                         {item.categories.map((category) => (
                           <div key={category.id}>
-                            <div className="inline-flex  text-sm rounded-full bg-red-50 text-red-600 px-5 py-2 font-semibold uppercase mb-4">
+                            <div className="inline-flex text-sm rounded-full bg-red-50 text-red-600 px-5 py-2 font-semibold uppercase mb-4">
                               {category.title}
                             </div>
 
@@ -209,15 +199,19 @@ export function SiteHeader() {
           </nav>
 
           {/* RIGHT SIDE */}
-          <div className="flex items-center gap-5">
-            <a href="tel:+919350803033" className="hidden xl:block text-white">
+          <div className="flex items-center gap-3 lg:gap-5">
+            <a
+              href="tel:+919350803033"
+              className="hidden xl:block text-white whitespace-nowrap"
+            >
               +91 9350803033
             </a>
 
             <LanguageSwitcher />
+
             <Link
               href={`${prefix}/contact`}
-              className="bg-red-700 text-white px-7 py-3 rounded-full font-semibold"
+              className="hidden lg:block bg-red-700 text-white px-7 py-3 rounded-full font-semibold whitespace-nowrap"
             >
               Get a Quote
             </Link>
@@ -233,7 +227,7 @@ export function SiteHeader() {
 
         {/* MOBILE MENU */}
         {isOpen && (
-          <div className="lg:hidden bg-white rounded-xl p-5">
+          <div className="lg:hidden bg-white rounded-xl p-5 max-h-[80vh] overflow-y-auto">
             {navItems.map((item) => (
               <div key={item.id}>
                 <div className="flex justify-between items-center py-3 border-b">
@@ -275,6 +269,15 @@ export function SiteHeader() {
                 )}
               </div>
             ))}
+
+            {/* GET A QUOTE - MOBILE */}
+            <Link
+              href={`${prefix}/contact`}
+              onClick={() => setIsOpen(false)}
+              className="block text-center bg-red-700 text-white px-7 py-3 rounded-full font-semibold mt-4"
+            >
+              Get a Quote
+            </Link>
           </div>
         )}
       </div>
