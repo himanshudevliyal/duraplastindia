@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import "./globals.css";
+import "../globals.css";
 
 import { SiteFooter } from "@/components/footer";
 import { SiteHeader } from "@/components/nav";
@@ -18,13 +18,13 @@ import QueryProvider from "@/providers/query-client-provider";
 
 // Local Fonts
 const universalSans = localFont({
-  src: "../../public/font/universal_sans/Universal-Sans-Text-Regular.woff2",
+  src: "../../../public/font/universal_sans/Universal-Sans-Text-Regular.woff2",
   variable: "--font-universal-sans",
   display: "swap",
 });
 
 const universalDisplay = localFont({
-  src: "../../public/font/universal_sans/Universal-Sans-Display-Medium.woff2",
+  src: "../../../public/font/universal_sans/Universal-Sans-Display-Medium.woff2",
   variable: "--font-universal-display",
   display: "swap",
 });

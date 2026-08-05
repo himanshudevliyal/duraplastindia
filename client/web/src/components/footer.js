@@ -84,14 +84,12 @@ export function SiteFooter() {
             <ul className="mt-7 space-y-5">
               {footerUsefulLinks.map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="text-[15px] text-gray-400 transition hover:text-white"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
