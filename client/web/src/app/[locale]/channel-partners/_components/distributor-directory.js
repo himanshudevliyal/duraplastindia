@@ -18,18 +18,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const display = Fraunces({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--dd-font-display",
-});
-const body = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--dd-font-body",
-});
-
 // Returns a clean 2-letter ISO country code for display, or null if the
 // source value is malformed (some rows in the data have bad codes). Flag
 // emoji was tried here but Windows renders those as plain letter pairs
@@ -77,7 +65,7 @@ export default function DistributorDirectory() {
   }, [partners, query, region]);
 
   return (
-    <div className={`${display.variable} ${body.variable} dd-root`}>
+    <div className={` dd-root`}>
       <style>{`
         .dd-root {
           --dd-bg: #fbfafa;
@@ -172,28 +160,7 @@ export default function DistributorDirectory() {
             style={{
               background: `linear-gradient(120deg, var(--dd-primary), var(--dd-primary-dark))`,
             }}
-          >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 sm:py-12">
-              <div className="flex items-center gap-3 text-white">
-                <Compass
-                  className="w-7 h-7 sm:w-9 sm:h-9 shrink-0"
-                  strokeWidth={1.5}
-                />
-                <div>
-                  <h1 className="dd-serif text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight italic">
-                    Distributor Atlas
-                  </h1>
-                  <p
-                    className="text-sm mt-1"
-                    style={{ color: "var(--dd-primary-soft)" }}
-                  >
-                    {partners.length} channel partners &middot;{" "}
-                    {regions.length - 1} regions worldwide
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          ></div>
 
           {/* Filters */}
           <div
@@ -325,7 +292,6 @@ function ErrorState({ error }) {
     </div>
   );
 }
-
 function DistributorCard({ d, onClick }) {
   const code = isoCode(d.iso);
 
@@ -344,10 +310,7 @@ function DistributorCard({ d, onClick }) {
                 {code}
               </span>
             ) : (
-              <MapPin
-                className="h-5 w-5"
-                style={{ color: "var(--dd-primary)" }}
-              />
+              <MapPin className="h-5 w-5 text-[var(--dd-primary)]" />
             )}
           </div>
 
@@ -378,31 +341,33 @@ function DistributorCard({ d, onClick }) {
       </div>
 
       {/* Contact */}
-      <div className="mt-5 space-y-2">
-        {d.mobile && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Phone className="h-4 w-4 text-[var(--dd-primary)]" />
-            <span>{d.mobile}</span>
-          </div>
-        )}
+      {/* {(d.mobile || d.email) && (
+        <div className="mt-5 space-y-2">
+          {d.mobile && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Phone className="h-4 w-4 text-[var(--dd-primary)]" />
+              <span>{d.mobile}</span>
+            </div>
+          )}
 
-        {d.email && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Mail className="h-4 w-4 text-[var(--dd-primary)]" />
-            <span className="truncate">{d.email}</span>
-          </div>
-        )}
-      </div>
+          {d.email && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Mail className="h-4 w-4 text-[var(--dd-primary)]" />
+              <span className="truncate">{d.email}</span>
+            </div>
+          )}
+        </div>
+      )} */}
 
       {/* Footer */}
       <div className="mt-6 flex items-center justify-between border-t pt-4">
-        <div className="flex items-center gap-2">
-          {d.map_iframe && (
-            <span className="rounded-full bg-green-100 px-2 py-1 text-[11px] font-medium text-green-700">
-              Map Available
-            </span>
-          )}
-        </div>
+        {d.map_iframe ? (
+          <span className="rounded-full bg-green-100 px-2 py-1 text-[11px] font-medium text-green-700">
+            Map Available
+          </span>
+        ) : (
+          <span />
+        )}
 
         <span className="flex items-center gap-1 text-sm font-semibold text-[var(--dd-primary)] transition-all group-hover:translate-x-1">
           View Details
@@ -497,9 +462,6 @@ function DetailModal({ d, onClose }) {
               value={d.email || "—"}
               href={d.email ? `mailto:${d.email}` : null}
             />
-            {createdDate && (
-              <InfoRow icon={Calendar} label="Added on" value={createdDate} />
-            )}
           </div>
 
           {d.map_iframe ? (
