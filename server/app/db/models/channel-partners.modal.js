@@ -180,16 +180,22 @@ const get = async (req) => {
     queryParams.query = `%${q}%`;
   }
 
-  const page = req.query.page ? Number(req.query.page) : 1;
-
-  const limit = req.query.limit ? Number(req.query.limit) : 10;
-
-  const offset = (page - 1) * limit;
-
   let whereClause = "";
 
   if (whereConditions.length) {
     whereClause = `WHERE ${whereConditions.join(" AND ")}`;
+  }
+
+  // Pagination only if page & limit are provided
+  const page = req.query.page ? Number(req.query.page) : null;
+  const limit = req.query.limit ? Number(req.query.limit) : null;
+
+  let pagination = "";
+
+  if (page && limit) {
+    queryParams.limit = limit;
+    queryParams.offset = (page - 1) * limit;
+    pagination = `LIMIT :limit OFFSET :offset`;
   }
 
   const query = `
@@ -202,27 +208,23 @@ const get = async (req) => {
       cp.logo,
       cp.mobile,
       cp.email,
-        cp.map_iframe,
+      cp.map_iframe,
       cp.created_at
     FROM ${constants.models.CHANNEL_PARTNER_TABLE} cp
     ${whereClause}
     ORDER BY cp.created_at DESC
-    LIMIT :limit OFFSET :offset
+    ${pagination}
   `;
 
   const countQuery = `
     SELECT
-      COUNT(cp.id) OVER()::integer AS total
+      COUNT(cp.id)::integer AS total
     FROM ${constants.models.CHANNEL_PARTNER_TABLE} cp
     ${whereClause}
   `;
 
   const partners = await ChannelPartnerModel.sequelize.query(query, {
-    replacements: {
-      ...queryParams,
-      limit,
-      offset,
-    },
+    replacements: queryParams,
     type: QueryTypes.SELECT,
     raw: true,
   });

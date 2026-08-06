@@ -9,6 +9,8 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useMemo, useRef } from "react";
 import { workProjects } from "@/lib/data/work-data";
 import Heading from "@/components/layout/heading";
 import { Section } from "@/components/layout/section";
@@ -24,21 +26,20 @@ export function WorkCard({
 }) {
   return (
     <div
-      className={`group relative h-[500px] overflow-hidden rounded-3xl ${className}`}
+      className={`group relative h-[350px] lg:h-[380px] overflow-hidden rounded-3xl ${className}`}
     >
+      {" "}
       <Image
         src={project.image}
         fill
         className={`object-cover transition duration-500 group-hover:scale-105 ${imageClassName}`}
         alt={project.client}
       />
-
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent ${overlayClassName}`}
       />
-
       <div className={`absolute bottom-10 left-10 ${contentClassName}`}>
-        <h2 className={`text-2xl font-bold text-white ${titleClassName}`}>
+        <h2 className={` font-bold text-white text-xl ${titleClassName}`}>
           {project.client}
         </h2>
 
@@ -56,11 +57,19 @@ export function WorkCard({
 }
 
 export function OurWork() {
+  const autoplay = useMemo(
+    () =>
+      Autoplay({
+        delay: 3000,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    [],
+  );
+
   return (
-    <Section
-      className="bg-gray-100"
-      containerClassName="!max-w-none w-full px-0"
-    >
+    <Section className="bg-gray-100" containerClassName="">
+      {" "}
       <Heading
         eyebrow="Our Work"
         heading="Explore Our Completed Projects"
@@ -68,32 +77,30 @@ export function OurWork() {
         className="mx-auto max-w-3xl"
         eyebrowClassName="justify-center"
         headingClassName="text-3xl sm:text-4xl lg:text-5xl"
-        subheadingClassName="mx-auto mt-5 max-w-2xl"
+        subheadingClassName="mx-auto mt-5 mb-14 max-w-2xl"
       />
+      <Carousel
+        plugins={[autoplay]}
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-6">
+          {workProjects.map((project) => (
+            <CarouselItem
+              key={project.slug}
+              className="basis-full sm:basis-1 md:basis-1/2 lg:basis-1/3 pl-6"
+            >
+              <WorkCard project={project} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
-      <div className="relative mt-14">
-        <Carousel
-          opts={{
-            align: "center",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-6">
-            {workProjects.map((project, index) => (
-              <CarouselItem
-                key={project.slug}
-                className="basis-[82%] md:basis-[70%] lg:basis-[65%] pl-6"
-              >
-                <WorkCard project={project} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
-          <CarouselPrevious className="left-6 h-12 w-12" />
-          <CarouselNext className="right-6 h-12 w-12" />
-        </Carousel>
-      </div>
+        <CarouselPrevious className="left-6 h-12 w-12" />
+        <CarouselNext className="right-6 h-12 w-12" />
+      </Carousel>
     </Section>
   );
 }

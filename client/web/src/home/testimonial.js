@@ -13,7 +13,7 @@ export const testimonials = [
     date: "12 March 2025",
     rating: 5,
     quote:
-      "Dura Plast's skylight panels transformed our warehouse. Natural daylight has reduced our electricity usage significantly.",
+      "Dura Plast completely transformed our warehouse with their skylight system. The quality of materials, professional installation, and excellent natural lighting have helped us reduce daytime electricity costs while creating a much brighter and more productive workspace.",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ export const testimonials = [
     date: "28 February 2025",
     rating: 5,
     quote:
-      "The roof ventilators were installed on time and the airflow inside our factory has improved remarkably.",
+      "We installed their roof ventilators across our factory, and the improvement in airflow was noticeable within days. The team was knowledgeable, delivered on schedule, and ensured the installation was completed without disrupting our operations.",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ export const testimonials = [
     date: "9 February 2025",
     rating: 5,
     quote:
-      "Custom-fabricated domes were delivered exactly as required. Excellent coordination with our contractor.",
+      "The custom-fabricated skylight domes matched our project specifications perfectly. Every detail was handled professionally, and communication throughout the project was clear, timely, and highly reliable.",
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export const testimonials = [
     date: "20 January 2025",
     rating: 5,
     quote:
-      "The GRP roofing sheets have performed exceptionally well through heavy rains. Highly satisfied with the quality.",
+      "The GRP roofing sheets have exceeded our expectations in both durability and finish. Even after heavy rainfall and continuous exposure to harsh weather, the performance has remained excellent with no maintenance concerns.",
   },
   {
     id: 5,
@@ -45,7 +45,7 @@ export const testimonials = [
     date: "3 January 2025",
     rating: 5,
     quote:
-      "Polycarbonate sheets arrived ahead of schedule and matched every technical specification we requested.",
+      "The polycarbonate sheets arrived before the committed delivery date and met every technical specification we requested. Their quality, transparency, and overall finish made them an excellent choice for our project.",
   },
   {
     id: 6,
@@ -53,7 +53,7 @@ export const testimonials = [
     date: "18 December 2024",
     rating: 5,
     quote:
-      "The team recommended the perfect ventilator model for our warehouse. Great experience from start to finish.",
+      "The Dura Plast team guided us in selecting the right ventilation solution for our warehouse. Their recommendations proved to be highly effective, and the entire process from consultation to installation was seamless.",
   },
   {
     id: 7,
@@ -61,7 +61,7 @@ export const testimonials = [
     date: "5 December 2024",
     rating: 5,
     quote:
-      "Professional installation and excellent after-sales support. The finished product exceeded our expectations.",
+      "Excellent workmanship and outstanding customer support. The installation team was punctual, professional, and ensured everything was completed to the highest standards. We are extremely satisfied with the final result.",
   },
   {
     id: 8,
@@ -69,7 +69,7 @@ export const testimonials = [
     date: "22 November 2024",
     rating: 5,
     quote:
-      "Our manufacturing unit is much brighter after installing the skylight sheets. Fantastic workmanship.",
+      "Our manufacturing unit feels much brighter after installing the skylight sheets. The amount of natural daylight entering the building has improved working conditions while also helping us lower lighting expenses.",
   },
   {
     id: 9,
@@ -77,7 +77,7 @@ export const testimonials = [
     date: "10 November 2024",
     rating: 5,
     quote:
-      "High-quality materials and transparent pricing. We will definitely work with Dura Plast again.",
+      "From the initial consultation to product delivery, every step was handled professionally. The materials were of premium quality, pricing was transparent, and we would gladly partner with Dura Plast again.",
   },
   {
     id: 10,
@@ -85,7 +85,7 @@ export const testimonials = [
     date: "1 November 2024",
     rating: 5,
     quote:
-      "Their engineering guidance made selecting the right roofing solution very easy. Highly recommended.",
+      "Their engineering team made it easy to choose the right roofing solution for our facility. The project was completed on time, and the finished installation looks exceptional while performing exactly as promised.",
   },
   {
     id: 11,
@@ -93,7 +93,7 @@ export const testimonials = [
     date: "15 October 2024",
     rating: 5,
     quote:
-      "Excellent build quality and quick delivery. The roofing panels have improved the overall appearance of our facility.",
+      "We were impressed by the build quality and timely delivery of the roofing panels. They have enhanced both the appearance and functionality of our industrial facility with minimal maintenance requirements.",
   },
   {
     id: 12,
@@ -101,7 +101,7 @@ export const testimonials = [
     date: "30 September 2024",
     rating: 5,
     quote:
-      "Very responsive customer service and premium-quality products. Installation was smooth and hassle-free.",
+      "The customer support team was responsive from the very beginning and answered every technical question with patience. The products were delivered on time, and installation was smooth and hassle-free.",
   },
   {
     id: 13,
@@ -109,7 +109,7 @@ export const testimonials = [
     date: "18 September 2024",
     rating: 5,
     quote:
-      "The ventilators have significantly reduced heat buildup inside our industrial shed during peak summer.",
+      "The roof ventilators have significantly reduced heat buildup inside our industrial shed during peak summer. Our employees immediately noticed the difference in comfort and ventilation after installation.",
   },
   {
     id: 14,
@@ -117,7 +117,7 @@ export const testimonials = [
     date: "6 September 2024",
     rating: 5,
     quote:
-      "We appreciated the attention to detail throughout the project. The final installation looks outstanding.",
+      "We truly appreciated the attention to detail throughout the project. From planning to execution, every commitment was fulfilled, and the finished installation reflects exceptional craftsmanship and quality.",
   },
   {
     id: 15,
@@ -125,7 +125,7 @@ export const testimonials = [
     date: "24 August 2024",
     rating: 5,
     quote:
-      "Reliable products, timely communication, and a skilled installation team. Couldn't ask for more.",
+      "Reliable products, prompt communication, and a highly skilled installation team made this project a great experience. Dura Plast delivered exactly what they promised without compromising on quality.",
   },
   {
     id: 16,
@@ -133,7 +133,7 @@ export const testimonials = [
     date: "12 August 2024",
     rating: 5,
     quote:
-      "The skylight solution has created a much more comfortable working environment for our employees.",
+      "The skylight solution has created a brighter and more comfortable working environment for our employees. The quality of the materials and the professional execution exceeded our expectations.",
   },
   {
     id: 17,
@@ -141,7 +141,7 @@ export const testimonials = [
     date: "29 July 2024",
     rating: 5,
     quote:
-      "Strong, durable materials and excellent finish. Everything was delivered exactly as promised.",
+      "The products are strong, durable, and beautifully finished. Everything was delivered according to schedule, and the entire experience reflected Dura Plast's commitment to quality and customer satisfaction.",
   },
   {
     id: 18,
@@ -149,7 +149,7 @@ export const testimonials = [
     date: "16 July 2024",
     rating: 5,
     quote:
-      "From consultation to installation, the entire process was smooth. Great quality and value for money.",
+      "From the first consultation to the final installation, the process was smooth, transparent, and professionally managed. We are extremely pleased with the quality, performance, and overall value provided by Dura Plast.",
   },
 ];
 export function Testimonials() {

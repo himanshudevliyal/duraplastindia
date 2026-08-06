@@ -9,7 +9,7 @@ export default async function routes(fastify, options) {
       preHandler: async (req, res) =>
         multipartPreHandler(req, res, ["related_products", "date"]),
     },
-    controller.create
+    controller.create,
   );
   fastify.put(
     "/:id",
@@ -21,7 +21,7 @@ export default async function routes(fastify, options) {
           "date",
         ]),
     },
-    controller.updateById
+    controller.updateById,
   );
   fastify.delete("/:id", {}, controller.deleteById);
   fastify.get("/:id", {}, controller.getById);

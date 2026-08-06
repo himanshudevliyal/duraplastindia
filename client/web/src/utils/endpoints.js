@@ -20,4 +20,7 @@ export const endpoints = {
   categories: { getAll: "/categories" },
   productPages: { getAll: "/product-pages" },
   channelPartners: { getAll: "/channel-partners" },
+  enquiries: {
+    getAll: "/enquiries",
+  },
 };

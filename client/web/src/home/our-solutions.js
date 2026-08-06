@@ -12,6 +12,7 @@ import Heading from "@/components/layout/heading";
 import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
 import { getCountryFromLocale } from "@/utils/country-mapping";
+import { sortCategories } from "@/lib/category-order";
 
 export function ProductCard({ product, prefix }) {
   return (
@@ -33,15 +34,9 @@ export function ProductCard({ product, prefix }) {
       </Link>
 
       <div className="flex flex-1 flex-col mt-4">
-        <h4 className="text-2xl font-bold line-clamp-1 leading-tight text-gray-900 transition-colors duration-300 group-hover:text-primary">
+        <h4 className="text-2xl font-bold  leading-tight text-gray-900 transition-colors duration-300 group-hover:text-primary">
           {product.title}
         </h4>
-
-        <p className="mt-4 flex-1 text-[15px] leading-7 text-gray-600 line-clamp-3">
-          {product.short_description ||
-            product.meta_description ||
-            product.description}
-        </p>
 
         <Link
           href={`/product/${product.slug}`}
@@ -116,6 +111,8 @@ export function OurSolutions() {
       .filter((category) => category.products.length > 0);
   }, [products, categories, country]);
 
+  const orderedCategories = sortCategories(solutionCategories);
+
   return (
     <Section className="bg-gray-100">
       <Heading
@@ -132,13 +129,14 @@ export function OurSolutions() {
         <div className="text-center mt-10">Loading...</div>
       ) : (
         <div className="mt-14 space-y-16">
-          {solutionCategories.map((category) => (
+          {orderedCategories.map((category) => (
             <SolutionCategory
               key={category.id}
               category={category}
               prefix={prefix}
             />
           ))}
+          ;
         </div>
       )}
     </Section>

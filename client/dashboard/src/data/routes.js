@@ -1,4 +1,11 @@
-import { BookOpenText, Box, LayoutDashboard, User, Users } from "lucide-react";
+import {
+  BookOpenText,
+  Box,
+  LayoutDashboard,
+  User,
+  Users,
+  MessageSquareMoreIcon,
+} from "lucide-react";
 
 const ROLES = {
   ADMIN: "admin",
@@ -148,6 +155,22 @@ export const sidebarData = [
     roles: [],
     isVisible: true,
     items: [],
+  },
+
+  {
+    title: "Enquiries",
+    url: "/enquiries?page=1&limit=10",
+    icon: MessageSquareMoreIcon,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [
+      {
+        title: "View",
+        url: "/enquiries/:id",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+    ],
   },
 ];
 

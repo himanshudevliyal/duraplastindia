@@ -6,6 +6,7 @@ import cityBlogRoutes from "../../api/city-blog/routes.js";
 import productPageRoutes from "../../api/product-page/routes.js";
 import channelPartnerPublicRoutes from "../../api/channel-partners/routes.js";
 import dashboardRoutes from "../../api/dashboard/routes.js";
+import enquiryRoutes from "../../api/enquiries/routes.js";
 
 export default async function routes(fastify, options) {
   fastify.addHook("onRequest", jwtVerify.verifyToken);
@@ -21,4 +22,5 @@ export default async function routes(fastify, options) {
   fastify.register(productPageRoutes, { prefix: "product-pages" });
   fastify.register(channelPartnerPublicRoutes, { prefix: "channel-partners" });
   fastify.register(dashboardRoutes, { prefix: "dashboard" });
+  fastify.register(enquiryRoutes, { prefix: "enquiries" });
 }
