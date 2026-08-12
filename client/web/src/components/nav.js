@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
 import { useLocale } from "next-intl";
 
 import { useProductPages } from "@/hooks/use-product-pages";
@@ -18,6 +18,7 @@ export function SiteHeader() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState(null);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   const [showNav, setShowNav] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,6 +48,14 @@ export function SiteHeader() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const country = getCountryFromLocale(locale) || "India";
 
@@ -136,6 +145,11 @@ export function SiteHeader() {
 
   const toggleMobileMenu = (id) => {
     setExpandedMenu(expandedMenu === id ? null : id);
+    setExpandedCategory(null);
+  };
+
+  const toggleMobileCategory = (id) => {
+    setExpandedCategory(expandedCategory === id ? null : id);
   };
 
   return (
@@ -395,110 +409,333 @@ export function SiteHeader() {
             <button
               className="text-white lg:hidden"
               onClick={() => setIsOpen(!isOpen)}
+              aria-label="Open menu"
             >
               {isOpen ? <X /> : <Menu />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
+      {/* Mobile Menu — full-screen dark slide-in panel */}
 
-        {isOpen && (
-          <div
-            className="
-              max-h-[80vh]
-              overflow-y-auto
-              rounded-xl
-              bg-white
-              p-5
-              lg:hidden
-            "
+      <div
+        className={`
+          fixed inset-0 z-[100]
+          lg:hidden
+
+          bg-[#161616]
+
+          transform
+          transition-transform
+          duration-300
+          ease-in-out
+          h-[100vh]
+          
+
+          ${isOpen ? "translate-x-0 " : "translate-x-full  "}
+
+          flex flex-col
+          overflow-y-auto
+        `}
+      >
+        {/* Top bar: logo + close */}
+
+        <div className="flex items-center justify-between px-5 pt-5">
+          <Link href={prefix} onClick={() => setIsOpen(false)}>
+            <Image
+              src="/logo.png"
+              alt="Dura Plast"
+              width={140}
+              height={140}
+              className="w-24"
+            />
+          </Link>
+
+          <button
+            className="text-white"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
           >
-            {navItems.map((item) => (
-              <div key={item.id}>
-                <div
+            <X size={26} />
+          </button>
+        </div>
+
+        {/* Nav list */}
+
+        <nav className="mt-6 flex flex-col px-5">
+          {navItems.map((item) => (
+            <div key={item.id} className="border-b border-white/10">
+              <div className="flex items-center justify-between py-4">
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
                   className="
-                    flex
-                    items-center
-                    justify-between
-                    border-b
-                    py-3
+                    text-[15px]
+                    font-semibold
+                    uppercase
+                    tracking-wider
+                    text-white
                   "
                 >
-                  <Link href={item.href} onClick={() => setIsOpen(false)}>
-                    {item.label}
-                  </Link>
+                  {item.label}
+                </Link>
 
-                  {item.categories?.length > 0 && (
+                {item.categories?.length > 0 && (
+                  <button
+                    onClick={() => toggleMobileMenu(item.id)}
+                    aria-label={`Toggle ${item.label} submenu`}
+                    className="
+                      flex
+                      h-7
+                      w-7
+                      items-center
+                      justify-center
+                      rounded-md
+                      border
+                      border-white/25
+                      text-white
+                    "
+                  >
                     <ChevronDown
+                      size={16}
                       className={`
-                        cursor-pointer
                         transition-transform
+                        duration-200
                         ${expandedMenu === item.id ? "rotate-180" : ""}
                       `}
-                      onClick={() => toggleMobileMenu(item.id)}
                     />
-                  )}
-                </div>
-
-                {expandedMenu === item.id && item.categories && (
-                  <div className="py-2 pl-4">
-                    {item.categories.map((category) => (
-                      <div key={category.id} className="mb-4">
-                        <Link
-                          href={`${prefix}/product?categories=${category.id}`}
-                          className="
-                            mb-2
-                            block
-                            font-semibold
-                            uppercase
-                            text-red-600
-                          "
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {category.title}
-                        </Link>
-
-                        {category.products.map((product) => (
-                          <Link
-                            key={product.id}
-                            href={`${prefix}/product/${product.slug}`}
-                            className="
-                              block
-                              py-2
-                              text-gray-600
-                            "
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {product.title}
-                          </Link>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+                  </button>
                 )}
               </div>
-            ))}
 
-            <Link
-              href={`${prefix}/contact`}
-              onClick={() => setIsOpen(false)}
+              {/* Expanded submenu — categories, accordion (one open at a time) */}
+
+              {expandedMenu === item.id && item.categories?.length > 0 && (
+                <div className="pb-4 pl-2">
+                  {isLoading ? (
+                    <div className="py-4 text-sm text-white/50">Loading...</div>
+                  ) : (
+                    item.categories.map((category) => (
+                      <div
+                        key={category.id}
+                        className="mb-2 border-b border-white/10 last:border-b-0"
+                      >
+                        <div className="flex items-center justify-between py-2">
+                          <Link
+                            href={`${prefix}/product?categories=${category.id}`}
+                            onClick={() => setIsOpen(false)}
+                            className="
+                              block
+                              text-sm
+                              font-bold
+                              uppercase
+                              tracking-wide
+                              text-red-500
+                            "
+                          >
+                            {category.title}
+                          </Link>
+
+                          <button
+                            onClick={() => toggleMobileCategory(category.id)}
+                            aria-label={`Toggle ${category.title} products`}
+                            className="
+                              flex
+                              h-6
+                              w-6
+                              items-center
+                              justify-center
+                              rounded-md
+                              border
+                              border-white/20
+                              text-white/70
+                            "
+                          >
+                            <ChevronDown
+                              size={14}
+                              className={`
+                                transition-transform
+                                duration-200
+                                ${
+                                  expandedCategory === category.id
+                                    ? "rotate-180"
+                                    : ""
+                                }
+                              `}
+                            />
+                          </button>
+                        </div>
+
+                        {expandedCategory === category.id && (
+                          <div className="pb-3 pl-2">
+                            {category.products.map((product) => (
+                              <Link
+                                key={product.id}
+                                href={`${prefix}/product/${product.slug}`}
+                                onClick={() => setIsOpen(false)}
+                                className="
+                                  block
+                                  py-1.5
+                                  text-sm
+                                  text-white/70
+                                "
+                              >
+                                {product.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <Link
+            href={`${prefix}/contact`}
+            onClick={() => setIsOpen(false)}
+            className="
+              mt-6
+              block
+              rounded-full
+              bg-red-700
+              px-7
+              py-3
+              text-center
+              font-semibold
+              text-white
+            "
+          >
+            Get a Quote
+          </Link>
+        </nav>
+
+        {/* Contact info footer */}
+
+        <div className="mt-auto px-5 pb-8 pt-10">
+          <h4
+            className="
+              mb-4
+              text-lg
+              font-bold
+              uppercase
+              tracking-wide
+              text-white
+            "
+          >
+            Contact Info
+          </h4>
+
+          <p className="mb-3 text-sm leading-relaxed text-white/70">
+            Plot No. 732, Sector- 69, I.M.T., Faridabad, Haryana- 121004
+          </p>
+
+          <a
+            href="tel:+919350803033"
+            className="mb-2 flex items-center gap-2 text-sm text-white/80"
+          >
+            <Phone size={15} className="text-red-500" />
+            +91 9350803033
+          </a>
+
+          <a
+            href="mailto:sales@duraplastindia.com"
+            className="mb-6 flex items-center gap-2 text-sm text-white/80"
+          >
+            <Mail size={15} className="text-red-500" />
+            sales@duraplastindia.com
+          </a>
+
+          <div className="flex items-center gap-4">
+            <a
+              href="#"
+              aria-label="Facebook"
               className="
-                mt-4
-                block
-                rounded-full
-                bg-red-700
-                px-7
-                py-3
-                text-center
-                font-semibold
-                text-white
+                flex h-9 w-9 items-center justify-center
+                rounded-full border border-white/25 text-white
+                hover:bg-red-700 hover:border-red-700
+                transition-colors
               "
             >
-              Get a Quote
-            </Link>
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 320 512"
+                className="h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+              </svg>
+            </a>
+            <a
+              href="#"
+              aria-label="Twitter"
+              className="
+                flex h-9 w-9 items-center justify-center
+                rounded-full border border-white/25 text-white
+                hover:bg-red-700 hover:border-red-700
+                transition-colors
+              "
+            >
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"></path>
+              </svg>
+            </a>
+            <a
+              href="#"
+              aria-label="LinkedIn"
+              className="
+                flex h-9 w-9 items-center justify-center
+                rounded-full border border-white/25 text-white
+                hover:bg-red-700 hover:border-red-700
+                transition-colors
+              "
+            >
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 448 512"
+                className="h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M100.28 448H7.4V148.9h92.88zm-46.44-341a53.79 53.79 0 1 1 53.79-53.79 53.79 53.79 0 0 1-53.79 53.79zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path>
+              </svg>
+            </a>
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="
+                flex h-9 w-9 items-center justify-center
+                rounded-full border border-white/25 text-white
+                hover:bg-red-700 hover:border-red-700
+                transition-colors
+              "
+            >
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 448 512"
+                className="h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+              </svg>
+            </a>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

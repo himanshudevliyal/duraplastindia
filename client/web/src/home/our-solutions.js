@@ -54,7 +54,6 @@ export function ProductCard({ product, prefix }) {
       </div>
     </article>
   );
-  ``;
 }
 
 function SolutionCategory({ category, prefix }) {
@@ -136,7 +135,6 @@ export function OurSolutions() {
               prefix={prefix}
             />
           ))}
-          ;
         </div>
       )}
     </Section>

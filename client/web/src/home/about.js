@@ -62,7 +62,7 @@ export function AboutUs() {
         {aboutContent.stats.map((stat, i) => (
           <div
             key={stat.value}
-            className={cn(i > 0 && "border-border pl-8 lg:border-l")}
+            className={cn(i > 0 && "border-border pl-0 lg:pl-8 lg:border-l")}
           >
             <dt className="sr-only">{stat.label}</dt>
 

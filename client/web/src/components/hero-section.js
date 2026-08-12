@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 import Aurora from "./ui/aurora";
 
 const slides = [
-  {
-    eyebrow: "Skylighting & Glazing",
-    title: "Lighting up lives… naturally",
-    body: "Polycarbonate skylights and glazing panels that bring daylight deep into industrial, commercial and institutional buildings.",
-    image: "/img/hero-1.png",
-    alt: "Polycarbonate skylight glazing",
-  },
+  // {
+  //   eyebrow: "Skylighting & Glazing",
+  //   title: "Lighting up lives… naturally",
+  //   body: "Polycarbonate skylights and glazing panels that bring daylight deep into industrial, commercial and institutional buildings.",
+  //   image: "/img/hero-1.png",
+  //   alt: "Polycarbonate skylight glazing",
+  // },
   {
     eyebrow: "Roof Ventilation",
     title: "For the joy of fresh air",
