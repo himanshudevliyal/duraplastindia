@@ -2,10 +2,10 @@ import Heading from "@/components/layout/heading";
 import { Paragraph } from "@/components/layout/pera";
 import { Section } from "@/components/layout/section";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
-import { AboutUs } from "@/home/about";
+import AboutSection from "@/home/about";
 import { OurSolutions } from "@/home/our-solutions";
 import Image from "next/image";
-import { Leaf, Globe } from "lucide-react";
+import { Leaf, Globe, Target, Eye } from "lucide-react";
 import { Globe2 } from "lucide-react";
 import { FeatureCards } from "@/components/feature-cards";
 
@@ -14,29 +14,12 @@ import {
   Building2,
   Warehouse,
   Landmark,
-  Trophy,
-  ShieldCheck,
-  Award,
-  Rocket,
+  Shield,
+  Home,
 } from "lucide-react";
 import { OurClinets } from "@/home/our-clinet";
 
 export default function About(params) {
-  const Productfeature = [
-    {
-      icon: Leaf,
-      title: "Commitment to Sustainability",
-      description:
-        "We are committed to promoting energy-efficient and eco-friendly building solutions for a sustainable future. Our mission is to contribute to global energy conservation and climate action by helping nations transition from polluting energy sources to clean energy, especially wind and solar.",
-    },
-    {
-      icon: Globe,
-      title: "Vision for the Future",
-      description:
-        "With a strong foundation, rich experience, global presence, and an unwavering focus on excellence and innovation, we aim to expand our international footprint by redefining architectural skylighting and ventilation through smart, sustainable, and technologically advanced solutions that help build better lives.",
-    },
-  ];
-
   const regions = [
     "South East Asia",
     "Africa",
@@ -46,12 +29,12 @@ export default function About(params) {
   ];
 
   const projectSegments = [
-    { icon: Factory, title: "Industrial & Manufacturing Facilities" },
-    { icon: Warehouse, title: "Warehouses & Logistics Centres" },
-    { icon: Building2, title: "Commercial & Industrial Buildings" },
-    { icon: Landmark, title: "Infrastructure Facilities" },
-    { icon: Building2, title: "Commercial Buildings & IT Parks" },
-    { icon: Trophy, title: "Stadiums & Public Spaces" },
+    { icon: Factory, title: "Industrial" },
+    { icon: Warehouse, title: "Warehousing" },
+    { icon: Building2, title: "Commercial & Institutional" },
+    { icon: Landmark, title: "Infrastructure" },
+    { icon: Shield, title: "Security & Military" },
+    { icon: Home, title: "Residential" },
   ];
 
   return (
@@ -62,41 +45,142 @@ export default function About(params) {
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
       />
 
-      <AboutUs />
+      <Section className="relative">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/img/duraplast-about.png')",
+          }}
+        />
+
+        {/* Overlay - keeps text readable */}
+        <div className="absolute inset-0 bg-white/65" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
+          {/* Heading */}
+          <div className="mb-12 text-center">
+            <Heading
+              heading="About Us"
+              className="mx-auto max-w-3xl"
+              eyebrowClassName="justify-center"
+              headingClassName="text-3xl sm:text-4xl lg:text-5xl"
+            />
+          </div>
+
+          {/* About Content */}
+          <div className="mx-auto">
+            <div className="space-y-7 text-base leading-7 md:text-lg md:leading-8">
+              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
+                We are a globally renowned skylight and natural roof ventilation
+                design and development company that possesses the unique and
+                much sought after capability to harness the tremendous power of
+                the <strong className="font-semibold">sun and wind</strong> to
+                naturally illuminate and ventilate buildings of all types.
+              </Paragraph>
+
+              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
+                Established in <strong className="font-semibold">2010</strong>,
+                the company has grown into a{" "}
+                <strong className="font-semibold">
+                  multi-billion-dollar enterprise
+                </strong>
+                , driven by technology, manufacturing excellence and a strong
+                and unwavering commitment to sustainability.
+              </Paragraph>
+
+              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
+                From conception through design and development to delivery and
+                fitment, we provide{" "}
+                <strong className="font-semibold">
+                  tailor made, turn-key and cost-effective solutions
+                </strong>{" "}
+                to the diverse and ever evolving skylighting and roof
+                ventilation requirements of the global building and construction
+                industry.
+              </Paragraph>
+
+              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
+                Our technical expertise backed by our advanced manufacturing
+                capability enables us to engineer the right solutions
+                consistently for industrial, warehousing and commercial projects
+                while focusing on critical performance parameters that include
+                light transmission and diffusion, thermal insulation, product
+                safety and durability.
+              </Paragraph>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       <Section className="bg-gray-100">
-        <div className="grid  gap-12 lg:grid-cols-2">
+        <div className="grid gap-12 lg:grid-cols-2">
           <div>
             <Heading
-              eyebrow="Who We Are"
-              heading="A Design & Development Company Powered by Nature"
-              subheading="As a skylight and roof ventilation design and development company, we harness the power of the sun and wind to naturally illuminate and ventilate buildings of every scale. From concept and design to manufacturing, delivery, and installation, we provide customized, cost-effective solutions for the global building and construction industry. Established in 2010, we have grown into a multi-billion-dollar enterprise driven by innovation, engineering excellence, and a commitment to sustainable building solutions."
+              eyebrow="Our Manufacturing Prowess"
+              heading="MANUFACTURING CAPABILITY"
+              subheading="Our strong manufacturing capabilities help us deliver reliable and high-performance light and air solutions consistently at scale"
               className="mx-auto max-w-4xl text-start"
               eyebrowClassName="justify-start"
               subheadingClassName="text-base leading-relaxed text-muted-foreground"
             />
 
-            <p className="mt-4 text-base leading-8 text-muted-foreground">
-              From concept and design to manufacturing, delivery, and
-              installation, we provide customized yet cost-effective solutions
-              for the global building and construction industry.
-            </p>
+            <div className="mt-6 space-y-4">
+              <p className="text-base leading-8 text-muted-foreground">
+                Headquartered in India, we operate{" "}
+                <strong className="font-semibold text-foreground">
+                  four state-of-the-art manufacturing facilities
+                </strong>{" "}
+                strategically located in the Indian cities of Faridabad, Vapi,
+                Barmer and Bhuj.
+              </p>
 
-            <p className="mt-4 text-base leading-8 text-muted-foreground">
-              Established in 2010, the company has grown into a
-              multi-billion-dollar enterprise driven by innovation, engineering
-              excellence, and a strong commitment to sustainable building
-              solutions.
-            </p>
+              <p className="text-base leading-8 text-muted-foreground">
+                All our advanced factories operate on cutting-edge technology
+                and are equipped with automated production and assembly lines.
+              </p>
+
+              <p className="text-base leading-8 text-muted-foreground">
+                The implementation of best-in-class manufacturing and management
+                practices, along with stringent quality control systems, enables
+                us to consistently deliver{" "}
+                <strong className="font-semibold text-foreground">
+                  world-class quality products at scale.
+                </strong>
+              </p>
+
+              <p className="text-base leading-8 text-muted-foreground">
+                Quality and operational excellence are central to our
+                philosophy. We follow best-in-class manufacturing and management
+                practices and are{" "}
+                <strong className="font-semibold text-foreground">
+                  ISO 9001 and ISO 14001 certified,
+                </strong>{" "}
+                ensuring compliance with international standards for quality,
+                safety, and environmental protection.
+              </p>
+
+              <p className="text-base leading-8 text-muted-foreground">
+                Continuous investment in{" "}
+                <strong className="font-semibold text-foreground">
+                  research & development, skill development, process
+                  improvement, and optimization
+                </strong>{" "}
+                enables us to stay ahead in the dynamic field of architectural
+                glazing, skylights, and natural roof ventilation.
+              </p>
+            </div>
           </div>
 
           {/* Right Image */}
           <div className="relative">
             <Image
               src="/img/hero-3.png"
-              alt="Skylight & Roof Ventilation"
+              alt="Manufacturing Capability"
               width={700}
               height={550}
-              className="w-full rounded-[20px]  h-full object-cover "
+              className="h-full w-full rounded-[20px] object-cover"
             />
           </div>
         </div>
@@ -111,10 +195,70 @@ export default function About(params) {
           subheadingClassName="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground"
         />
         <div className="mt-14"></div>
-        <FeatureCards
-          features={Productfeature}
-          className=" lg:grid-cols-2"
-        ></FeatureCards>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
+          {/* Mission */}
+          <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
+            <Target className="h-8 w-8 text-foreground" strokeWidth={1.5} />
+
+            <h4 className="mt-5 text-base font-semibold text-foreground">
+              Mission
+            </h4>
+
+            <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
+              We are committed to engineering excellence, world-class
+              manufacturing, continuous improvement, innovation and adapting and
+              implementing the best management practices to consistently deliver
+              world class product quality and services, reliable solutions and
+              excellent value to all our stakeholders including our business
+              partners and customers across global markets.
+              <br />
+              We also commit to improving people’s lives and ensuring a bright
+              and sustainable future for all by doing our bit for the
+              environment by naturally illuminating and ventilating green
+              buildings that are energy efficient, carbon neutral and
+              environment friendly besides adhering to the highest standards of
+              quality, performance and safety.
+            </p>
+          </div>
+
+          {/* Vision */}
+          <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
+            <Eye className="h-8 w-8 text-foreground" strokeWidth={1.5} />
+
+            <h4 className="mt-5 text-base font-semibold text-foreground">
+              Vision
+            </h4>
+
+            <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
+              We aspire to become world’s largest, the most valuable and the
+              most admired company by the Year 2050. We also aim at leading the
+              intriguing field of skylighting, natural roof ventilation,
+              specialized roofing and light & air solutions and setting global
+              benchmarks in innovation, sustainability, design, engineering and
+              manufacturing excellence.
+            </p>
+          </div>
+
+          {/* Sustainability */}
+          <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
+            <Leaf className="h-8 w-8 text-foreground" strokeWidth={1.5} />
+
+            <h4 className="mt-5 text-base font-semibold text-foreground">
+              Sustainability
+            </h4>
+
+            <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
+              We are committed to promoting energy-efficient and eco-friendly
+              building solutions for a bright and sustainable future.
+              <br />
+              Our mission is to contribute to global energy conservation efforts
+              and climate action by significantly reducing the world’s
+              dependence on artificial light and forced ventilation and to do
+              our bit to help nations transit from polluting sources of energy
+              to clean-green energy, especially wind and the sun.
+            </p>
+          </div>
+        </div>
       </Section>
 
       <OurSolutions></OurSolutions>
@@ -126,7 +270,7 @@ export default function About(params) {
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/img/hero-1.png')" }}
+          style={{ backgroundImage: "url('/img/global-reach.png')" }}
         />
 
         {/* Dark Overlay */}
@@ -135,9 +279,9 @@ export default function About(params) {
         {/* Content */}
         <div className="relative z-10">
           <Heading
-            eyebrow="Global Reach & Export Excellence"
-            heading="A Distributor Network Spanning Five Regions"
-            subheading="Supported by a vast international distributor network, we serve diverse markets and project requirements across continents — including multinational corporations, government bodies, and leading contracting and real estate developers."
+            eyebrow="Our Global Reach & Presence"
+            heading="An International Distributor Network"
+            subheading="A vast international distributor network spanning 6 continents that enables us to naturally light up and ventilate the remotest part of the world"
             headingClassName="text-3xl sm:text-4xl mx-auto max-w-2xl text-white"
             subheadingClassName="mt-4 max-w-2xl mx-auto text-neutral-300"
           />
@@ -154,19 +298,41 @@ export default function About(params) {
             ))}
           </div>
 
-          <div className="mt-12 flex flex-wrap justify-center gap-6">
-            <div className="w-[280px] rounded-[20px] border border-white/20 bg-white/5 backdrop-blur-2xl p-6 text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">400+</p>
+          <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            {/* Years of Experience */}
+            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+              <p className="text-4xl font-bold text-red-500">15</p>
+              <p className="mt-2 text-sm text-white/80">Years of Experience</p>
+            </div>
+
+            {/* International Customers */}
+            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+              <p className="text-4xl font-bold text-red-500">450</p>
               <p className="mt-2 text-sm text-white/80">
-                Prestigious projects executed worldwide
+                International Customers
               </p>
             </div>
 
-            <div className="w-[280px] rounded-[20px] border border-white/20 bg-white/5 backdrop-blur-2xl p-6 text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">150+</p>
+            {/* Completed Projects */}
+            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+              <p className="text-4xl font-bold text-red-500">531</p>
               <p className="mt-2 text-sm text-white/80">
-                Customers served globally
+                Completed International Projects
               </p>
+            </div>
+
+            {/* Channel Partners */}
+            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+              <p className="text-4xl font-bold text-red-500">17</p>
+              <p className="mt-2 text-sm text-white/80">
+                International Channel Partners
+              </p>
+            </div>
+
+            {/* Continents Served */}
+            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+              <p className="text-4xl font-bold text-red-500">6</p>
+              <p className="mt-2 text-sm text-white/80">Continents Served</p>
             </div>
           </div>
         </div>

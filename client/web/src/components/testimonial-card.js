@@ -36,14 +36,23 @@ export default function TestimonialCard({ item }) {
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted">
             <UserRound className="h-5 w-5 text-primary" strokeWidth={1.5} />
           </div>
+
           <div>
-            <p className="font-display text-lg    text-foreground">
-              {item.name}
-            </p>
-            <p className="text-md text-muted-foreground">{item.date}</p>
+            <p className="font-display text-lg text-foreground">{item.name}</p>
+
+            {item.designation && (
+              <p className="text-sm text-muted-foreground">
+                {item.designation}
+              </p>
+            )}
+
+            {item.date && (
+              <p className="text-sm text-muted-foreground">{item.date}</p>
+            )}
           </div>
         </div>
-        <GoogleMark className="h-6 w-6 shrink-0" />
+
+        {/* <GoogleMark className="h-6 w-6 shrink-0" /> */}
       </div>
 
       <StarRow rating={item.rating} />

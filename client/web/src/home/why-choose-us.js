@@ -18,58 +18,57 @@ export function WhyChooseUs() {
     growth: TrendingUp,
   };
   const data = {
-    eyebrow: "Why Choose Us",
-    heading: "Trusted Partner for Polycarbonate & Skylight Solutions",
-    subheading:
-      "We deliver premium polycarbonate sheets, skylight systems, and roofing solutions with superior quality, reliable service, and customer-focused innovation.",
+    eyebrow: "Why Us",
+
+    heading:
+      "Improving lives of people through innovation, technology & performance",
 
     items: [
       {
         img: "/img/icons/capability.png",
         title: "Capability",
         description:
-          "Advanced manufacturing with modern technology to deliver high-quality polycarbonate and skylight solutions.",
+          "We master the technology to harness the energy of the sun and wind to naturally illuminate & naturally ventilate all types of buildings.",
       },
       {
         img: "/img/icons/integrity.png",
         title: "Integrity",
         description:
-          "We follow ethical business practices with honesty, professionalism, and complete accountability.",
+          "We are an ethical company that adheres to the highest standards of propriety & business standard always and at every step.",
       },
       {
         img: "/img/icons/transparency.png",
         title: "Transparency",
         description:
-          "Clear communication and complete visibility throughout every stage of your project.",
+          "We maintain the highest levels of openness & transparency in all our business dealings and decision making.",
       },
       {
         img: "/img/icons/value-driven.png",
         title: "Value Driven",
         description:
-          "Providing innovative products that maximize quality, performance, and long-term value.",
+          "We are driven by our deep desire to deliver maximum value for the benefit of our associates including our customers.",
       },
       {
         img: "/img/icons/trust-reliability.png",
         title: "Trust & Reliability",
         description:
-          "Consistent quality, dependable service, and lasting customer relationships built on trust.",
+          "Consistent performance that has earned us global trust, respect & reputation.",
       },
       {
         img: "/img/icons/commitment.png",
-        title: "Commitment",
+        title: "Commitment Dedicated",
         description:
-          "Dedicated to delivering excellence with continuous support and unmatched customer satisfaction.",
+          "An un-wavering commitment & unflinching resolve to develop green technologies & solutions that better people’s lives and ensure a bright & sustainable future.",
       },
     ],
   };
-
   return (
     <Section>
       <Heading
         eyebrow={data.eyebrow}
         heading={data.heading}
         subheading={data.subheading}
-        className="mx-auto max-w-2xl"
+        className="mx-auto max-w-5xl"
         eyebrowClassName="justify-center"
         headingClassName="text-3xl sm:text-4xl lg:text-5xl"
         subheadingClassName="mx-auto mt-4 max-w-2xl"

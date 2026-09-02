@@ -3,7 +3,7 @@ export const categoryOrder = [
   "ROOF VENTILATION",
   "LIGHT AND AIR",
   "SPECIALIZED INDUSTRIAL ROOFING",
-  "SOAKER PLATES",
+  "ROOF CURBS",
 ];
 
 export function sortCategories(categories = []) {

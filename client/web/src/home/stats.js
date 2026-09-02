@@ -135,7 +135,7 @@ export function HeroParallax({
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
               </Link>
 
-              <Link
+              {/* <Link
                 href={`tel:${supportPhone}`}
                 className={cn(
                   buttonVariants({ variant: "secondary", size: "lg" }),
@@ -151,7 +151,7 @@ export function HeroParallax({
 
                   <span className="mt-1 font-semibold">{supportPhone}</span>
                 </div>
-              </Link>
+              </Link> */}
             </div>
           </div>
 

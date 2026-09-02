@@ -21,12 +21,13 @@ export function ProductCard({ product, prefix }) {
         href={`/product/${product.slug}`}
         className="relative block overflow-hidden"
       >
-        <div className="relative rounded-[20px] h-80 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="relative rounded-[20px]  overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
           <Image
             src={`${process.env.NEXT_PUBLIC_FILE_BASE}${product.pictures?.[0]}`}
             alt={product.title}
-            fill
-            className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+            width={400}
+            height={400}
+            className="w-full transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -116,11 +117,11 @@ export function OurSolutions() {
     <Section className="bg-gray-100">
       <Heading
         eyebrow="Our Solutions"
-        heading="Complete Plastic Packaging Solutions"
-        subheading="From pharmaceutical and agrochemical bottles to food jars, cosmetic containers, edible oil bottles, and industrial packaging, we manufacture high-quality HDPE, PET, PP, and LDPE packaging solutions tailored to your business requirements."
-        className="mx-auto max-w-4xl"
+        heading="World Class Skylighting & Natural Ventilation Solutions"
+        subheading="Innovative & technologically advanced products engineered to match the diverse natural lighting & ventilation requirements of buildings that are meant to be green, carbon neutral and energy efficient besides being safe, reliable & high performing"
+        className="mx-auto capitalize max-w-4xl"
         eyebrowClassName="justify-center"
-        headingClassName="text-2xl font-bold uppercase tracking-wide sm:text-3xl"
+        headingClassName="text-2xl font-bold  tracking-wide sm:text-3xl"
         subheadingClassName="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground"
       />
 

@@ -8,40 +8,33 @@ import { cn } from "@/lib/utils";
 import Aurora from "./ui/aurora";
 
 const slides = [
-  // {
-  //   eyebrow: "Skylighting & Glazing",
-  //   title: "Lighting up lives… naturally",
-  //   body: "Polycarbonate skylights and glazing panels that bring daylight deep into industrial, commercial and institutional buildings.",
-  //   image: "/img/hero-1.png",
-  //   alt: "Polycarbonate skylight glazing",
-  // },
   {
-    eyebrow: "Roof Ventilation",
-    title: "For the joy of fresh air",
-    body: "Wind-driven auto rotators and motorized roof exhausts that keep industrial sheds naturally ventilated, all year round.",
+    eyebrow: "RHINO TUFF",
+    title: "Glazings, Skylights & Sidelights",
+    body: "Lighting Up Lives … Naturally",
+    image: "/img/hero-1.png",
+    alt: "Glazings, Skylights & Sidelights",
+  },
+  {
+    eyebrow: "RHINO TUFF",
+    title: "NATURAL ROOF VENTILATION",
+    body: "For the joy of fresh air",
     image: "/img/hero-2.png",
-    alt: "Roof ventilation system",
+    alt: "Natural Roof Ventilation",
   },
   {
-    eyebrow: "Soaker Plates",
-    title: "Reliable Roof Protection",
-    body: "Durable soaker plates designed to provide superior weather sealing and long-lasting roof performance.",
+    eyebrow: "RHINO TUFF",
+    title: "For a greener planet",
+    body: "Sustainable light and air solutions for a cleaner, greener future.",
     image: "/img/hero-3.png",
-    alt: "Soaker plates for industrial roofing",
+    alt: "For a greener planet",
   },
   {
-    eyebrow: "Industrial Roofing",
-    title: "Built for Strength",
-    body: "High-performance industrial roofing systems engineered for durability, efficiency, and modern infrastructure.",
+    eyebrow: "RHINO TUFF",
+    title: "Creating a bright and sustainable future",
+    body: "Innovative daylighting and natural ventilation solutions for sustainable buildings.",
     image: "/img/hero-4.png",
-    alt: "Industrial roofing solution",
-  },
-  {
-    eyebrow: "Light & Air",
-    title: "Bright Spaces, Fresh Air",
-    body: "Integrated daylighting and ventilation solutions that improve comfort, reduce energy costs, and support sustainable buildings.",
-    image: "/img/hero-5.png",
-    alt: "Light and air solution",
+    alt: "Creating a bright and sustainable future",
   },
 ];
 
@@ -109,7 +102,7 @@ export function SiteHero() {
                 variant="outline"
                 className="border-white/40 bg-transparent text-white hover:bg-primary/10 hover:text-white"
               >
-                <Link href="/contact">Talk to an Engineer</Link>
+                <Link href="/contact"> Get in Touch</Link>
               </Button>
             </div>
           </div>

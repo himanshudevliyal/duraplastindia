@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/nav";
 import { SiteHero } from "@/components/hero-section";
-import { AboutUs } from "@/home/about";
+import AboutSection from "@/home/about";
 import { WhyChooseUs } from "@/home/why-choose-us";
 import { Testimonials } from "@/home/testimonial";
 import { BlogSection } from "@/home/blogsection";
@@ -19,45 +19,50 @@ export default function HomePage() {
   return (
     <main>
       <SiteHero />
-      <AboutUs />
+
+      <AboutSection />
       <OurSolutions></OurSolutions>
       <WhyChooseUs />
       <Testimonials></Testimonials>
       <OurWork></OurWork>
-
       <HeroParallax
         backgroundImage="/img/hero-5.png"
         foregroundImage="/img/hero-3.png"
-        badge="ENGINEERED DAYLIGHTING SOLUTIONS"
-        heading="Transform Your Roof with Smart Skylighting & Ventilation"
-        description="For over two decades, Dura Plast has been delivering high-performance polycarbonate skylights, roof ventilation systems, GRP products, and architectural glazing solutions. Our RHINO TUFF range is engineered to maximize natural daylight, improve airflow, and enhance energy efficiency for industrial, commercial, and infrastructure projects worldwide." // Based on Dura Plast's product portfolio. :contentReference[oaicite:0]{index=0}
-        checklist={[
-          "Premium Polycarbonate Skylights & Roofing Systems",
-          "Advanced Natural & Hybrid Roof Ventilation Solutions",
-          "UV-Protected, Weather-Resistant & Long-Lasting Products",
-        ]}
+        badge="RHINO TUFF™"
+        heading="Born in India to Naturally Illuminate and Ventilate the World"
+        description="We in India believe that the world is one family. It is this belief that inspires us to develop powerful green technologies that hold the potential to make the world a better, happier and safer place for our future generations."
+        checklist={[]}
         ctaLabel="Request a Quote"
-        ctaHref="/contact"
+        ctaHref="/contat"
         supportPhone="+91 8744 060 423"
         stats={[
           {
-            value: "20+",
-            label: "Years of Manufacturing Excellence",
+            value: "15",
+            label: "Years of Experience",
           },
           {
-            value: "1000+",
-            label: "Industrial & Commercial Projects",
+            value: "372",
+            label: "No. of Customers",
           },
           {
-            value: "25+",
-            label: "Innovative Roofing & Ventilation Products",
+            value: "930",
+            label: "No. of Completed Projects",
           },
           {
-            value: "India & Global",
-            label: "Trusted Supply Network",
+            value: "7,60,000",
+            label: "Total Floor Area Illuminated (Sq. Ft.)",
+          },
+          {
+            value: "4,30,000",
+            label: "Total Floor Area Ventilated (Sq. Ft.)",
+          },
+          {
+            value: "8",
+            label: "No. of Ongoing Projects",
           },
         ]}
       />
+
       <OurClinets></OurClinets>
       <BlogSection></BlogSection>
     </main>

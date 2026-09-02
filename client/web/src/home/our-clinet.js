@@ -10,9 +10,9 @@ export function OurClinets(params) {
     <Section className="overflow-hidden">
       <Heading
         eyebrow="Our Clients"
-        heading="Trusted by Leading Brands Across Industries"
-        subheading="From manufacturing plants and commercial facilities to warehouses and institutional projects, Dura Plast has delivered high-performance polycarbonate skylighting, glazing, and roof ventilation solutions for some of India's most trusted brands."
-        className="text-center"
+        heading="Patronised by the world's best for natural illumination & ventilation"
+        subheading="We have delighted our customers by helping them meet the highest standards of building performance and safety and by attaining environmental sustainability through improved energy efficiency and reduction in carbon foot print."
+        className="text-center max-w-5xl mx-auto"
         eyebrowClassName="justify-center"
         headingClassName="text-center mx-auto text-3xl sm:text-4xl lg:text-5xl"
         subheadingClassName="mt-5 max-w-2xl mx-auto "
