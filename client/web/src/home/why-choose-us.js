@@ -70,7 +70,6 @@ export function WhyChooseUs() {
         subheading={data.subheading}
         className="mx-auto max-w-5xl"
         eyebrowClassName="justify-center"
-        headingClassName="text-3xl sm:text-4xl lg:text-5xl"
         subheadingClassName="mx-auto mt-4 max-w-2xl"
       />
 

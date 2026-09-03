@@ -76,7 +76,6 @@ export function OurWork() {
         subheading="Our projects reflect our expertise across diverse applications; combining innovation, engineering and capability to meet every project requirement."
         className="mx-auto max-w-4xl"
         eyebrowClassName="justify-center"
-        headingClassName="text-3xl sm:text-4xl lg:text-5xl"
         subheadingClassName="mx-auto mt-5 mb-14 max-w-3xl"
       />
       <Carousel

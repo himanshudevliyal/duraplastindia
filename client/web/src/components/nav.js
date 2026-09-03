@@ -23,6 +23,9 @@ export function SiteHeader() {
   const [showNav, setShowNav] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // NEW: tracks which desktop dropdown is open (replaces pure CSS group-hover)
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -190,7 +193,12 @@ export function SiteHeader() {
             "
           >
             {navItems.map((item) => (
-              <div key={item.id} className="relative group">
+              <div
+                key={item.id}
+                className="relative"
+                onMouseEnter={() => setOpenDropdownId(item.id)}
+                onMouseLeave={() => setOpenDropdownId(null)}
+              >
                 <Link
                   href={item.href}
                   className="
@@ -211,7 +219,7 @@ export function SiteHeader() {
 
                 {item.categories?.length > 0 && (
                   <div
-                    className="
+                    className={`
                       absolute
                       top-12
                       left-3/1
@@ -228,18 +236,16 @@ export function SiteHeader() {
                       max-h-[80vh]
                       overflow-y-auto
 
-                      opacity-0
-                      invisible
-                      translate-y-3
-
-                      group-hover:opacity-100
-                      group-hover:visible
-                      group-hover:translate-y-0
-
                       transition-all
                       duration-300
                       z-50
-                    "
+
+                      ${
+                        openDropdownId === item.id
+                          ? "opacity-100 visible translate-y-0"
+                          : "opacity-0 invisible translate-y-3"
+                      }
+                    `}
                   >
                     {isLoading ? (
                       <div className="py-10 text-center text-gray-500">
@@ -270,6 +276,7 @@ export function SiteHeader() {
 
                             <Link
                               href={`${prefix}/product?categories=${category.id}`}
+                              onClick={() => setOpenDropdownId(null)}
                               className="group/title inline-block"
                             >
                               <h3
@@ -277,18 +284,18 @@ export function SiteHeader() {
                                   relative
                                   inline-block
                                   pb-3
-                                  text-[18px]
+                                
                                   font-bold
                                   uppercase
                                   tracking-wide
-                                  text-red-600
+                                  text-black
 
                                   after:absolute
                                   after:left-0
                                   after:bottom-0
                                   after:h-[2px]
                                   after:w-12
-                                  after:bg-red-600
+                                  after:bg-black
 
                                   group-hover/title:after:w-full
                                   after:transition-all
@@ -305,6 +312,7 @@ export function SiteHeader() {
                                 <Link
                                   key={product.id}
                                   href={`${prefix}/product/${product.slug}`}
+                                  onClick={() => setOpenDropdownId(null)}
                                   className="
                                     group
                                     flex
@@ -314,15 +322,14 @@ export function SiteHeader() {
                                     px-3
                                     py-3
 
-                                    text-[15px]
+                                    text-[14px]
                                     font-medium
-                                    text-gray-700
+                                    text-black
 
                                     transition-all
                                     duration-200
 
                                     hover:bg-red-50
-                                    hover:text-red-600
                                   "
                                 >
                                   <span className=" pr-3">{product.title}</span>
@@ -416,8 +423,6 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu — full-screen dark slide-in panel */}
 
       <div
         className={`

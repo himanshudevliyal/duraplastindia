@@ -65,7 +65,6 @@ export default function About(params) {
               heading="About Us"
               className="mx-auto max-w-3xl"
               eyebrowClassName="justify-center"
-              headingClassName="text-3xl sm:text-4xl lg:text-5xl"
             />
           </div>
 

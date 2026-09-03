@@ -103,7 +103,6 @@ export default function AboutSection() {
             heading="About Us"
             className="mx-auto max-w-3xl"
             eyebrowClassName="justify-center"
-            headingClassName="text-3xl sm:text-4xl lg:text-5xl"
           />
 
           {/* <div className="mx-auto mt-4 h-1 w-16 bg-primary" /> */}
@@ -112,7 +111,7 @@ export default function AboutSection() {
         {/* About Content */}
         <div className="mx-auto ">
           <div className="space-y-7 text-base leading-7 md:text-lg md:leading-8">
-            <Paragraph className="text-center  mx-auto text-lg max-w-5xl">
+            <Paragraph className="text-center  mx-auto text-lg max-w-5xl  text-black">
               We are a globally renowned skylight & roof ventilation design &
               development company that masters the technology to harness the
               tremendous power of the{" "}
@@ -121,7 +120,7 @@ export default function AboutSection() {
               buildings.
             </Paragraph>
 
-            <Paragraph className="text-center mx-auto max-w-5xl text-lg">
+            <Paragraph className="text-center mx-auto max-w-5xl text-lg text-black">
               Established in <strong className="font-semibold">2010</strong>,
               the company has grown into a{" "}
               <strong className="font-semibold">
@@ -131,7 +130,7 @@ export default function AboutSection() {
               commitment to sustainable building solutions.
             </Paragraph>
 
-            <Paragraph className="text-center mx-auto max-w-5xl text-lg">
+            <Paragraph className="text-center mx-auto max-w-5xl text-lg text-black">
               From conception through design & development to delivery &
               fitment, we provide{" "}
               <strong className="font-semibold">

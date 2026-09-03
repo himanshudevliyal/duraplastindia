@@ -13,7 +13,6 @@ export function BlogSection() {
         subheading="Explore expert articles, packaging trends, manufacturing innovations, and practical tips to help your business choose the right plastic packaging solutions."
         className="mx-auto max-w-3xl"
         eyebrowClassName="justify-center"
-        headingClassName="text-3xl sm:text-4xl lg:text-5xl"
         subheadingClassName="mx-auto mt-5 max-w-2xl"
       />
 

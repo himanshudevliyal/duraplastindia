@@ -170,7 +170,6 @@ export default function PolicyStatementPage() {
           subheading="We recognize our responsibility to protect the environment and are committed to operating in a manner that supports sustainable development, energy efficiency, carbon neutrality and green building practices, in line with ISO 14001:2015."
           className="mx-auto max-w-3xl"
           eyebrowClassName="justify-center"
-          headingClassName="text-3xl sm:text-4xl lg:text-5xl"
           subheadingClassName="mx-auto mt-5 max-w-2xl"
         />
 

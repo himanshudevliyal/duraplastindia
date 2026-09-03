@@ -28,7 +28,7 @@ export default function Heading({
 
       <h2
         className={cn(
-          "mt-3 font-display  capitalize  text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl",
+          "mt-3 font-display  capitalize  text-2xl font-bold text-foreground  lg:text-4xl",
           headingClassName,
         )}
       >

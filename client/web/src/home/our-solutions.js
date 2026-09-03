@@ -35,7 +35,7 @@ export function ProductCard({ product, prefix }) {
       </Link>
 
       <div className="flex flex-1 flex-col mt-4">
-        <h4 className="text-2xl font-bold  leading-tight text-gray-900 transition-colors duration-300 group-hover:text-primary">
+        <h4 className="text-xl font-bold  leading-tight text-gray-900 transition-colors duration-300 group-hover:text-primary">
           {product.title}
         </h4>
 
