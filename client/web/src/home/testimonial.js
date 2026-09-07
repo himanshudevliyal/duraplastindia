@@ -87,7 +87,7 @@ export function Testimonials() {
           <Heading
             eyebrow="Testimonials"
             heading="Words That Inspire Us"
-            // subheading="See how our skylighting, glazing, and ventilation systems have helped builders bring in more daylight, better airflow, and lasting roof protection."
+            subheading=" You inspire us to dream bigger "
             className="text-left py-10 lg:ml-auto lg:py-16 capitalize"
             eyebrowClassName="justify-start"
             headingClassName="text-3xl text-start sm:text-4xl lg:text-5xl"

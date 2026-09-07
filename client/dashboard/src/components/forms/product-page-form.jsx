@@ -44,6 +44,16 @@ import {
 } from "@/hooks/use-product-pages";
 import CustomMultiSelect from "../custom-multi-select";
 
+// ================= Slug Helper =================
+// Agar value hai to usi ko slugify karega (lowercase, spaces/special chars -> hyphen)
+const generateSlug = (value) =>
+  value
+    ?.toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "";
+
 const defaultValues = {
   pictures: [],
   title: "",
@@ -272,6 +282,8 @@ export default function ProductPageForm({ id, type }) {
     formState: { errors },
     reset,
     setError,
+    setValue,
+    getValues,
     watch,
     control,
   } = methods;
@@ -329,13 +341,35 @@ export default function ProductPageForm({ id, type }) {
   });
 
   const { data, isLoading, isError, error } = useProductPage(id);
-  console.log({ data });
   const {
     data: categories,
     isLoading: isCategoryLoading,
     isError: isCategoryError,
     error: categoryError,
   } = useFormattedCategories("");
+
+  // ================= Auto Slug Logic =================
+  // Title change hone par: agar slug field me pehle se value hai to usi ko
+  // slugify karke rakho (title ignore). Agar slug empty hai to title se banao.
+  const titleValue = watch("title");
+
+  useEffect(() => {
+    const currentSlug = getValues("product_page_slug");
+
+    if (currentSlug && currentSlug.trim() !== "") {
+      const regeneratedFromSlug = generateSlug(currentSlug);
+      if (regeneratedFromSlug !== currentSlug) {
+        setValue("product_page_slug", regeneratedFromSlug, {
+          shouldValidate: true,
+        });
+      }
+    } else {
+      setValue("product_page_slug", generateSlug(titleValue), {
+        shouldValidate: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [titleValue]);
 
   const onSubmit = (data) => {
     if (!fileUrls?.picture_urls?.length && !files.pictures.length) {
@@ -501,7 +535,13 @@ export default function ProductPageForm({ id, type }) {
             <div className="space-y-2">
               <Label htmlFor="product_page_slug">Product page slug *</Label>
               <Input
-                {...register("product_page_slug")}
+                {...register("product_page_slug", {
+                  onChange: (e) => {
+                    setValue("product_page_slug", generateSlug(e.target.value), {
+                      shouldValidate: true,
+                    });
+                  },
+                })}
                 placeholder="Enter product page slug"
               />
               {errors?.product_page_slug && (
@@ -539,7 +579,6 @@ export default function ProductPageForm({ id, type }) {
                     options={cityOptions}
                     value={field.value || []}
                     onChange={(value) => {
-                      console.log({ value });
                       field.onChange(value);
                     }}
                     placeholder="Select Countries"
@@ -618,32 +657,6 @@ export default function ProductPageForm({ id, type }) {
                 }}
               />
             </div>
-
-            {/* related products */}
-            {/* <div className="col-span-full">
-              <Label htmlFor="related_products">Related products</Label>
-              <Controller
-                id="related_products"
-                control={control}
-                name="related_products"
-                render={({ field }) => {
-                  return (
-                    <CustomMultiSelect
-                      options={productOptions?.filter(
-                        ({ value }) => value !== id,
-                      )}
-                      onChange={field.onChange}
-                      value={field.value}
-                      placeholder="Select related products"
-                      async={true}
-                      isLoading={isProductOptionsLoading}
-                      isError={isProductOptionsError}
-                      error={productOptionsError}
-                    />
-                  );
-                }}
-              />
-            </div> */}
 
             {/* ================= Overview ================= */}
             <div className="col-span-full space-y-4 rounded-xl border p-5">
@@ -889,7 +902,7 @@ export default function ProductPageForm({ id, type }) {
                                 size="icon"
                                 className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
                                 onClick={() =>
-                                  methods.setValue(
+                                  setValue(
                                     `applications.features.${index}.img`,
                                     "",
                                   )
@@ -1013,7 +1026,7 @@ export default function ProductPageForm({ id, type }) {
                                 size="icon"
                                 className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
                                 onClick={() =>
-                                  methods.setValue(
+                                  setValue(
                                     `benefits.features.${index}.img`,
                                     "",
                                   )
@@ -1156,115 +1169,5 @@ export default function ProductPageForm({ id, type }) {
         </div>
       </form>
     </FormProvider>
-  );
-}
-
-function PricingItem({ index, removePricing, showStateDeleteButton }) {
-  const {
-    register,
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const {
-    fields: cityFields,
-    append: appendCity,
-    remove: removeCity,
-  } = useFieldArray({ control, name: `pricing.${index}.cities` });
-
-  return (
-    <div className="border-input space-y-2 rounded-md border p-4">
-      <div className="grid grid-cols-3 gap-4">
-        <Input
-          placeholder="State Name"
-          {...register(`pricing.${index}.name`)}
-          className={cn({
-            "border-red-500": errors?.pricing?.[index]?.name,
-          })}
-        />
-        <Controller
-          control={control}
-          name={`pricing.${index}.cities.${cityIndex}.name`}
-          render={({ field }) => (
-            <CustomMultiSelect
-              options={cityOptions}
-              value={field.value || []}
-              onChange={field.onChange}
-              placeholder="Select Countries"
-              className={cn({
-                "border-red-500":
-                  errors?.pricing?.[index]?.cities?.[cityIndex]?.name,
-              })}
-            />
-          )}
-        />
-      </div>
-
-      <div className="mt-4 space-y-2">
-        <h4 className="font-medium">Cities</h4>
-        {cityFields.map((city, cityIndex) => (
-          <div
-            key={city.id}
-            className="border-muted grid grid-cols-4 items-center gap-4 rounded border p-2"
-          >
-            <Input
-              placeholder="City Name"
-              {...register(`pricing.${index}.cities.${cityIndex}.name`)}
-              className={cn({
-                "border-red-500":
-                  errors?.pricing?.[index]?.cities?.[cityIndex]?.name,
-              })}
-            />
-            <Input
-              type="number"
-              placeholder="Price Modifier"
-              {...register(
-                `pricing.${index}.cities.${cityIndex}.price_modifier`,
-                { valueAsNumber: true },
-              )}
-              className={cn({
-                "border-red-500":
-                  errors?.pricing?.[index]?.cities?.[cityIndex]?.price_modifier,
-              })}
-            />
-            <Button
-              variant="destructive"
-              type="button"
-              size="icon"
-              onClick={() => removeCity(cityIndex)}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          size="sm"
-          onClick={() =>
-            appendCity({
-              id: "",
-              name: [],
-              price_modifier: "",
-            })
-          }
-          className="mt-2"
-          variant="outline"
-        >
-          <Plus className="h-4 w-4" /> Add City
-        </Button>
-      </div>
-
-      {showStateDeleteButton && (
-        <div className="pt-2 text-right">
-          <Button
-            variant="destructive"
-            type="button"
-            size="icon"
-            onClick={() => removePricing(index)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-    </div>
   );
 }

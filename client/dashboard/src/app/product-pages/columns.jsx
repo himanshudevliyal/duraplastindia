@@ -28,12 +28,12 @@ export const columns = (openModal, setId) => [
       );
     },
     cell: ({ row }) => {
-      const slug = row.original.slug;
+      const slug = row.original.product_page_slug;
       const title = row.getValue("title");
       return (
-        <a
-          target="_blank"
-          href={`${slug}`}
+        
+          <a target="_blank"
+          href={`https://duraplast.bwdemo.in/in/product/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >
@@ -59,7 +59,7 @@ export const columns = (openModal, setId) => [
       return (
         <a
           target="_blank"
-          href={`https://duraplast.bwdemo.in/product/${slug}`}
+          href={`https://duraplast.bwdemo.in/in/product/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >

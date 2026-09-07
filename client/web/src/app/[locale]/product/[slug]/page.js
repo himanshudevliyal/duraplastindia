@@ -24,7 +24,7 @@ export default async function ProductDetailsPage({ params }) {
 
   const pageSections = [
     { id: "overview", label: "Overview" },
-    { id: "why-choose-us", label: "Why Choose Us" },
+    { id: "why-choose-us", label: "Features" },
     { id: "benefits", label: "Benefits" },
     { id: "applications", label: "Applications" },
     { id: "relative-products", label: "Relative Products" },
@@ -57,7 +57,7 @@ export default async function ProductDetailsPage({ params }) {
 
       <Section className="bg-gray-50" id="why-choose-us">
         <Heading
-          eyebrow="Why Choose Us"
+          eyebrow="Features"
           heading={product.why_choose?.heading || "Why Choose Us"}
           subheading={product.why_choose?.short_paragraph}
           className="mx-auto max-w-4xl"

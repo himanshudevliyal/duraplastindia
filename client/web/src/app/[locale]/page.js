@@ -33,7 +33,7 @@ export default function HomePage() {
         description="We in India believe that the world is one family. It is this belief that inspires us to develop powerful green technologies that hold the potential to make the world a better, happier and safer place for our future generations."
         checklist={[]}
         ctaLabel="Request a Quote"
-        ctaHref="/contat"
+        ctaHref="/contact"
         supportPhone="+91 8744 060 423"
         stats={[
           {

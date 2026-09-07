@@ -363,7 +363,10 @@ export default function About(params) {
         </div>
       </Section>
 
-      <OurClinets></OurClinets>
+     <OurClinets
+  heading="Patronised By The Worlds Best For Natural Illumination & Ventilation"
+  subheading="We have delighted our customers by helping them meet the highest standards of building performance and safety and by attaining environmental sustainability through improved energy efficiency and reduction in carbon foot print.    "
+/>
     </>
   );
 }

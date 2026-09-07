@@ -94,7 +94,7 @@ export function SiteHero() {
                 size="lg"
                 className="bg-primary text-white hover:bg-destructive"
               >
-                <Link href="/product">Explore Products</Link>
+                <Link href="/product"> Explore Our Solutions</Link>
               </Button>
               <Button
                 asChild
