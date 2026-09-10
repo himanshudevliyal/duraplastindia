@@ -31,7 +31,7 @@ const DEFAULT_IMAGES = [
 ];
 
 export function ProductShowcase({
-  eyebrow = "GET IN TOUCH",
+ eyebrow = "overview",
   heading = "Let's bring natural light into your next project",
   description = "From skylighting and glazing to roof ventilation, our team works with you from concept to installation, engineering solutions that are durable, energy-efficient, and built for your building's exact requirements. From skylighting and glazing to roof ventilation, our team works with you from concept to installation, engineering solutions that are durable, energy-efficient, and built for your building's exact requirements.",
   buttonLabel = "Enquiry Now",

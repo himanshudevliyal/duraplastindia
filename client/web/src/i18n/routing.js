@@ -10,12 +10,32 @@ import { defineRouting } from "next-intl/routing";
  * Add new locales here only - every other part of the i18n setup
  * (proxy, navigation helpers, language switcher) reads from this file.
  */
+
+
 export const routing = defineRouting({
-  locales: ["in", "au", "nz", "us", "gb", "ae"],
+  locales: [
+    "in",
+    "au",
+    "nz",
+    "us",
+    "gb",
+    "ae",
+    "za",
+    "eg",
+    "ng",
+    "ma",
+    "dz",
+    "ke",
+    "tz",
+  ],
+
   defaultLocale: "in",
+
   localePrefix: "always",
+
   localeCookie: {
     name: "Dura_Plast",
     maxAge: 60 * 60 * 24 * 365,
   },
 });
+

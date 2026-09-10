@@ -10,12 +10,12 @@ export default function Heading({
   subheadingClassName,
 }) {
   return (
-    <div className={cn(" text-center", className)}>
+    <div className={cn("text-center", className)}>
       {eyebrow && (
         <span
           className={cn(
-            "relative inline-flex items-center pl-3 text-sm font-medium text-primary",
-            eyebrowClassName,
+            "relative inline-flex items-center pl-3 text-xs font-medium text-primary",
+            eyebrowClassName
           )}
         >
           <span
@@ -28,8 +28,8 @@ export default function Heading({
 
       <h2
         className={cn(
-          "mt-3 font-display  capitalize  text-2xl font-bold text-foreground  lg:text-4xl",
-          headingClassName,
+          "mt-2 font-display capitalize text-xl font-bold text-foreground lg:text-3xl",
+          headingClassName
         )}
       >
         {heading}
@@ -38,8 +38,8 @@ export default function Heading({
       {subheading && (
         <p
           className={cn(
-            "mt-4 font-body text-base leading-relaxed text-muted-foreground",
-            subheadingClassName,
+            "mt-3 font-body text-sm leading-relaxed text-muted-foreground",
+            subheadingClassName
           )}
         >
           {subheading}

@@ -490,4 +490,186 @@ opacity: 0.5;
 position: absolute;
   }
 }
+/* ================================
+   Global Responsive Typography
+   ================================ */
 
+h1 {
+  font-size: 2rem !important;
+}
+
+h2 {
+  font-size: 1.75rem !important;
+}
+
+h3 {
+  font-size: 1.5rem !important;
+}
+
+h4 {
+  font-size: 1.25rem !important;
+}
+
+h5 {
+  font-size: 1.125rem !important;
+}
+
+h6 {
+  font-size: 1rem !important;
+}
+
+p {
+  font-size: 0.875rem !important;
+}
+
+span {
+  font-size: 0.8125rem !important;
+}
+
+div {
+  font-size: 0.875rem !important;
+}
+
+
+/* ================================
+   Tablet
+   ================================ */
+
+@media (max-width: 991px) {
+  h1 {
+    font-size: 1.8rem !important;
+  }
+
+  h2 {
+    font-size: 1.6rem !important;
+  }
+
+  h3 {
+    font-size: 1.4rem !important;
+  }
+
+  h4 {
+    font-size: 1.2rem !important;
+  }
+
+  h5 {
+    font-size: 1.05rem !important;
+  }
+
+  h6 {
+    font-size: 0.95rem !important;
+  }
+
+  p {
+    font-size: 0.8125rem !important;
+  }
+
+  span {
+    font-size: 0.75rem !important;
+  }
+
+  div {
+    font-size: 0.8125rem !important;
+  }
+}
+
+
+/* ================================
+   Mobile
+   ================================ */
+
+@media (max-width: 575px) {
+  h1 {
+    font-size: 1.6rem !important;
+  }
+
+  h2 {
+    font-size: 1.4rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  h4 {
+    font-size: 1.1rem !important;
+  }
+
+  h5 {
+    font-size: 1rem !important;
+  }
+
+  h6 {
+    font-size: 0.9rem !important;
+  }
+
+  p {
+    font-size: 0.75rem !important;
+  }
+
+  span {
+    font-size: 0.7rem !important;
+  }
+
+  div {
+    font-size: 0.75rem !important;
+  }
+}
+
+
+
+
+
+
+
+
+/* =========================
+   MINIMAL SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* No background */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Only red scrollbar */
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+/* Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Remove arrows/buttons */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+/* =========================
+   TEXT SELECTION
+========================= */
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}

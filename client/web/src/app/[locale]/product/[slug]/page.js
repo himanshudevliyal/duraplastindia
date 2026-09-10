@@ -57,7 +57,7 @@ export default async function ProductDetailsPage({ params }) {
 
       <Section className="bg-gray-50" id="why-choose-us">
         <Heading
-          eyebrow="Features"
+          // eyebrow="Features"
           heading={product.why_choose?.heading || "Why Choose Us"}
           subheading={product.why_choose?.short_paragraph}
           className="mx-auto max-w-4xl"
@@ -81,7 +81,7 @@ export default async function ProductDetailsPage({ params }) {
 
       <Section className="bg-white" id="applications">
         <Heading
-          eyebrow="Applications"
+          // eyebrow="Applications"
           heading={
             product.applications?.heading ||
             "Applications of RHINO TUFF Polycarbonate Solid Flat Panels"

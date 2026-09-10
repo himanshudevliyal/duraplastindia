@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 
 // Native-language labels, so each locale is always legible to its own
 // speakers regardless of which language is currently active.
+
+
 const LOCALE_LABELS = {
   in: { native: "India", short: "IN" },
   au: { native: "Australia", short: "AU" },
@@ -24,7 +26,16 @@ const LOCALE_LABELS = {
   us: { native: "United States", short: "US" },
   gb: { native: "United Kingdom", short: "UK" },
   ae: { native: "United Arab Emirates", short: "UAE" },
+
+  za: { native: "South Africa", short: "ZA" },
+  eg: { native: "Egypt", short: "EG" },
+  ng: { native: "Nigeria", short: "NG" },
+  ma: { native: "Morocco", short: "MA" },
+  dz: { native: "Algeria", short: "DZ" },
+  ke: { native: "Kenya", short: "KE" },
+  tz: { native: "Tanzania", short: "TZ" },
 };
+
 export default function LanguageSwitcher({ className, align = "end" }) {
   const locale = useLocale();
   const router = useRouter();
