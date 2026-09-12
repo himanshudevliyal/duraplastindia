@@ -50,7 +50,7 @@ export default function About(params) {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/img/duraplast-about.png')",
+            backgroundImage: "url('/img/about-us.jpg')",
           }}
         />
 
@@ -175,7 +175,7 @@ export default function About(params) {
           {/* Right Image */}
           <div className="relative">
             <Image
-              src="/img/hero-3.png"
+              src="/img/manufacturing-capability.jpeg"
               alt="Manufacturing Capability"
               width={700}
               height={550}

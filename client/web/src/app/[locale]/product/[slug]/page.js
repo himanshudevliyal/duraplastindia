@@ -120,7 +120,10 @@ export default async function ProductDetailsPage({ params }) {
         </div>
       </Section>
       <Section className="bg-gray-50" id="relative-products">
-        <RelativeProducts categoryId={product.category_id} />
+       <RelativeProducts
+  categoryId={product.category_id}
+  currentProductId={product.id}
+/>
       </Section>
       <FAQSection faq={product.faq} />
     </>

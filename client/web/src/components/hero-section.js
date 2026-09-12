@@ -10,29 +10,25 @@ import Aurora from "./ui/aurora";
 const slides = [
   {
     eyebrow: "RHINO TUFF",
-    title: "Glazings, Skylights & Sidelights",
-    body: "Lighting Up Lives … Naturally",
+    title: "Lighting up lives…naturally",
     image: "/img/hero-1.png",
-    alt: "Glazings, Skylights & Sidelights",
+    alt: "Lighting up lives naturally",
   },
   {
     eyebrow: "RHINO TUFF",
-    title: "NATURAL ROOF VENTILATION",
-    body: "For the joy of fresh air",
+    title: "For the joy of fresh air",
     image: "/img/hero-2.png",
-    alt: "Natural Roof Ventilation",
+    alt: "For the joy of fresh air",
   },
   {
     eyebrow: "RHINO TUFF",
     title: "For a greener planet",
-    body: "Sustainable light and air solutions for a cleaner, greener future.",
     image: "/img/hero-3.png",
     alt: "For a greener planet",
   },
   {
     eyebrow: "RHINO TUFF",
     title: "Creating a bright and sustainable future",
-    body: "Innovative daylighting and natural ventilation solutions for sustainable buildings.",
     image: "/img/hero-4.png",
     alt: "Creating a bright and sustainable future",
   },
@@ -47,7 +43,7 @@ export function SiteHero() {
 
   return (
     <section className="relative h-screen min-h-[560px] w-full overflow-hidden ">
-      <Aurora blend={0.5} amplitude={1.0} speed={0.5} />
+      {/* <Aurora blend={0.5} amplitude={1.0} speed={0.5} /> */}
 
       <div
         ref={heroRef}
@@ -79,14 +75,13 @@ export function SiteHero() {
         {/* Copy */}
         <div className="absolute inset-x-0 bottom-24 z-20">
           <div className="mx-auto max-w-7xl px-6">
-            <p className="mb-4 font-brand-mono text-xs uppercase tracking-[0.25em] text-white">
-              {active.eyebrow}
-            </p>
+            <Image src="/rhinotuff.png" alt="rhinotuff" width={500} height={500} className="w-[200x]  mb-5"></Image>
+
             <h1 className="max-w-2xl font-display text-4xl font-bold uppercase leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
-              {active.title}
+              {active?.title}
             </h1>
             <p className="mt-6 max-w-lg font-body text-base leading-relaxed text-white/85">
-              {active.body}
+              {active?.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button

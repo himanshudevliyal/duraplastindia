@@ -21,38 +21,38 @@ export function ProductCard({ product, prefix }) {
         href={`/product/${product.slug}`}
         className="relative block overflow-hidden"
       >
-        <div className="relative rounded-[20px]  overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-          <Image
-            src={`${process.env.NEXT_PUBLIC_FILE_BASE}${product.pictures?.[0]}`}
-            alt={product.title}
-            width={400}
-            height={400}
-            className="w-full transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
-          />
+   <div className="relative   aspect-video overflow-hidden rounded-[20px] bg-gradient-to-br from-gray-100 to-gray-200">
+  <Image
+    src={`${process.env.NEXT_PUBLIC_FILE_BASE}${product.pictures?.[0]}`}
+    alt={product.title}
+    fill
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+    className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+  />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-        </div>
+  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+</div>
       </Link>
 
-      <div className="flex flex-1 flex-col mt-4">
-        <h4 className="text-xl font-bold  leading-tight text-gray-900 transition-colors duration-300 group-hover:text-primary">
-          {product.title}
-        </h4>
+  <div className="mt-4 flex flex-1 flex-col">
+  <h4 className="min-h-[56px] text-xl font-bold leading-7 text-gray-900 transition-colors duration-300 group-hover:text-primary">
+    {product.title}
+  </h4>
 
-        <Link
-          href={`/product/${product.slug}`}
-          className="mt-8 inline-flex items-center gap-3 font-semibold text-primary"
-        >
-          <span className="relative">
-            Learn More
-            <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-          </span>
+  <Link
+    href={`/product/${product.slug}`}
+    className="mt-auto inline-flex items-center gap-3 pt-8 font-semibold text-primary"
+  >
+    <span className="relative">
+      Learn More
+      <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+    </span>
 
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white transition-all duration-300 group-hover:translate-x-2 group-hover:rotate-45 group-hover:shadow-lg">
-            <ArrowUpRight className="h-5 w-5" />
-          </span>
-        </Link>
-      </div>
+    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white transition-all duration-300 group-hover:translate-x-2 group-hover:rotate-45 group-hover:shadow-lg">
+      <ArrowUpRight className="h-5 w-5" />
+    </span>
+  </Link>
+</div>
     </article>
   );
 }

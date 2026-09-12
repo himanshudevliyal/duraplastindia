@@ -18,10 +18,11 @@ export default function ContactPage({ className }) {
         <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-6 text-muted-foreground">
           Please use the below form. You can also call customer service on{" "}
           <a
-            href="tel:+918744060423"
+            href="tel:+918595060394"
             className="font-medium text-primary hover:underline"
           >
-            +91 87 44 060 423
+      
+            +91 85950 60394
           </a>
           .
         </p>
@@ -82,18 +83,12 @@ export default function ContactPage({ className }) {
 
                 <div className="mt-2 space-y-1">
                   <a
-                    href="tel:+918744060423"
+                    href="tel:+918595060394"
                     className="block hover:text-primary"
                   >
-                    +91 87 44 060 423
-                  </a>
+                    +91 85950 60394</a>
 
-                  <a
-                    href="tel:+919873002192"
-                    className="block hover:text-primary"
-                  >
-                    +91 98 73 002 192
-                  </a>
+                  
                 </div>
               </div>
 
@@ -104,18 +99,13 @@ export default function ContactPage({ className }) {
 
                 <div className="mt-2 space-y-1">
                   <a
-                    href="mailto:marketing@duraplastindia.com"
-                    className="block hover:text-primary"
-                  >
-                    marketing@duraplastindia.com
-                  </a>
-
-                  <a
                     href="mailto:sales@duraplastindia.com"
                     className="block hover:text-primary"
                   >
                     sales@duraplastindia.com
                   </a>
+
+                 
                 </div>
               </div>
             </div>

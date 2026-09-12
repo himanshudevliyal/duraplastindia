@@ -5,9 +5,9 @@ export default function OurWork(params) {
   return (
     <>
       <BreadcrumbBanner
-        title="Our Beginning"
+        title="Project Gallery"
         // backgroundImage="/img/banner/contact-banner.jpg"
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "our-beginning" }]}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Project Gallery" }]}
       />
 
       <ProjectsPage></ProjectsPage>

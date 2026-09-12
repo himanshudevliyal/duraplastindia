@@ -88,7 +88,7 @@ export default function AboutSection() {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url('/img/duraplast-about.png')",
+          backgroundImage: "url('/img/about-us.jpg')",
         }}
       />
 

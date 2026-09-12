@@ -20,8 +20,8 @@ export const footerAddresses = [
 ];
 
 export const footerContact = {
-  email: "marketing@duraplastindia.com",
-  phones: ["+91 8744 060 423", "+91 9873 002 192"],
+  email: "sales@duraplastindia.com",
+  phones: ["+91 85950 60394"],
 };
 
 export const footerUsefulLinks = [

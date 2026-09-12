@@ -363,7 +363,7 @@ export  function SiteHeader() {
 
             {/* Phone */}
             <a
-              href="tel:+919350803033"
+              href="tel:+918595060394"
               className="
                 hidden
                 whitespace-nowrap
@@ -372,7 +372,7 @@ export  function SiteHeader() {
                 xl:block
               "
             >
-              +91 9350803033
+              +91 85950 60394
             </a>
 
             {/* Language */}
