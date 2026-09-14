@@ -545,7 +545,7 @@ export  function SiteHeader() {
                                 font-bold
                                 uppercase
                                 tracking-wide
-                                text-black
+                                text-white
                                 sm:text-sm
                               "
                             >

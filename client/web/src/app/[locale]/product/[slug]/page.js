@@ -16,7 +16,7 @@ export default async function ProductDetailsPage({ params }) {
   const { slug } = await params;
 
   const data = await fetchProductPageBySlug(slug);
-  console.log("data", data);
+
   const product = data;
   if (!product) {
     return <div className="py-20 text-center">Product not found</div>;
@@ -33,12 +33,12 @@ export default async function ProductDetailsPage({ params }) {
 
   return (
     <>
-      <BreadcrumbBanner
+      {/* <BreadcrumbBanner
         title={product.title}
         // backgroundImage="/img/banner/about-banner.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: product.title }]}
-      />
-{/* 
+      /> */}
+
       <BreadcrumbBanner
   title={product.title}
   backgroundImage={
@@ -50,7 +50,7 @@ export default async function ProductDetailsPage({ params }) {
     { label: "Home", href: "/" },
     { label: product.title },
   ]}
-/> */}
+/>
 
 
       <SectionNav sections={pageSections} offset={140} />

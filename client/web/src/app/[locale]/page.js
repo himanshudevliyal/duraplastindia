@@ -8,6 +8,7 @@ import { OurSolutions } from "@/home/our-solutions";
 import { OurWork } from "@/home/our-work";
 import { OurClinets } from "@/home/our-clinet";
 import { HeroParallax } from "@/home/stats";
+import OurTechnologies from "@/home/our-technologies";
 
 export const metadata = {
   title: "Skylights, Glazing & Roof Ventilation Manufacturer",
@@ -26,8 +27,8 @@ export default function HomePage() {
       <Testimonials></Testimonials>
       <OurWork></OurWork>
       <HeroParallax
-        backgroundImage="/img/hero-5.png"
-        foregroundImage="/img/hero-3.png"
+        backgroundImage="/img/born-in-India.png"
+        foregroundImage="/img/born-in-India.png"
         badge="RHINO TUFF™"
         heading="Born in India to Naturally Illuminate and Ventilate the World"
         description="We in India believe that the world is one family. It is this belief that inspires us to develop powerful green technologies that hold the potential to make the world a better, happier and safer place for our future generations."
@@ -62,7 +63,7 @@ export default function HomePage() {
           },
         ]}
       />
-
+<OurTechnologies></OurTechnologies>
       <OurClinets></OurClinets>
       <BlogSection></BlogSection>
     </main>
