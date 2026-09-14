@@ -38,6 +38,20 @@ export default async function ProductDetailsPage({ params }) {
         // backgroundImage="/img/banner/about-banner.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: product.title }]}
       />
+{/* 
+      <BreadcrumbBanner
+  title={product.title}
+  backgroundImage={
+    product.pictures?.[0]
+      ? `${process.env.NEXT_PUBLIC_FILE_BASE}${product.pictures[0].replaceAll("\\", "/")}`
+      : undefined
+  }
+  breadcrumbs={[
+    { label: "Home", href: "/" },
+    { label: product.title },
+  ]}
+/> */}
+
 
       <SectionNav sections={pageSections} offset={140} />
 

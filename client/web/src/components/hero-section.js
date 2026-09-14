@@ -11,25 +11,25 @@ const slides = [
   {
     eyebrow: "RHINO TUFF",
     title: "Lighting up lives…naturally",
-    image: "/img/hero-1.png",
+    image: "/img/hero-4.png",
     alt: "Lighting up lives naturally",
   },
   {
     eyebrow: "RHINO TUFF",
     title: "For the joy of fresh air",
-    image: "/img/hero-2.png",
+    image: "/img/hero-5.png",
     alt: "For the joy of fresh air",
   },
   {
     eyebrow: "RHINO TUFF",
     title: "For a greener planet",
-    image: "/img/hero-3.png",
+    image: "/img/hero-2.png",
     alt: "For a greener planet",
   },
   {
     eyebrow: "RHINO TUFF",
     title: "Creating a bright and sustainable future",
-    image: "/img/hero-4.png",
+    image: "/img/hero-3.png",
     alt: "Creating a bright and sustainable future",
   },
 ];
@@ -104,7 +104,7 @@ export function SiteHero() {
         </div>
 
         {/* Thumbnail rail */}
-        <div
+        {/* <div
           className="absolute bottom-10 right-6 z-20 hidden h-60 w-56 flex-col gap-3 lg:flex"
           role="tablist"
           aria-label="Hero slides"
@@ -132,7 +132,7 @@ export function SiteHero() {
               />
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* Autoplay progress ring */}
         <div className="absolute bottom-6 left-6 z-20 flex h-[52px] w-[52px] items-center justify-center text-xs font-semibold text-white">

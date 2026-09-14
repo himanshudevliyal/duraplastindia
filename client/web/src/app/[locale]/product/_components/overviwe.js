@@ -85,7 +85,7 @@ export function ProductShowcase({
                       src={img.src}
                       alt={img.alt}
                       fill
-                      className="object-cover"
+                      className="   aspect-video"
                     />
                   </div>
                 </CarouselItem>
