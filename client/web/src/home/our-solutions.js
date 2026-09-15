@@ -12,7 +12,7 @@ import Heading from "@/components/layout/heading";
 import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
 import { getCountryFromLocale } from "@/utils/country-mapping";
-import { sortCategories } from "@/lib/category-order";
+import { sortCategories, sortProducts } from "@/lib/category-order";
 
 export function ProductCard({ product, prefix }) {
   return (
@@ -93,23 +93,35 @@ export function OurSolutions() {
   const categories =
     categoryResponse?.categories ?? categoryResponse?.data?.categories ?? [];
 
-  const solutionCategories = useMemo(() => {
-    const filteredProducts = products.filter((product) =>
-      product.city?.includes(country),
-    );
+const solutionCategories = useMemo(() => {
+  const filteredProducts = products.filter((product) => {
+    if (!product.city) return false;
 
-    return categories
-      .map((category) => ({
+    return Array.isArray(product.city)
+      ? product.city.includes(country)
+      : product.city === country;
+  });
+
+  return categories
+    .map((category) => {
+      const categoryProducts = filteredProducts.filter(
+        (product) =>
+          String(product.category_id) === String(category.id) ||
+          String(product.category?.id) === String(category.id),
+      );
+
+      return {
         id: category.id,
         title: category.title,
-        products: filteredProducts.filter(
-          (product) =>
-            product.category_id === category.id ||
-            product.category?.id === category.id,
+        products: sortProducts(
+          category.title,
+          categoryProducts,
         ),
-      }))
-      .filter((category) => category.products.length > 0);
-  }, [products, categories, country]);
+      };
+    })
+    .filter((category) => category.products.length > 0);
+}, [products, categories, country]);
+
 
   const orderedCategories = sortCategories(solutionCategories);
 

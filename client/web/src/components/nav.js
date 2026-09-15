@@ -9,7 +9,10 @@ import { useLocale } from "next-intl";
 import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
 import { getCountryFromLocale } from "@/utils/country-mapping";
-import { sortCategories } from "@/lib/category-order";
+import {
+  sortCategories,
+  sortProducts,
+} from "@/lib/category-order";
 import LanguageSwitcher from "./ui/language-switcher";
 
 export  function SiteHeader() {
@@ -90,20 +93,24 @@ export  function SiteHeader() {
     });
 
     const productCategories = categories
-      .map((category) => {
-        const categoryProducts = filteredProducts.filter(
-          (product) =>
-            String(product.category_id) === String(category.id),
-        );
+  .map((category) => {
+    const categoryProducts = filteredProducts.filter(
+      (product) =>
+        String(product.category_id) === String(category.id),
+    );
 
-        return {
-          id: category.id,
-          title: category.title,
-          slug: category.slug,
-          products: categoryProducts,
-        };
-      })
-      .filter((category) => category.products.length > 0);
+    return {
+      id: category.id,
+      title: category.title,
+      slug: category.slug,
+      products: sortProducts(
+        category.title,
+        categoryProducts,
+      ),
+    };
+  })
+  .filter((category) => category.products.length > 0);
+
 
     return [
       {

@@ -18,14 +18,16 @@ import {
   Home,
 } from "lucide-react";
 import { OurClinets } from "@/home/our-clinet";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
 export default function About(params) {
   const regions = [
-    "South East Asia",
-    "Africa",
-    "Middle East",
-    "Europe",
-    "North & Latin America",
+  "North America",
+"South America",
+"Europe",
+"Africa",
+"Asia",
+"Australia & Oceania "
   ];
 
   const projectSegments = [
@@ -60,13 +62,13 @@ export default function About(params) {
         {/* Content */}
         <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
           {/* Heading */}
-          <div className="mb-12 text-center">
+          {/* <div className="mb-12 text-center">
             <Heading
               heading="About Us"
               className="mx-auto max-w-3xl"
               eyebrowClassName="justify-center"
             />
-          </div>
+          </div> */}
 
           {/* About Content */}
           <div className="mx-auto">
@@ -279,69 +281,87 @@ export default function About(params) {
         <div className="relative z-10">
           <Heading
             eyebrow="Our Global Reach & Presence"
-            heading="An International Distributor Network"
+            heading="AN INTERNATIONAL DISTRIBUTOR NETWORK"
             subheading="A vast international distributor network spanning 6 continents that enables us to naturally light up and ventilate the remotest part of the world"
             headingClassName="text-3xl sm:text-4xl mx-auto max-w-2xl text-white"
             subheadingClassName="mt-4 max-w-2xl mx-auto text-neutral-300"
           />
 
-          <div className="mt-10 flex justify-center flex-wrap gap-3">
-            {regions.map((region) => (
-              <span
-                key={region}
-                className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-red-800 bg-red-950/50 px-4 py-2 text-sm font-medium text-red-200"
-              >
-                <Globe2 className="h-4 w-4 text-red-400" strokeWidth={2} />
-                {region}
-              </span>
-            ))}
-          </div>
+       <div className="mt-10 flex flex-wrap justify-center gap-3">
+  {regions.map((region) => (
+    <span
+      key={region}
+      className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-red-800 bg-red-950/50 px-4 py-2 text-sm font-medium text-red-200"
+    >
+      <Globe2
+        className="h-4 w-4 text-red-400"
+        strokeWidth={2}
+      />
+      {region}
+    </span>
+  ))}
+</div>
 
-          <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {/* Years of Experience */}
-            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">15</p>
-              <p className="mt-2 text-sm text-white/80">Years of Experience</p>
-            </div>
+<div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+  {/* Years of Experience */}
+  <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+    <p className="text-3xl! font-bold text-red-500">
+      <AnimatedCounter value="15" />
+    </p>
+    <p className="mt-2 text-sm text-white/80">
+      Years of Experience
+    </p>
+  </div>
 
-            {/* International Customers */}
-            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">450</p>
-              <p className="mt-2 text-sm text-white/80">
-                International Customers
-              </p>
-            </div>
+  {/* International Customers */}
+  <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+    <p className="text-3xl! font-bold text-red-500">
+      <AnimatedCounter value="450" />
+    </p>
+    <p className="mt-2 text-sm text-white/80">
+      International Customers
+    </p>
+  </div>
 
-            {/* Completed Projects */}
-            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">531</p>
-              <p className="mt-2 text-sm text-white/80">
-                Completed International Projects
-              </p>
-            </div>
+  {/* Completed Projects */}
+  <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+    <p className="text-3xl! font-bold text-red-500">
+      <AnimatedCounter value="531" />
+    </p>
+    <p className="mt-2 text-sm text-white/80">
+      Completed International Projects
+    </p>
+  </div>
 
-            {/* Channel Partners */}
-            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">17</p>
-              <p className="mt-2 text-sm text-white/80">
-                International Channel Partners
-              </p>
-            </div>
+  {/* Channel Partners */}
+  <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+    <p className="text-3xl! font-bold text-red-500">
+      <AnimatedCounter value="17" />
+    </p>
+    <p className="mt-2 text-sm text-white/80">
+      International Channel Partners
+    </p>
+  </div>
 
-            {/* Continents Served */}
-            <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-              <p className="text-4xl font-bold text-red-500">6</p>
-              <p className="mt-2 text-sm text-white/80">Continents Served</p>
-            </div>
-          </div>
+  {/* Continents Served */}
+  <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+    <p className="text-3xl! font-bold text-red-500">
+      <AnimatedCounter value="6" />
+    </p>
+    <p className="mt-2 text-sm text-white/80">
+      Continents Served
+    </p>
+  </div>
+</div>
+
         </div>
       </Section>
 
       <Section id="project-segments" className="bg-neutral-50 py-20">
         <Heading
           eyebrow="Trusted Partner for Global Projects"
-          heading="Built Alongside the World's Leading Architects"
-          subheading="We collaborate with reputed architectural firms, design engineering consultants, and contracting companies to deliver world-class industrial, warehousing, commercial, and residential projects — integrating design, strength, performance, and durability."
+          heading="WINNING PARTNERSHIPS THAT TURN VISION TO REALITY "
+          subheading="We collaborate with reputed architectural firms, design engineering consultants, and contracting companies to deliver world-class industrial, warehousing, commercial and residential projects."
           headingClassName="text-3xl sm:text-4xl mx-auto  max-w-2xl"
           subheadingClassName="mt-4 max-w-2xl  mx-auto "
         />

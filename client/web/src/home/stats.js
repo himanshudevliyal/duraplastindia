@@ -7,6 +7,7 @@ import { ArrowUpRight, Check, Phone, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Section } from "@/components/layout/section";
 import { buttonVariants } from "@/components/ui/button";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
 export function HeroParallax({
   backgroundImage,
@@ -156,21 +157,25 @@ export function HeroParallax({
           </div>
 
           {/* Stats */}
-          <div className="relative mt-16 border-t border-white/15 pt-10">
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-              {stats?.map((stat) => (
-                <div key={stat.label}>
-                  <h3 className="text-4xl font-bold text-white lg:text-5xl">
-                    {stat.value}
-                  </h3>
 
-                  <p className="mt-3 text-sm leading-6 text-white/70">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+
+
+<div className="relative mt-16 border-t border-white/15 pt-10">
+  <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+    {stats?.map((stat) => (
+      <div key={stat.label}>
+          <AnimatedCounter value={stat.value} />
+
+        <p className="mt-3 text-lg leading-6 text-white/70">
+          {stat.label}
+        </p>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+       
         </div>
       </Section>
     </>
