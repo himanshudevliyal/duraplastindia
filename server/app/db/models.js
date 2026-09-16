@@ -6,6 +6,7 @@ import cityBlogModel from "./models/city-blog.model.js";
 import productPageModel from "./models/product-page.model.js";
 import channelPartnersModal from "./models/channel-partners.modal.js";
 import enquiryModal from "./models/enquiry.modal.js";
+import newsletterModel from "./models/newsletter.model.js";
 
 export default {
   UserModel: userModel,
@@ -15,4 +16,6 @@ export default {
   ProductPageModel: productPageModel,
   ChannelPartnerModel: channelPartnersModal,
   EnquiryModel: enquiryModal,
+  NewsletterModel: newsletterModel,
+
 };
