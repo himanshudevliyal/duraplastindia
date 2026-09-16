@@ -6,7 +6,7 @@ export default function ChannelPartners(params) {
     <>
       <BreadcrumbBanner
         title="Channel Partners"
-        // backgroundImage="/img/banner/contact-banner.jpg"
+         backgroundImage="/img/our-patners.jpg"
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "channel-partners" },

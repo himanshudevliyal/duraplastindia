@@ -23,4 +23,8 @@ export const endpoints = {
   enquiries: {
     getAll: "/enquiries",
   },
+ newsletters: {
+  getAll: "/newsletters",
+  subscribe: "/newsletters/subscribe",
+},
 };

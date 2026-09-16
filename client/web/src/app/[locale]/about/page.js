@@ -43,77 +43,76 @@ export default function About(params) {
     <>
       <BreadcrumbBanner
         title="About US"
-        // backgroundImage="/img/banner/contact-banner.jpg"
+         backgroundImage="/img/about-bg.png"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
       />
 
-      <Section className="relative">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/img/about-us.jpg')",
-          }}
-        />
+<Section className="bg-white">
+  <div className="mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
+    {/* About Content */}
+    <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
 
-        {/* Overlay - keeps text readable */}
-        <div className="absolute inset-0 bg-white/65" />
-
-        {/* Content */}
-        <div className="relative z-10 mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
-          {/* Heading */}
-          {/* <div className="mb-12 text-center">
-            <Heading
-              heading="About Us"
-              className="mx-auto max-w-3xl"
-              eyebrowClassName="justify-center"
-            />
-          </div> */}
-
-          {/* About Content */}
-          <div className="mx-auto">
-            <div className="space-y-7 text-base leading-7 md:text-lg md:leading-8">
-              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
-                We are a globally renowned skylight and natural roof ventilation
-                design and development company that possesses the unique and
-                much sought after capability to harness the tremendous power of
-                the <strong className="font-semibold">sun and wind</strong> to
-                naturally illuminate and ventilate buildings of all types.
-              </Paragraph>
-
-              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
-                Established in <strong className="font-semibold">2010</strong>,
-                the company has grown into a{" "}
-                <strong className="font-semibold">
-                  multi-billion-dollar enterprise
-                </strong>
-                , driven by technology, manufacturing excellence and a strong
-                and unwavering commitment to sustainability.
-              </Paragraph>
-
-              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
-                From conception through design and development to delivery and
-                fitment, we provide{" "}
-                <strong className="font-semibold">
-                  tailor made, turn-key and cost-effective solutions
-                </strong>{" "}
-                to the diverse and ever evolving skylighting and roof
-                ventilation requirements of the global building and construction
-                industry.
-              </Paragraph>
-
-              <Paragraph className="mx-auto max-w-5xl text-center text-lg">
-                Our technical expertise backed by our advanced manufacturing
-                capability enables us to engineer the right solutions
-                consistently for industrial, warehousing and commercial projects
-                while focusing on critical performance parameters that include
-                light transmission and diffusion, thermal insulation, product
-                safety and durability.
-              </Paragraph>
-            </div>
-          </div>
+      {/* Image - Top on mobile / Right on desktop */}
+      <div className="order-2 lg:order-1">
+        <div className="relative overflow-hidden rounded-[10px]">
+          <Image
+            src="/img/about-us.jpg"
+            alt="About Us"
+            width={900}
+            height={650}
+            className="h-auto max-h-[600px] w-full object-cover"
+          />
         </div>
-      </Section>
+      </div>
+
+      {/* Text - Bottom on mobile / Left on desktop */}
+      <div className=" order-1 lg:order-2">
+        <div className="space-y-7 text-base leading-7 md:text-lg md:leading-8">
+
+          <Paragraph className="mx-auto max-w-5xl  text-lg lg:text-left">
+            We are a globally renowned skylight and natural roof ventilation
+            design and development company that possesses the unique and
+            much sought after capability to harness the tremendous power of
+            the <strong className="font-semibold">sun and wind</strong> to
+            naturally illuminate and ventilate buildings of all types.
+          </Paragraph>
+
+          <Paragraph className="mx-auto max-w-5xl  text-lg lg:text-left">
+            Established in <strong className="font-semibold">2010</strong>,
+            the company has grown into a{" "}
+            <strong className="font-semibold">
+              multi-billion-dollar enterprise
+            </strong>
+            , driven by technology, manufacturing excellence and a strong
+            and unwavering commitment to sustainability.
+          </Paragraph>
+
+          <Paragraph className="mx-auto max-w-5xl text-lg lg:text-left">
+            From conception through design and development to delivery and
+            fitment, we provide{" "}
+            <strong className="font-semibold">
+              tailor made, turn-key and cost-effective solutions
+            </strong>{" "}
+            to the diverse and ever evolving skylighting and roof
+            ventilation requirements of the global building and construction
+            industry.
+          </Paragraph>
+
+          <Paragraph className="mx-auto max-w-5xl  text-lg lg:text-left">
+            Our technical expertise backed by our advanced manufacturing
+            capability enables us to engineer the right solutions
+            consistently for industrial, warehousing and commercial projects
+            while focusing on critical performance parameters that include
+            light transmission and diffusion, thermal insulation, product
+            safety and durability.
+          </Paragraph>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Section>
 
       <Section className="bg-gray-100">
         <div className="grid gap-12 lg:grid-cols-2">

@@ -9,7 +9,7 @@ export default function ContactPage({ className }) {
     <>
       <BreadcrumbBanner
         title="CONTACT US"
-        // backgroundImage="/img/banner/contact-banner.jpg"
+         backgroundImage="/img/contact-us-bg.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact Us" }]}
       />
       <Section containerClassName="">

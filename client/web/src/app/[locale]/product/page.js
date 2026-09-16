@@ -21,7 +21,7 @@ export default function HomePage() {
     <main>
       <BreadcrumbBanner
         title="Our Products"
-        // backgroundImage="/img/banner/contact-banner.jpg"
+       backgroundImage="/img/product-bg.png"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Products" }]}
       />
       <OurSolutions></OurSolutions>

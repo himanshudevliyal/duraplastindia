@@ -57,9 +57,9 @@ export default function OurTechnologies() {
 
         {/* Technology Cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {technologies.map((tech) => (
+          {technologies.map((tech,index) => (
             <div
-              key={tech.id}
+              key={index}
               className="text-center"
               
             >

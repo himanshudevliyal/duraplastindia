@@ -59,7 +59,7 @@ export function AnimatedCounter({ value, duration = 2000 }) {
 
   return (
  <div ref={ref}>
-            <h3  className="!text-2xl font-bold text-white !lg:text-3xl">
+            <h3  className="text-2xl! font-bold text-white !lg:text-3xl">
 
       {count.toLocaleString("en-IN")}
     </h3>
