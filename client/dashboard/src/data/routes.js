@@ -5,6 +5,7 @@ import {
   User,
   Users,
   MessageSquareMoreIcon,
+  MailIcon 
 } from "lucide-react";
 
 const ROLES = {
@@ -172,6 +173,14 @@ export const sidebarData = [
       },
     ],
   },
+  {
+  title: "Newsletters",
+  url: "/newsletters?page=1&limit=10",
+  icon: MailIcon,
+  roles: [ROLES.ADMIN],
+  isVisible: true,
+  items: [],
+},
 ];
 
 export const publicRoutes = ["/", "/admin", "/register", "/flipbook"];

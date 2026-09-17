@@ -21,4 +21,8 @@ export const endpoints = {
   productPages: { getAll: "/product-pages" },
   channelPartners: { getAll: "/channel-partners" },
   enquiries: { getAll: "/enquiries" },
+  newsletters: {
+  getAll: "/newsletters",
+  subscribe: "/newsletters/subscribe",
+},
 };
