@@ -56,7 +56,7 @@ export function WhyChooseUs() {
       },
       {
         img: "/img/icons/commitment.png",
-        title: "Commitment Dedicated",
+        title: "Commitment & Dedication ",
         description:
           "An un-wavering commitment & unflinching resolve to develop green technologies & solutions that better people’s lives and ensure a bright & sustainable future.",
       },
