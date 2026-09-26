@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 
 import { useSubscribeNewsletter } from "@/hooks/newsletter";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { z } from "zod";
 
