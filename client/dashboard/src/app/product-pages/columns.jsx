@@ -33,7 +33,7 @@ export const columns = (openModal, setId) => [
       return (
         
           <a target="_blank"
-          href={`https://duraplast.bwdemo.in/in/product/${slug}`}
+          href={`https://duraplastindia.com/in/product/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >
@@ -59,7 +59,7 @@ export const columns = (openModal, setId) => [
       return (
         <a
           target="_blank"
-          href={`https://duraplast.bwdemo.in/in/product/${slug}`}
+          href={`https://duraplastindia.com/in/product/${slug}`}
           referrerPolicy="no-referrer"
           className="hover:text-primary underline"
         >
