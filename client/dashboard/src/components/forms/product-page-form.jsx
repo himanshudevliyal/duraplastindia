@@ -109,7 +109,83 @@ const defaultValues = {
   meta_description: "",
   meta_keywords: "",
   jsonld_schema: "",
+
+  // country-wise SEO: { [countryValue]: { meta_title, meta_description, meta_keywords, jsonld_schema } }
+  country_seo: {},
 };
+
+// Fields of one SEO block (used for Global SEO and every country SEO block)
+const seoFieldKeys = [
+  "meta_title",
+  "meta_description",
+  "meta_keywords",
+  "jsonld_schema",
+];
+
+// Reusable SEO block. prefix "" => Global SEO (existing field names),
+// prefix "country_seo.<country>." => country-specific SEO.
+function SeoFields({ prefix = "", label = "", idKey = "" }) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+
+  const fieldErrors = prefix
+    ? errors?.country_seo?.[idKey] || {}
+    : errors || {};
+  const withLabel = (text) => (label ? `${label} ${text}` : text);
+  const idOf = (name) => (idKey ? `${idKey}_${name}` : name);
+
+  return (
+    <div className="space-y-2">
+      <div className="col-span-full space-y-2">
+        <Label htmlFor={idOf("meta_title")}>{withLabel("Meta title")}</Label>
+        <Input
+          id={idOf("meta_title")}
+          {...register(`${prefix}meta_title`)}
+          className={cn({ "border-red-500": fieldErrors.meta_title })}
+          placeholder={`Enter ${label ? label + " " : ""}meta title`}
+        />
+      </div>
+      <div className="col-span-full space-y-2">
+        <Label htmlFor={idOf("meta_description")}>
+          {withLabel("Meta description")}
+        </Label>
+        <Textarea
+          id={idOf("meta_description")}
+          {...register(`${prefix}meta_description`)}
+          className={cn({ "border-red-500": fieldErrors.meta_description })}
+          placeholder={`Enter ${label ? label + " " : ""}meta description`}
+        />
+      </div>
+      <div className="col-span-full space-y-2">
+        <Label htmlFor={idOf("meta_keywords")}>
+          {withLabel("Meta keywords")}
+        </Label>
+        <Textarea
+          id={idOf("meta_keywords")}
+          {...register(`${prefix}meta_keywords`)}
+          className={cn({ "border-red-500": fieldErrors.meta_keywords })}
+          placeholder={`Enter ${label ? label + " " : ""}meta keywords`}
+        />
+      </div>
+      <div className="col-span-full space-y-2">
+        <Label htmlFor={idOf("jsonld_schema")}>
+          {label ? `${label} Schema Markup` : "JsonLD Schema"}
+        </Label>
+        <Textarea
+          id={idOf("jsonld_schema")}
+          {...register(`${prefix}jsonld_schema`)}
+          className={cn("h-40", {
+            "border-red-500": fieldErrors.jsonld_schema,
+          })}
+          placeholder={`Enter ${label ? label + " " : ""}schema`}
+        />
+      </div>
+    </div>
+  );
+}
+
 const cityOptions = [
   { label: "India", value: "India" },
   { label: "Australia", value: "Australia" },
@@ -187,6 +263,20 @@ export const schema = z.object({
   meta_keywords: z.string().optional(),
 
   jsonld_schema: z.any().optional(),
+
+  // country-specific SEO (all optional)
+  country_seo: z
+    .record(
+      z.string(),
+      z.object({
+        meta_title: z.string().optional().nullable(),
+        meta_description: z.string().optional().nullable(),
+        meta_keywords: z.string().optional().nullable(),
+        jsonld_schema: z.any().optional().nullable(),
+      }),
+    )
+    .optional()
+    .nullable(),
 
   overview: z
     .object({
@@ -400,6 +490,17 @@ export default function ProductPageForm({ id, type }) {
       });
     });
 
+    // Country SEO: send only for currently selected countries (skip empty blocks).
+    // Data of a removed country stays in form state while editing, so re-selecting
+    // the country restores what was typed; it is only dropped on save.
+    data.country_seo = Object.fromEntries(
+      Object.entries(data.country_seo || {}).filter(
+        ([country, seo]) =>
+          data.city.includes(country) &&
+          seoFieldKeys.some((key) => seo?.[key]?.toString().trim()),
+      ),
+    );
+
     // Other Form Data
     Object.entries(data).forEach(([key, value]) => {
       formData.append(
@@ -419,6 +520,8 @@ export default function ProductPageForm({ id, type }) {
       ? createMutation.mutate(formData)
       : updateMutation.mutate(formData);
   };
+
+  const selectedCountries = watch("city") || [];
 
   const formErrors = getFormErrors(errors);
   const hasErrors = formErrors.length > 0;
@@ -1094,47 +1197,20 @@ export default function ProductPageForm({ id, type }) {
         {/* seo */}
         <div className="space-y-4">
           <h3 className="text-3xl font-semibold">SEO</h3>
-          <div className="space-y-2">
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_title">Meta title</Label>
-              <Input
-                id="meta_title"
-                {...register("meta_title")}
-                className={cn({ "border-red-500": errors.meta_title })}
-                placeholder="Enter meta title"
-              />
-            </div>
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_description">Meta description</Label>
-              <Textarea
-                id="meta_description"
-                {...register("meta_description")}
-                className={cn({ "border-red-500": errors.meta_description })}
-                placeholder="Enter meta description"
-              />
-            </div>
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_keywords">Meta keywords</Label>
-              <Textarea
-                id="meta_keywords"
-                {...register("meta_keywords")}
-                className={cn({ "border-red-500": errors.meta_keywords })}
-                placeholder="Enter meta keywords"
-              />
-            </div>
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="jsonld_schema">JsonLD Schema</Label>
-              <Textarea
-                id="jsonld_schema"
-                {...register("jsonld_schema")}
-                className={cn("h-40", {
-                  "border-red-500": errors.jsonld_schema,
-                })}
-                placeholder="Enter schema"
-              />
-            </div>
-          </div>
+          <SeoFields />
         </div>
+
+        {/* country-specific seo (generated from selected countries) */}
+        {selectedCountries.map((country) => (
+          <div key={country.value} className="space-y-4">
+            <h3 className="text-3xl font-semibold">{country.label} SEO</h3>
+            <SeoFields
+              prefix={`country_seo.${country.value}.`}
+              label={country.label}
+              idKey={country.value}
+            />
+          </div>
+        ))}
 
         {/* errors print */}
         {hasErrors && (

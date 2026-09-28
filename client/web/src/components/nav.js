@@ -8,7 +8,11 @@ import { useLocale } from "next-intl";
 
 import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
-import { getCountryFromLocale } from "@/utils/country-mapping";
+import {
+  getCountryFromLocale,
+  getLocalePrefix,
+  isProductAvailableInCountry,
+} from "@/utils/country-mapping";
 import {
   sortCategories,
   sortProducts,
@@ -60,8 +64,9 @@ export  function SiteHeader() {
     };
   }, [isOpen]);
 
-  const country = getCountryFromLocale(locale) || "India";
-  const prefix = locale ? `/${locale}` : "/in";
+  const country = getCountryFromLocale(locale); // null => global (all products)
+  const prefix = getLocalePrefix(locale); // "" for global, "/in" ...
+  const homeHref = prefix || "/";
 
   // Products
   const { data: productResponse, isLoading } = useProductPages();
@@ -84,13 +89,9 @@ export  function SiteHeader() {
   }, [categoryResponse]);
 
   const navItems = useMemo(() => {
-    const filteredProducts = products.filter((product) => {
-      if (!product.city) return false;
-
-      return Array.isArray(product.city)
-        ? product.city.includes(country)
-        : product.city === country;
-    });
+    const filteredProducts = products.filter((product) =>
+      isProductAvailableInCountry(product.city, country),
+    );
 
     const productCategories = categories
   .map((category) => {
@@ -116,7 +117,7 @@ export  function SiteHeader() {
       {
         id: "home",
         label: "Home",
-        href: prefix,
+        href: homeHref,
       },
       {
         id: "about",
@@ -171,7 +172,7 @@ export  function SiteHeader() {
         <div className="flex h-20 items-center justify-between lg:h-24">
 
           {/* Logo */}
-          <Link href={prefix}>
+          <Link href={homeHref}>
             <Image
               src="/logo.png"
               alt="Dura Plast"
@@ -380,6 +381,7 @@ export  function SiteHeader() {
               "
             >
               +91 85950 60394
+              
             </a>
 
             {/* Language */}
@@ -447,7 +449,7 @@ export  function SiteHeader() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-5 pt-5">
           <Link
-            href={prefix}
+            href={homeHref}
             onClick={() => setIsOpen(false)}
           >
             <Image
@@ -681,7 +683,7 @@ export  function SiteHeader() {
           </p>
 
           <a
-            href="tel:+919350803033"
+            href="tel:+918595060394"
             className="
               mb-2
               flex
@@ -693,7 +695,7 @@ export  function SiteHeader() {
             "
           >
             <Phone size={15} className="text-red-500" />
-            +91 9350803033
+            +91 8595060394
           </a>
 
           <a

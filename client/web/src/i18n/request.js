@@ -1,6 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { GLOBAL_LOCALE } from "@/utils/country-mapping";
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -15,6 +16,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    // "global" has no messages file of its own — it uses the India (en) copy.
+    messages: (
+      await import(
+        `../../messages/${locale === GLOBAL_LOCALE ? "in" : locale}.json`
+      )
+    ).default,
   };
 });

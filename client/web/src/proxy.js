@@ -21,8 +21,9 @@ export default function proxy(request) {
     const token = request.cookies.get("token")?.value;
 
     if (token && authOnlyRoutes.includes(pathname)) {
-      // "always" mode → every locale, including default, gets a prefix
-      return NextResponse.redirect(new URL(`/${locale}/`, request.url));
+      // global (default) locale has no prefix, country locales do
+      const home = locale === routing.defaultLocale ? "/" : `/${locale}/`;
+      return NextResponse.redirect(new URL(home, request.url));
     }
   }
 

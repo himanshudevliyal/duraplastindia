@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useBlogs } from "@/hooks/use-blogs";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Section } from "@/components/layout/section";
 import { ArrowUpRight } from "lucide-react";
 

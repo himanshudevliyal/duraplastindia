@@ -4,16 +4,16 @@ import { Section } from "@/components/layout/section";
 import Heading from "@/components/layout/heading";
 import { useCategoryRelatedProducts } from "@/hooks/use-categories";
 import { useLocale } from "next-intl";
-import { LOCALE_TO_COUNTRY } from "@/utils/country-mapping";
+import { getCountryFromLocale } from "@/utils/country-mapping";
 import { ProductCard } from "@/home/our-solutions";
 
 export default function RelativeProducts({ categoryId, currentProductId }) {
   const locale = useLocale();
-  const country = LOCALE_TO_COUNTRY[locale];
+  const country = getCountryFromLocale(locale); // null => global
 
   const { data, isLoading } = useCategoryRelatedProducts(
     categoryId,
-    `country=${country}`,
+    country ? `country=${country}` : "",
   );
 
   if (isLoading) return <div>Loading...</div>;

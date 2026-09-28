@@ -8,7 +8,10 @@ import {
   updateCategory,
 } from "@/services/category-service";
 import { useLocale } from "next-intl";
-import { getCountryFromLocale } from "@/utils/country-mapping";
+import {
+  getCountryFromLocale,
+  isProductAvailableInCountry,
+} from "@/utils/country-mapping";
 
 export const useCategories = (searchParams = "") => {
   return useQuery({
@@ -53,9 +56,7 @@ export const useCategoryRelatedProducts = (
       ...data,
       products:
         data?.products?.filter((product) =>
-          Array.isArray(product.city)
-            ? product.city.includes(currentCountry)
-            : false,
+          isProductAvailableInCountry(product.city, currentCountry),
         ) ?? [],
     }),
     ...options,

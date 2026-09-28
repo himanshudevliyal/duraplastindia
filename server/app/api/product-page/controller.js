@@ -32,6 +32,19 @@ export const schema = z.object({
 
   jsonld_schema: z.any().optional(),
 
+  // country-specific SEO: { in: {...}, au: {...}, us: {...} } (all optional)
+  country_seo: z
+    .record(
+      z.string(),
+      z.object({
+        meta_title: z.string().optional(),
+        meta_description: z.string().optional(),
+        meta_keywords: z.string().optional(),
+        jsonld_schema: z.any().optional(),
+      }),
+    )
+    .optional(),
+
   overview: z
     .object({
       heading: z.string().optional(),

@@ -2,7 +2,7 @@ import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
 import { fetchBlogBySlug, fetchBlogs } from "@/services/product-service";
 import { Fraunces } from "next/font/google";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 

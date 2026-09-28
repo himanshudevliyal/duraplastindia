@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { useMemo } from "react";
 import { useLocale } from "next-intl";
@@ -11,8 +11,13 @@ import Heading from "@/components/layout/heading";
 
 import { useProductPages } from "@/hooks/use-product-pages";
 import { useCategories } from "@/hooks/use-categories";
-import { getCountryFromLocale } from "@/utils/country-mapping";
+import {
+  getCountryFromLocale,
+  getLocalePrefix,
+  isProductAvailableInCountry,
+} from "@/utils/country-mapping";
 import { sortCategories, sortProducts } from "@/lib/category-order";
+import { getFileUrl } from "@/utils/file-url";
 
 export function ProductCard({ product, prefix }) {
   return (
@@ -22,13 +27,15 @@ export function ProductCard({ product, prefix }) {
         className="relative block overflow-hidden"
       >
    <div className="relative   aspect-video overflow-hidden rounded-[20px] bg-gradient-to-br from-gray-100 to-gray-200">
-  <Image
-    src={`${process.env.NEXT_PUBLIC_FILE_BASE}${product.pictures?.[0]}`}
-    alt={product.title}
-    fill
-    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-    className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
-  />
+  {getFileUrl(product.pictures?.[0]) && (
+    <Image
+      src={getFileUrl(product.pictures?.[0])}
+      alt={product.title}
+      fill
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+    />
+  )}
 
   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 </div>
@@ -82,8 +89,8 @@ function SolutionCategory({ category, prefix }) {
 export function OurSolutions() {
   const locale = useLocale();
 
-  const prefix = locale ? `/${locale}` : "/in";
-  const country = getCountryFromLocale(locale) || "India";
+  const prefix = getLocalePrefix(locale);
+  const country = getCountryFromLocale(locale); // global => India products
 
   const { data: productResponse, isLoading } = useProductPages();
   const { data: categoryResponse } = useCategories();
@@ -94,13 +101,9 @@ export function OurSolutions() {
     categoryResponse?.categories ?? categoryResponse?.data?.categories ?? [];
 
 const solutionCategories = useMemo(() => {
-  const filteredProducts = products.filter((product) => {
-    if (!product.city) return false;
-
-    return Array.isArray(product.city)
-      ? product.city.includes(country)
-      : product.city === country;
-  });
+  const filteredProducts = products.filter((product) =>
+    isProductAvailableInCountry(product.city, country),
+  );
 
   return categories
     .map((category) => {

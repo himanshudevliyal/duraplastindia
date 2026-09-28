@@ -1,4 +1,6 @@
+import { cache } from "react";
 import { fetchProductPageBySlug } from "@/services/product-page-services";
+import { LOCALE_TO_COUNTRY } from "@/utils/country-mapping";
 
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
 import { ProductShowcase } from "../_components/overviwe";
@@ -12,10 +14,47 @@ import BenefitsSection from "../_components/benefits-section";
 import RelatedProducts from "../_components/related-products";
 import RelativeProducts from "../_components/related-products";
 
-export default async function ProductDetailsPage({ params }) {
-  const { slug } = await params;
+// One API call per request, shared by generateMetadata and the page.
+// "global" (no URL prefix) has no country => Global SEO; /in, /au ... => that country's SEO.
+const getProduct = cache((slug, locale) =>
+  fetchProductPageBySlug(slug, LOCALE_TO_COUNTRY[locale]),
+);
 
-  const data = await fetchProductPageBySlug(slug);
+// schema markup is saved as text in the dashboard; only output it if it is valid JSON
+function getJsonLd(raw) {
+  if (!raw) return null;
+  try {
+    const value =
+      typeof raw === "string"
+        ? JSON.parse(raw.replace(/<\/?script[^>]*>/gi, "").trim())
+        : raw;
+    return JSON.stringify(value).replace(/</g, "\\u003c");
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }) {
+  const { slug, locale } = await params;
+
+  try {
+    const product = await getProduct(slug, locale);
+    if (!product) return {};
+
+    return {
+      title: product.meta_title || product.title,
+      description: product.meta_description || product.description || undefined,
+      keywords: product.meta_keywords || undefined,
+    };
+  } catch {
+    return {};
+  }
+}
+
+export default async function ProductDetailsPage({ params }) {
+  const { slug, locale } = await params;
+
+  const data = await getProduct(slug, locale);
 
   const product = data;
   if (!product) {
@@ -31,8 +70,17 @@ export default async function ProductDetailsPage({ params }) {
     { id: "faq", label: "FAQ" },
   ];
 
+  const jsonLd = getJsonLd(product.jsonld_schema);
+
   return (
     <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd }}
+        />
+      )}
+
       {/* <BreadcrumbBanner
         title={product.title}
         // backgroundImage="/img/banner/about-banner.jpg"

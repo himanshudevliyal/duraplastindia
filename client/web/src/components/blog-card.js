@@ -1,5 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import Image from "next/image";
 export const blogPosts = [

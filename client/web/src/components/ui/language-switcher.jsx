@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 
 
 const LOCALE_LABELS = {
+  global: { native: "Global", short: "GLOBAL" },
   in: { native: "India", short: "IN" },
   au: { native: "Australia", short: "AU" },
   nz: { native: "New Zealand", short: "NZ" },

@@ -13,7 +13,10 @@ import { defineRouting } from "next-intl/routing";
 
 
 export const routing = defineRouting({
+  // "global" = the main site (https://duraplastindia.com/) — no URL prefix.
+  // Every other locale is a country site with a prefix (/in, /au, /us ...).
   locales: [
+    "global",
     "in",
     "au",
     "nz",
@@ -29,13 +32,17 @@ export const routing = defineRouting({
     "tz",
   ],
 
-  defaultLocale: "in",
+  defaultLocale: "global",
 
-  localePrefix: "always",
+  // default (global) locale => no prefix, country locales => prefix
+  localePrefix: "as-needed",
+
+  // "/" must always stay the global site; a country is only used when it is
+  // in the URL (chosen from the country switcher).
+  localeDetection: false,
 
   localeCookie: {
     name: "Dura_Plast",
     maxAge: 60 * 60 * 24 * 365,
   },
 });
-

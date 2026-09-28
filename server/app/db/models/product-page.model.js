@@ -51,12 +51,26 @@ const init = async (sequelize) => {
         allowNull: false,
       },
       content: { type: DataTypes.TEXT },
+
+      // Global SEO (duraplast.com)
       meta_title: { type: DataTypes.TEXT },
       meta_description: { type: DataTypes.TEXT },
       meta_keywords: { type: DataTypes.TEXT },
       jsonld_schema: {
         type: DataTypes.JSONB,
         allowNull: true,
+      },
+
+      // Country-specific SEO, keyed by country code. Shape:
+      // {
+      //   "in": { meta_title, meta_description, meta_keywords, jsonld_schema },
+      //   "au": { ... },
+      //   "us": { ... }
+      // }
+      country_seo: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
       },
 
       overview: {
@@ -152,6 +166,7 @@ const create = async (req, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
+      country_seo: req.body.country_seo || {},
       faq: req.body.faq || [],
 
       overview: req.body.overview || { heading: "", paragraphs: [] },
@@ -200,6 +215,7 @@ const update = async (req, id, transaction) => {
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
+      country_seo: req.body.country_seo || {},
       faq: req.body.faq || [],
 
       overview: req.body.overview || { heading: "", paragraphs: [] },
@@ -367,6 +383,7 @@ const getBySlug = async (req, slug) => {
       prdp.meta_description,
       prdp.meta_keywords,
       prdp.jsonld_schema,
+      prdp.country_seo,
       prdp.faq,
 
       prdp.created_at,
@@ -379,7 +396,7 @@ const getBySlug = async (req, slug) => {
     WHERE prdp.slug = :slug
   `;
 
-  return await ProductPageModel.sequelize.query(query, {
+  const record = await ProductPageModel.sequelize.query(query, {
     replacements: {
       slug: req.params?.slug || slug,
     },
@@ -387,6 +404,32 @@ const getBySlug = async (req, slug) => {
     raw: true,
     plain: true,
   });
+
+  if (!record) return record;
+
+  // ?country=in (URL prefix code) or ?country=India (name) — both supported.
+  // country_seo keys are the country names selected in the dashboard.
+  const COUNTRY_ALIASES = { in: "india", au: "australia", us: "united states" };
+  const rawCountry = (req.query?.country || "").toString().trim().toLowerCase();
+  const country = COUNTRY_ALIASES[rawCountry] || rawCountry;
+  const countryKey = Object.keys(record.country_seo || {}).find(
+    (k) => k.toLowerCase() === country,
+  );
+  const countrySeo = (countryKey && record.country_seo[countryKey]) || {};
+
+  // field-level fallback: country value -> global value
+  const pick = (key) => {
+    const v = countrySeo[key];
+    return v !== undefined && v !== null && v !== "" ? v : record[key];
+  };
+
+  return {
+    ...record,
+    meta_title: pick("meta_title"),
+    meta_description: pick("meta_description"),
+    meta_keywords: pick("meta_keywords"),
+    jsonld_schema: pick("jsonld_schema"),
+  };
 };
 
 const deleteById = async (req, id, transaction) => {

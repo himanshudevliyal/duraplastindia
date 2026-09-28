@@ -13,9 +13,11 @@ export const fetchProductPage = async (id) => {
   return data;
 };
 
-export const fetchProductPageBySlug = async (slug) => {
+// country: "India" | "Australia" ... => that country's SEO; empty => global SEO
+export const fetchProductPageBySlug = async (slug, country) => {
+  const query = country ? `?country=${encodeURIComponent(country)}` : "";
   const { data } = await http().get(
-    `${endpoints.productPages.getAll}/get-by-slug/${slug}`,
+    `${endpoints.productPages.getAll}/get-by-slug/${slug}${query}`,
   );
   return data;
 };
