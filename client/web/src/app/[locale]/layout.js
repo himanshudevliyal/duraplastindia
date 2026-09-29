@@ -14,6 +14,7 @@ import {
 
 import { routing } from "@/i18n/routing";
 import QueryProvider from "@/providers/query-client-provider";
+import Script from "next/script";
 // import { notFound } from "next/navigation";
 
 // Local Fonts
@@ -69,6 +70,23 @@ export default async function RootLayout({ children, params }) {
         `}
         suppressHydrationWarning
       >
+
+  <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-9HCDEP5C1R"
+          strategy="afterInteractive"
+        />
+
+        <Script id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-9HCDEP5C1R');
+          `}
+        </Script>
+
+
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
             <SiteHeader />
