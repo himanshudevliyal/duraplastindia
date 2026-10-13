@@ -2,12 +2,10 @@ import Heading from "@/components/layout/heading";
 import { Paragraph } from "@/components/layout/pera";
 import { Section } from "@/components/layout/section";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
-import AboutSection from "@/home/about";
 import { OurSolutions } from "@/home/our-solutions";
 import Image from "next/image";
 import { Leaf, Globe, Target, Eye } from "lucide-react";
 import { Globe2 } from "lucide-react";
-import { FeatureCards } from "@/components/feature-cards";
 
 import {
   Factory,
@@ -19,8 +17,32 @@ import {
 } from "lucide-react";
 import { OurClinets } from "@/home/our-clinet";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { JsonLd } from "@/components/layout/json-ld";
+import FAQSection from "../product/_components/faq";
+import { getMessages } from "next-intl/server";
+import { buildSchemas } from "@/lib/messages";
 
-export default function About(params) {
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const messages = await getMessages({ locale });
+
+  // Seo.about in messages/<locale>.json (no default metadata for this page)
+  return { ...messages.Seo?.about };
+}
+
+export default async function About({ params }) {
+  const { locale } = await params;
+  const messages = await getMessages({ locale });
+
+  // Country content from messages/<locale>.json — missing keys keep the
+  // existing static content.
+  const about = messages.About ?? {};
+  const schemas = buildSchemas(
+    messages.Schema?.about,
+    about.faq,
+    `https://duraplastindia.com/${locale}/about#faq`,
+  );
+
   const regions = [
   "North America",
 "South America",
@@ -41,8 +63,10 @@ export default function About(params) {
 
   return (
     <>
+      {schemas.length > 0 && <JsonLd data={schemas} />}
+
       <BreadcrumbBanner
-        title="About US"
+        title={about.h1 ?? "About US"}
          backgroundImage="/img/about-bg.png"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
       />
@@ -386,6 +410,8 @@ export default function About(params) {
   heading="Patronised By The Worlds Best For Natural Illumination & Ventilation"
   subheading="We have delighted our customers by helping them meet the highest standards of building performance and safety and by attaining environmental sustainability through improved energy efficiency and reduction in carbon foot print.    "
 />
+
+      {about.faq?.length > 0 && <FAQSection faq={about.faq} />}
     </>
   );
 }

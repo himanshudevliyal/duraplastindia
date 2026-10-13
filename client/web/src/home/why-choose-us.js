@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export function WhyChooseUs() {
+export function WhyChooseUs({ content } = {}) {
   const icons = {
     shield: ShieldCheck,
     headset: Headset,
@@ -62,6 +62,14 @@ export function WhyChooseUs() {
       },
     ],
   };
+  if (content) {
+    data.heading = content.heading;
+    data.items = data.items.map((item, i) => ({
+      ...item,
+      ...content.items[i],
+    }));
+  }
+
   return (
     <Section>
       <Heading

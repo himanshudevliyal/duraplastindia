@@ -56,7 +56,10 @@ export function WorkCard({
   );
 }
 
-export function OurWork() {
+export function OurWork({
+  heading = "Transforming Spaces Across Industries Through Innovation and Technology",
+  subheading = "Our projects reflect our expertise across diverse applications; combining innovation, engineering and capability to meet every project requirement.",
+} = {}) {
   const autoplay = useMemo(
     () =>
       Autoplay({
@@ -72,8 +75,8 @@ export function OurWork() {
       {" "}
       <Heading
         eyebrow="Our Projects"
-        heading="Transforming Spaces Across Industries Through Innovation and Technology"
-        subheading="Our projects reflect our expertise across diverse applications; combining innovation, engineering and capability to meet every project requirement."
+        heading={heading}
+        subheading={subheading}
         className="mx-auto max-w-4xl"
         eyebrowClassName="justify-center"
         subheadingClassName="mx-auto mt-5 mb-14 max-w-3xl"

@@ -3,9 +3,10 @@ import { Paragraph } from "@/components/layout/pera";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { renderBold } from "@/lib/render-bold";
 import { Link } from "@/i18n/navigation";
 
-export default function AboutSection() {
+export default function AboutSection({ content } = {}) {
   return (
     <Section className="bg-white">
       <div className="mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
@@ -35,34 +36,44 @@ export default function AboutSection() {
     />
 
     <div className="mt-6 space-y-7 text-base leading-7 md:text-lg md:leading-8">
-      <Paragraph className="text-left text-lg text-black">
-        We are a globally renowned skylight & roof ventilation design &
-        development company that masters the technology to harness the
-        tremendous power of the{" "}
-        <strong className="font-semibold">sun and wind</strong>
-        to naturally illuminate and ventilate different types of
-        buildings.
-      </Paragraph>
+      {content ? (
+        content.map((text, i) => (
+          <Paragraph key={i} className="text-left text-lg text-black">
+            {renderBold(text)}
+          </Paragraph>
+        ))
+      ) : (
+        <>
+        <Paragraph className="text-left text-lg text-black">
+          We are a globally renowned skylight & roof ventilation design &
+          development company that masters the technology to harness the
+          tremendous power of the{" "}
+          <strong className="font-semibold">sun and wind</strong>
+          to naturally illuminate and ventilate different types of
+          buildings.
+        </Paragraph>
 
-      <Paragraph className="text-left text-lg text-black">
-        Established in <strong className="font-semibold">2010</strong>,
-        the company has grown into a{" "}
-        <strong className="font-semibold">
-          multi-billion-dollar enterprise
-        </strong>
-        , driven by technology, manufacturing excellence & a strong
-        commitment to sustainable building solutions.
-      </Paragraph>
+        <Paragraph className="text-left text-lg text-black">
+          Established in <strong className="font-semibold">2010</strong>,
+          the company has grown into a{" "}
+          <strong className="font-semibold">
+            multi-billion-dollar enterprise
+          </strong>
+          , driven by technology, manufacturing excellence & a strong
+          commitment to sustainable building solutions.
+        </Paragraph>
 
-      <Paragraph className="text-left text-lg text-black">
-        From conception through design & development to delivery &
-        fitment, we provide{" "}
-        <strong className="font-semibold">
-          tailor made, turn-key & cost-effective solutions
-        </strong>
-        to the skylighting & roof ventilation requirements of the global
-        building & construction industry.
-      </Paragraph>
+        <Paragraph className="text-left text-lg text-black">
+          From conception through design & development to delivery &
+          fitment, we provide{" "}
+          <strong className="font-semibold">
+            tailor made, turn-key & cost-effective solutions
+          </strong>
+          to the skylighting & roof ventilation requirements of the global
+          building & construction industry.
+        </Paragraph>
+        </>
+      )}
     </div>
 
     {/* Read More */}

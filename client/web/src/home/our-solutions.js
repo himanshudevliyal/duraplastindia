@@ -86,7 +86,10 @@ function SolutionCategory({ category, prefix }) {
   );
 }
 
-export function OurSolutions() {
+export function OurSolutions({
+  heading = "World Class Skylighting & Natural Ventilation Solutions",
+  subheading = "Innovative & technologically advanced products engineered to match the diverse natural lighting & ventilation requirements of buildings that are meant to be green, carbon neutral and energy efficient besides being safe, reliable & high performing",
+} = {}) {
   const locale = useLocale();
 
   const prefix = getLocalePrefix(locale);
@@ -132,8 +135,8 @@ const solutionCategories = useMemo(() => {
     <Section className="bg-gray-100">
       <Heading
         eyebrow="Our Solutions"
-        heading="World Class Skylighting & Natural Ventilation Solutions"
-        subheading="Innovative & technologically advanced products engineered to match the diverse natural lighting & ventilation requirements of buildings that are meant to be green, carbon neutral and energy efficient besides being safe, reliable & high performing"
+        heading={heading}
+        subheading={subheading}
         className="mx-auto capitalize max-w-4xl"
         eyebrowClassName="justify-center"
         headingClassName="text-2xl font-bold  tracking-wide sm:text-3xl"

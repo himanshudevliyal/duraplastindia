@@ -16,6 +16,7 @@ import { routing } from "@/i18n/routing";
 import QueryProvider from "@/providers/query-client-provider";
 import Script from "next/script";
 import DistributorPopup from "@/components/distributor-popup";
+import { CLIENT_NAMESPACES, pickMessages } from "@/lib/messages";
 // import { notFound } from "next/navigation";
 
 // Local Fonts
@@ -88,7 +89,10 @@ export default async function RootLayout({ children, params }) {
         </Script>
 
 
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider
+          locale={locale}
+          messages={pickMessages(messages, CLIENT_NAMESPACES)}
+        >
           <QueryProvider>
             <SiteHeader />
             {children}

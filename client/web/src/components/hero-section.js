@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSlider } from "@/lib/use-slider";
 import { cn } from "@/lib/utils";
 import Aurora from "./ui/aurora";
+import { useMessages } from "next-intl";
 
 const slides = [
   {
@@ -35,6 +36,10 @@ const slides = [
 ];
 
 export function SiteHero() {
+  // Country H1 from messages (Hero.h1). When set, the rotating tagline is not
+  // the page H1 any more and the country H1 is rendered visually hidden.
+  const countryH1 = useMessages()?.Hero?.h1;
+  const TitleTag = countryH1 ? "p" : "h1";
   const { heroRef, morphRef, current, progress, goTo } = useSlider(
     slides.map((s) => s.image),
   );
@@ -77,9 +82,10 @@ export function SiteHero() {
           <div className="mx-auto max-w-7xl px-6">
             <Image src="/rhinotuff.png" alt="rhinotuff" width={500} height={500} className="w-[200x]  mb-5"></Image>
 
-            <h1 className="max-w-2xl font-display text-4xl font-bold uppercase leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {countryH1 && <h1 className="sr-only">{countryH1}</h1>}
+            <TitleTag className="max-w-2xl font-display text-4xl font-bold uppercase leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
               {active?.title}
-            </h1>
+            </TitleTag>
             <p className="mt-6 max-w-lg font-body text-base leading-relaxed text-white/85">
               {active?.body}
             </p>

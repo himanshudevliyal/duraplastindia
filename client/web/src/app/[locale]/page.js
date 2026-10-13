@@ -11,23 +11,46 @@ import { HeroParallax } from "@/home/stats";
 import OurTechnologies from "@/home/our-technologies";
 import Image from "next/image";
 import { Section } from "@/components/layout/section";
+import { JsonLd } from "@/components/layout/json-ld";
+import FootprintSection from "@/home/footprint-section";
+import FAQSection from "./product/_components/faq";
+import { getMessages } from "next-intl/server";
+import { buildSchemas } from "@/lib/messages";
 
-export const metadata = {
+const defaultMetadata = {
   title: "Skylights, Glazing & Roof Ventilation Manufacturer",
   description:
     "Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings worldwide.",
 };
 
-export default function HomePage() {
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const messages = await getMessages({ locale });
+
+  // Seo.home in messages/<locale>.json overrides the defaults (per field)
+  return { ...defaultMetadata, ...messages.Seo?.home };
+}
+
+export default async function HomePage({ params }) {
+  const { locale } = await params;
+  const messages = await getMessages({ locale });
+
+  // Country content from messages/<locale>.json — missing keys keep the
+  // existing static content.
+  const home = messages.Home ?? {};
+  const schemas = buildSchemas(messages.Schema?.home, home.faq);
   return (
     <main>
+      {schemas.length > 0 && <JsonLd data={schemas} />}
+
       <SiteHero />
 
-      <AboutSection />
-      <OurSolutions></OurSolutions>
-      <WhyChooseUs />
+      <AboutSection content={home.about} />
+      {home.footprint && <FootprintSection content={home.footprint} />}
+      <OurSolutions {...home.solutions} />
+      <WhyChooseUs content={home.whyUs} />
       <Testimonials></Testimonials>
-      <OurWork></OurWork>
+      <OurWork {...home.projects} />
       {/* <HeroParallax
         backgroundImage="/img/born-in-India.png"
         foregroundImage="/img/born-in-India.png"
@@ -94,6 +117,8 @@ export default function HomePage() {
 <OurTechnologies></OurTechnologies>
       <OurClinets></OurClinets>
       <BlogSection></BlogSection>
+
+      {home.faq?.length > 0 && <FAQSection faq={home.faq} />}
     </main>
   );
 }

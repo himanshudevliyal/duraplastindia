@@ -20,6 +20,7 @@ import {
   footerSocials,
 } from "@/lib/data/footer-data";
 import Newsletter from "./newsletter";
+import { useMessages } from "next-intl";
 
 
 const socialIcons = {
@@ -30,6 +31,7 @@ const socialIcons = {
 };
 
 export function SiteFooter() {
+  const footerText = useMessages()?.Footer?.text;
   const year = new Date().getFullYear();
 
   return (
@@ -50,9 +52,8 @@ export function SiteFooter() {
             />
 
             <p className="mt-4 max-w-sm text-[14px] leading-6 text-gray-400">
-              Manufacturer and exporter of polycarbonate skylights, glazing
-              panels and roof ventilation systems, engineered in India and
-              installed worldwide.
+              {footerText ??
+                "Manufacturer and exporter of polycarbonate skylights, glazing panels and roof ventilation systems, engineered in India and installed worldwide."}
             </p>
 
             <ul className="mt-5 space-y-3">
