@@ -5,7 +5,8 @@ import {
   User,
   Users,
   MessageSquareMoreIcon,
-  MailIcon 
+  MailIcon,
+  Building2,
 } from "lucide-react";
 
 const ROLES = {
@@ -168,6 +169,27 @@ export const sidebarData = [
       {
         title: "View",
         url: "/enquiries/:id",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+    ],
+  },
+  {
+    title: "Distributor Enquiries",
+    url: "/distributor-enquiries?page=1&limit=10",
+    icon: Building2,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [
+      {
+        title: "View",
+        url: "/distributor-enquiries/:id",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+      {
+        title: "Edit",
+        url: "/distributor-enquiries/:id/edit",
         roles: [ROLES.ADMIN],
         isVisible: false,
       },

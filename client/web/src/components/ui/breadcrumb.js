@@ -7,7 +7,7 @@ export function BreadcrumbBanner({
   title,
   breadcrumbs = [],
   backgroundImage = "/img/hero-2.png",
-  height = "h-[400px] lg:h-[300px]",
+  height = "h-[400px] lg:h-[350px]",
 }) {
   return (
     <section className={`relative ${height} overflow-hidden`}>
@@ -21,7 +21,7 @@ export function BreadcrumbBanner({
 
       <div className="absolute inset-0 bg-black/55" />
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-5 text-center text-white">
         {/* Breadcrumb */}
         <nav className="mb-3 flex flex-wrap items-center justify-center gap-2 text-sm">
           {breadcrumbs.map((item, index) => (

@@ -50,6 +50,8 @@ const constants = {
     CHANNEL_PARTNER_TABLE: "channel_partners",
     ENQUIRY_TABLE: "enquiries",
     NEWSLETTER_TABLE: "newsletters",
+    DISTRIBUTOR_ENQUIRY_TABLE: "distributor_enquiries",
+
 
   },
   bcrypt: {

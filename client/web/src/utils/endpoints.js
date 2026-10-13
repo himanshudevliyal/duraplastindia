@@ -27,4 +27,7 @@ export const endpoints = {
   getAll: "/newsletters",
   subscribe: "/newsletters/subscribe",
 },
+  distributorEnquiries: {
+    getAll: "/distributor-enquiries",
+  },
 };

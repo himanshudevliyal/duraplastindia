@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>New Distributor Enquiry</title></head>
+<body style="margin:0;padding:24px;background:#f4f5f7;font-family:'Segoe UI',Tahoma,Arial,sans-serif;color:#1f2d3d;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#0f3d6e;color:#ffffff;padding:20px 28px;">
+      <h2 style="margin:0;font-size:20px;">New Distributor Enquiry</h2>
+      <p style="margin:4px 0 0;font-size:13px;opacity:.85;"><%= submittedDate %></p>
+    </td></tr>
+    <tr><td style="padding:24px 28px;">
+      <h3 style="margin:0 0 8px;font-size:15px;color:#0f3d6e;">Company Information</h3>
+      <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
+        <tr><td width="38%" style="color:#6b7785;">Company Name</td><td><%= company_name %></td></tr>
+        <tr><td style="color:#6b7785;">Country</td><td><%= country %></td></tr>
+        <tr><td style="color:#6b7785;">City / Region</td><td><%= city_region %></td></tr>
+        <% if (website) { %><tr><td style="color:#6b7785;">Website</td><td><%= website %></td></tr><% } %>
+        <tr><td style="color:#6b7785;">Business Type</td><td><%= business_type.join(", ") %><% if (business_type_other) { %> (<%= business_type_other %>)<% } %></td></tr>
+      </table>
+
+      <h3 style="margin:20px 0 8px;font-size:15px;color:#0f3d6e;">Contact Information</h3>
+      <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
+        <tr><td width="38%" style="color:#6b7785;">Contact Person</td><td><%= contact_person %></td></tr>
+        <tr><td style="color:#6b7785;">Designation</td><td><%= designation %></td></tr>
+        <tr><td style="color:#6b7785;">Email</td><td><%= email %></td></tr>
+        <tr><td style="color:#6b7785;">WhatsApp / Mobile</td><td><%= mobile %></td></tr>
+      </table>
+
+      <h3 style="margin:20px 0 8px;font-size:15px;color:#0f3d6e;">Business Information</h3>
+      <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;border-collapse:collapse;">
+        <tr><td width="38%" style="color:#6b7785;vertical-align:top;">Products of Interest</td><td><%= products_of_interest.join(", ") %><% if (products_other) { %> (<%= products_other %>)<% } %></td></tr>
+        <tr><td style="color:#6b7785;vertical-align:top;">About Company</td><td style="white-space:pre-wrap;"><%= about_company %></td></tr>
+        <% if (heard_from && heard_from.length) { %><tr><td style="color:#6b7785;">Heard About Us</td><td><%= heard_from.join(", ") %><% if (heard_from_other) { %> (<%= heard_from_other %>)<% } %></td></tr><% } %>
+      </table>
+
+      <p style="margin:24px 0 0;font-size:12px;color:#6b7785;">Reply to this email to respond directly to the applicant.</p>
+    </td></tr>
+  </table>
+</body>
+</html>

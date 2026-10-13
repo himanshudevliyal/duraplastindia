@@ -304,9 +304,9 @@ export default function About(params) {
 <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
   {/* Years of Experience */}
   <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-    <p className="text-3xl! font-bold text-red-500">
+    <div className="text-3xl! font-bold text-red-500">
       <AnimatedCounter value="15" />
-    </p>
+    </div>
     <p className="mt-2 text-sm text-white/80">
       Years of Experience
     </p>
@@ -314,9 +314,9 @@ export default function About(params) {
 
   {/* International Customers */}
   <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-    <p className="text-3xl! font-bold text-red-500">
+    <div className="text-3xl! font-bold text-red-500">
       <AnimatedCounter value="450" />
-    </p>
+    </div>
     <p className="mt-2 text-sm text-white/80">
       International Customers
     </p>
@@ -324,9 +324,9 @@ export default function About(params) {
 
   {/* Completed Projects */}
   <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-    <p className="text-3xl! font-bold text-red-500">
+    <div className="text-3xl! font-bold text-red-500">
       <AnimatedCounter value="531" />
-    </p>
+    </div>
     <p className="mt-2 text-sm text-white/80">
       Completed International Projects
     </p>
@@ -334,9 +334,9 @@ export default function About(params) {
 
   {/* Channel Partners */}
   <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-    <p className="text-3xl! font-bold text-red-500">
+    <div className="text-3xl! font-bold text-red-500">
       <AnimatedCounter value="17" />
-    </p>
+    </div>
     <p className="mt-2 text-sm text-white/80">
       International Channel Partners
     </p>
@@ -344,9 +344,9 @@ export default function About(params) {
 
   {/* Continents Served */}
   <div className="rounded-[20px] border border-white/20 bg-white/10 p-6 text-center backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
-    <p className="text-3xl! font-bold text-red-500">
+    <div className="text-3xl! font-bold text-red-500">
       <AnimatedCounter value="6" />
-    </p>
+    </div>
     <p className="mt-2 text-sm text-white/80">
       Continents Served
     </p>

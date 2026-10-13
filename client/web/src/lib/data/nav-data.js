@@ -26,6 +26,7 @@ export const primaryLinks = [
 
   { label: "Project Gallery", href: "/our-works" },
   { label: "Channel Partners", href: "/channel-partners" },
+  { label: "Become a Distributor", href: "/become-a-distributor" },
   { label: "Contact Us", href: "/contact" },
 ];
 
@@ -119,7 +120,7 @@ export const productGroups = [
 
 export const contact = {
   phoneSupport: "+91 8744060394",
-  phoneSales: "+91 8595060394",
+  phoneSales: "+91 9350803033",
   email: "sales@duraplastindia.com",
   address:
     "Plot No. 732, Sector-69, I.M.T., Faridabad, Haryana - 121004, India",

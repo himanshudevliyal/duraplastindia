@@ -23,16 +23,16 @@ async function sendResetPasswordEmail(userEmail, token) {
       "forgot-password.ejs"
     );
     const templateString = fs.readFileSync(templatePath, "utf-8");
-    const resetLink = `https://bdseducation.in/reset-password?t=${token}`;
+    const resetLink = `www.duraplastindia.com/reset-password?t=${token}`;
     const htmlContent = ejs.render(templateString, {
       resetLink,
     });
 
     const mailOptions = {
       // from: config.smtp_from_email,
-      from: '"Bds Education" <no-reply@bdseducation.in>',
+      from: '"duraplastindia" <no-reply@bdseducation.in>',
       to: userEmail,
-      subject: "Reset Your Password – BDS Education",
+      subject: "Reset Your Password – duraplastindia",
       html: htmlContent,
     };
 
@@ -53,16 +53,16 @@ async function sendResetUsernameEmail(userEmail, token) {
       "forgot-username.ejs"
     );
     const templateString = fs.readFileSync(templatePath, "utf-8");
-    const resetLink = `https://bdseducation.in/reset-username?t=${token}`;
+    const resetLink = `https://www.duraplastindia.com/reset-username?t=${token}`;
     const htmlContent = ejs.render(templateString, {
       resetLink,
     });
 
     const mailOptions = {
       // from: config.smtp_from_email,
-      from: '"Bds Education" <no-reply@bdseducation.in>',
+      from: '"duraplastindia" <no-reply@bdseducation.in>',
       to: userEmail,
-      subject: "Reset Your Username – BDS Education",
+      subject: "Reset Your Username – duraplastindia",
       html: htmlContent,
     };
 
@@ -102,9 +102,9 @@ async function sendContactInquiryEmail(userEmail, inquiryData) {
     });
 
     const mailOptions = {
-      from: '"BDS Education" <no-reply@bdseducation.in>',
+      from: '"duraplastindia" <no-reply@bdseducation.in>',
       to: userEmail,
-      subject: "We Received Your Contact Inquiry – BDS Education",
+      subject: "We Received Your Contact Inquiry – duraplastindia",
       html: htmlContent,
     };
 
@@ -146,9 +146,9 @@ async function sendDistributorInquiryEmail(userEmail, inquiryData) {
     });
 
     const mailOptions = {
-      from: '"BDS Education" <no-reply@bdseducation.in>',
+      from: '"duraplastindia" <no-reply@bdseducation.in>',
       to: userEmail,
-      subject: "Your Distributor Application Received – BDS Education",
+      subject: "Your Distributor Application Received – duraplastindia",
       html: htmlContent,
     };
 
@@ -176,9 +176,9 @@ async function sendOrderConfirmationEmail(orderRecord, items) {
     });
 
     const mailOptions = {
-      from: '"BDS Education" <no-reply@bdseducation.in>',
+      from: '"duraplastindia" <no-reply@bdseducation.in>',
       to: "sales@bdseducation.in",
-      subject: "New Order Received – BDS Education",
+      subject: "New Order Received – duraplastindia",
       html: htmlContent,
     };
 
@@ -191,7 +191,60 @@ async function sendOrderConfirmationEmail(orderRecord, items) {
   }
 }
 
+// Distributor enquiry: 1) notification to admin(s), 2) confirmation to applicant.
+// Mail is skipped (not an error) when SMTP creds are not configured.
+async function sendDistributorEnquiryEmails(enquiry) {
+  if (!config.smtp_user || !config.smtp_password) {
+    console.warn("SMTP not configured - distributor enquiry mail skipped");
+    return;
+  }
+
+  const render = (file, data) =>
+    ejs.render(
+      fs.readFileSync(path.join(process.cwd(), "views", file), "utf-8"),
+      data,
+    );
+
+  const submittedDate = new Date().toLocaleString("en-GB", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+  const fromEmail = config.smtp_from_email || config.smtp_user;
+  const from = `"${config.company_name}" <${fromEmail}>`;
+  const data = { ...enquiry, submittedDate, company: config.company_name };
+
+  const jobs = [];
+
+  if (config.distributor_notify_email.length) {
+    jobs.push(
+      transporter.sendMail({
+        from,
+        to: config.distributor_notify_email,
+        replyTo: enquiry.email,
+        subject: `New Distributor Enquiry - ${enquiry.company_name} (${enquiry.country})`,
+        html: render("distributor-enquiry-admin.ejs", data),
+      }),
+    );
+  }
+
+  jobs.push(
+    transporter.sendMail({
+      from,
+      to: enquiry.email,
+      subject: `We received your distributor enquiry - ${config.company_name}`,
+      html: render("distributor-enquiry-confirmation.ejs", data),
+    }),
+  );
+
+  const results = await Promise.allSettled(jobs);
+  results.forEach((r) => {
+    if (r.status === "rejected")
+      console.error("Distributor enquiry mail failed:", r.reason);
+  });
+}
+
 export const mailer = {
+  sendDistributorEnquiryEmails: sendDistributorEnquiryEmails,
   transporter: transporter,
   sendResetPasswordEmail: sendResetPasswordEmail,
   sendResetUsernameEmail: sendResetUsernameEmail,

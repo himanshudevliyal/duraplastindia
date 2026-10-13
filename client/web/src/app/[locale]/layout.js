@@ -15,6 +15,7 @@ import {
 import { routing } from "@/i18n/routing";
 import QueryProvider from "@/providers/query-client-provider";
 import Script from "next/script";
+import DistributorPopup from "@/components/distributor-popup";
 // import { notFound } from "next/navigation";
 
 // Local Fonts
@@ -92,6 +93,7 @@ export default async function RootLayout({ children, params }) {
             <SiteHeader />
             {children}
             <SiteFooter />
+             <DistributorPopup />
           </QueryProvider>
         </NextIntlClientProvider>
       </body>

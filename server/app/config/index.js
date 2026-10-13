@@ -7,7 +7,7 @@ process.env.PORT = process.env.PORT || 3001;
 
 const config = {
   port: parseInt(process.env.PORT, 10),
-  site_url: process.env.BDS_SITE_URL,
+  site_url: process.env.SITE_URL,
   // postgres creds
   pg_database: process.env.PG_DATABASE_NAME,
   pg_username: process.env.PG_USERNAME,
@@ -27,8 +27,18 @@ const config = {
   smtp_from_email: process.env.SMTP_EMAIL,
   smtp_port: parseInt(process.env.SMTP_PORT) || 465,
   smtp_host: process.env.SMTP_HOST || "smtp.gmail.com",
-  smtp_user: process.env.BDS_SMTP_USER,
-  smtp_password: process.env.BDS_SMTP_PASSWORD,
+  smtp_user: process.env.SMTP_USER,
+  smtp_password: process.env.SMTP_PASSWORD,
+
+  
+  // distributor enquiry mails (comma separated list of admin emails)
+  distributor_notify_email: process.env.DISTRIBUTOR_NOTIFY_EMAIL
+    ? process.env.DISTRIBUTOR_NOTIFY_EMAIL.split(",")
+        .map((e) => e.trim())
+        .filter(Boolean)
+    : [],
+  company_name: process.env.COMPANY_NAME || "Dura Plast India",
+
 
   // payu
   payu_merchant_key: process.env.PAYU_MERCHANT_KEY,
