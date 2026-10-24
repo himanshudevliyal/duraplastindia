@@ -23,8 +23,15 @@ export default function ContactPage({ className }) {
           >
       
             +91 85950 60394
+          </a>, {" "}
+            <a
+            href="tel:+918744060394"
+            className="font-medium text-primary hover:underline"
+          >
+      
+            +91  87440 60394
           </a>
-          .
+          
         </p>
 
         {/* Google Map */}
@@ -87,6 +94,12 @@ export default function ContactPage({ className }) {
                     className="block hover:text-primary"
                   >
                     +91 85950 60394</a>
+                  <a
+                    href="tel:+918744060394"
+                    className="block hover:text-primary"
+                  >
+                    +91 8744 060 394
+                  </a>
 
                   
                 </div>

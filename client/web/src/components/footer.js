@@ -60,15 +60,17 @@ export function SiteFooter() {
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-[oklch(0.5164_0.2011_28.1378)]" />
 
-                <div className="space-x-3 text-[14px] text-gray-400">
-                  {footerContact.phones.map((phone) => (
-                    <a
-                      key={phone}
-                      href={`tel:${phone}`}
-                      className="hover:text-white"
-                    >
-                      {phone}
-                    </a>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[14px] text-gray-400">
+                  {footerContact.phones.map((phone, i) => (
+                    <span key={phone} className="whitespace-nowrap">
+                      <a
+                        href={`tel:${phone.replace(/\s/g, "")}`}
+                        className="hover:text-white"
+                      >
+                        {phone}
+                      </a>
+                      {i < footerContact.phones.length - 1 && ","}
+                    </span>
                   ))}
                 </div>
               </li>

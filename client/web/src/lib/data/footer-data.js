@@ -21,7 +21,7 @@ export const footerAddresses = [
 
 export const footerContact = {
   email: "sales@duraplastindia.com",
-  phones: ["+91 85950 60394"],
+  phones: ["+91 85950 60394", "+91 8744 060 394"],
 };
 
 export const footerUsefulLinks = [

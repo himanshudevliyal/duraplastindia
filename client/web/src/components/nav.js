@@ -267,13 +267,22 @@ export function SiteHeader() {
 
               <span className="h-4 w-px bg-white/20" aria-hidden />
 
-              <a
-                href="tel:+918595060394"
-                className="flex items-center gap-2 font-medium text-white transition-colors hover:text-red-400"
-              >
-                <Phone size={14} className="text-red-500" />
-                +91 85950 60394
-              </a>
+              <div className="flex items-center whitespace-nowrap font-medium text-white">
+                <a
+                  href="tel:+918595060394"
+                  className="flex items-center gap-2 transition-colors hover:text-red-400"
+                >
+                  <Phone size={14} className="text-red-500" />
+                  +91 85950 60394
+                </a>
+                <span className="mr-2">,</span>
+                <a
+                  href="tel:+918744060394"
+                  className="transition-colors hover:text-red-400"
+                >
+                  +91 8744 060 394
+                </a>
+              </div>
             </div>
           </div>
         </div>
