@@ -11,7 +11,7 @@ import {
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 
@@ -98,39 +98,48 @@ export const columns = (openModal, setId) => [
       const enquiry = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/distributor-enquiries/${enquiry.id}`}>
+              <Eye className="h-4 w-4" />
+              View
+            </Link>
+          </Button>
 
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem asChild>
-              <Link href={`/distributor-enquiries/${enquiry.id}`}>View</Link>
-            </DropdownMenuItem>
+              <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
-              <Link href={`/distributor-enquiries/${enquiry.id}/edit`}>
-                Edit
-              </Link>
-            </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/distributor-enquiries/${enquiry.id}`}>View</Link>
+              </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => {
-                setId(enquiry.id);
-                openModal("delete");
-              }}
-              className="text-red-600"
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem asChild>
+                <Link href={`/distributor-enquiries/${enquiry.id}/edit`}>
+                  Edit
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setId(enquiry.id);
+                  openModal("delete");
+                }}
+                className="text-red-600"
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       );
     },
   },
