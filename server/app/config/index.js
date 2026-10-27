@@ -29,11 +29,18 @@ const config = {
   smtp_host: process.env.SMTP_HOST || "smtp.gmail.com",
   smtp_user: process.env.SMTP_USER,
   smtp_password: process.env.SMTP_PASSWORD,
+  // GoDaddy shared hosting serves a cert for its own hostname, not mail.<domain>
+  smtp_tls_servername: process.env.SMTP_TLS_SERVERNAME,
 
-  
   // distributor enquiry mails (comma separated list of admin emails)
   distributor_notify_email: process.env.DISTRIBUTOR_NOTIFY_EMAIL
     ? process.env.DISTRIBUTOR_NOTIFY_EMAIL.split(",")
+        .map((e) => e.trim())
+        .filter(Boolean)
+    : [],
+  // contact enquiry / newsletter mails (comma separated list of admin emails)
+  notify_email: process.env.NOTIFY_EMAIL
+    ? process.env.NOTIFY_EMAIL.split(",")
         .map((e) => e.trim())
         .filter(Boolean)
     : [],

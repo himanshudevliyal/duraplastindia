@@ -2,6 +2,7 @@
 
 import table from "../../db/models.js";
 import { StatusCodes } from "http-status-codes";
+import { mailer } from "../../services/mailer.js";
 
 const subscribe = async (req, res) => {
   try {
@@ -39,6 +40,10 @@ const subscribe = async (req, res) => {
         email,
       },
     });
+
+    mailer
+      .sendNewsletterSubscribeEmail(email)
+      .catch((err) => console.error("Newsletter mail error:", err));
 
     return res.code(StatusCodes.CREATED).send({
       status: true,

@@ -4,16 +4,33 @@ import fs from "fs";
 import ejs from "ejs";
 import config from "../config/index.js";
 
-// Create transporter using Brevo SMTP
 const transporter = nodemailer.createTransport({
-  host: "smtp.mailrcld.com",
-  port: 587,
-  secure: false,
+  host: config.smtp_host,
+  port: config.smtp_port,
+  secure: config.smtp_port === 465,
+  // shared hosting resets parallel connections, so queue mails over one
+  pool: true,
+  maxConnections: 1,
   auth: {
     user: config.smtp_user,
     pass: config.smtp_password,
   },
+  ...(config.smtp_tls_servername && {
+    tls: { servername: config.smtp_tls_servername },
+  }),
 });
+
+// Hosting SMTP rejects mail whose From is not the logged-in mailbox
+const fromAddress = () =>
+  `"${config.company_name}" <${config.smtp_from_email || config.smtp_user}>`;
+
+const smtpConfigured = () => Boolean(config.smtp_user && config.smtp_password);
+
+const render = (file, data) =>
+  ejs.render(
+    fs.readFileSync(path.join(process.cwd(), "views", file), "utf-8"),
+    data,
+  );
 
 async function sendResetPasswordEmail(userEmail, token) {
   try {
@@ -29,8 +46,7 @@ async function sendResetPasswordEmail(userEmail, token) {
     });
 
     const mailOptions = {
-      // from: config.smtp_from_email,
-      from: '"duraplastindia" <no-reply@bdseducation.in>',
+      from: fromAddress(),
       to: userEmail,
       subject: "Reset Your Password – duraplastindia",
       html: htmlContent,
@@ -59,8 +75,7 @@ async function sendResetUsernameEmail(userEmail, token) {
     });
 
     const mailOptions = {
-      // from: config.smtp_from_email,
-      from: '"duraplastindia" <no-reply@bdseducation.in>',
+      from: fromAddress(),
       to: userEmail,
       subject: "Reset Your Username – duraplastindia",
       html: htmlContent,
@@ -102,7 +117,7 @@ async function sendContactInquiryEmail(userEmail, inquiryData) {
     });
 
     const mailOptions = {
-      from: '"duraplastindia" <no-reply@bdseducation.in>',
+      from: fromAddress(),
       to: userEmail,
       subject: "We Received Your Contact Inquiry – duraplastindia",
       html: htmlContent,
@@ -146,7 +161,7 @@ async function sendDistributorInquiryEmail(userEmail, inquiryData) {
     });
 
     const mailOptions = {
-      from: '"duraplastindia" <no-reply@bdseducation.in>',
+      from: fromAddress(),
       to: userEmail,
       subject: "Your Distributor Application Received – duraplastindia",
       html: htmlContent,
@@ -176,7 +191,7 @@ async function sendOrderConfirmationEmail(orderRecord, items) {
     });
 
     const mailOptions = {
-      from: '"duraplastindia" <no-reply@bdseducation.in>',
+      from: fromAddress(),
       to: "sales@bdseducation.in",
       subject: "New Order Received – duraplastindia",
       html: htmlContent,
@@ -194,23 +209,16 @@ async function sendOrderConfirmationEmail(orderRecord, items) {
 // Distributor enquiry: 1) notification to admin(s), 2) confirmation to applicant.
 // Mail is skipped (not an error) when SMTP creds are not configured.
 async function sendDistributorEnquiryEmails(enquiry) {
-  if (!config.smtp_user || !config.smtp_password) {
+  if (!smtpConfigured()) {
     console.warn("SMTP not configured - distributor enquiry mail skipped");
     return;
   }
-
-  const render = (file, data) =>
-    ejs.render(
-      fs.readFileSync(path.join(process.cwd(), "views", file), "utf-8"),
-      data,
-    );
 
   const submittedDate = new Date().toLocaleString("en-GB", {
     dateStyle: "long",
     timeStyle: "short",
   });
-  const fromEmail = config.smtp_from_email || config.smtp_user;
-  const from = `"${config.company_name}" <${fromEmail}>`;
+  const from = fromAddress();
   const data = { ...enquiry, submittedDate, company: config.company_name };
 
   const jobs = [];
@@ -243,7 +251,73 @@ async function sendDistributorEnquiryEmails(enquiry) {
   });
 }
 
+// Contact enquiry: 1) notification to admin(s), 2) confirmation to customer.
+async function sendContactEnquiryEmails(enquiry) {
+  if (!smtpConfigured()) {
+    console.warn("SMTP not configured - contact enquiry mail skipped");
+    return;
+  }
+
+  const submittedDate = new Date().toLocaleString("en-GB", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+  const data = {
+    name: enquiry.name,
+    email: enquiry.email,
+    phone: enquiry.phone || "",
+    company: enquiry.company || "",
+    subject: enquiry.subject || "",
+    message: enquiry.message,
+    submittedDate,
+  };
+
+  const jobs = [];
+
+  if (config.notify_email.length) {
+    jobs.push(
+      transporter.sendMail({
+        from: fromAddress(),
+        to: config.notify_email,
+        replyTo: enquiry.email,
+        subject: `New Contact Enquiry - ${enquiry.name}${enquiry.subject ? ` (${enquiry.subject})` : ""}`,
+        html: render("contact-enquiry-admin.ejs", data),
+      }),
+    );
+  }
+
+  jobs.push(
+    transporter.sendMail({
+      from: fromAddress(),
+      to: enquiry.email,
+      subject: `We received your enquiry - ${config.company_name}`,
+      html: render("contact-inquiry.ejs", data),
+    }),
+  );
+
+  const results = await Promise.allSettled(jobs);
+  results.forEach((r) => {
+    if (r.status === "rejected")
+      console.error("Contact enquiry mail failed:", r.reason);
+  });
+}
+
+// Newsletter: notify admin(s) of a new subscriber.
+async function sendNewsletterSubscribeEmail(email) {
+  if (!smtpConfigured() || !config.notify_email.length) return;
+
+  await transporter.sendMail({
+    from: fromAddress(),
+    to: config.notify_email,
+    replyTo: email,
+    subject: `New Newsletter Subscriber - ${email}`,
+    html: `<p>A new user subscribed to the newsletter:</p><p><strong>${ejs.escapeXML(email)}</strong></p>`,
+  });
+}
+
 export const mailer = {
+  sendContactEnquiryEmails: sendContactEnquiryEmails,
+  sendNewsletterSubscribeEmail: sendNewsletterSubscribeEmail,
   sendDistributorEnquiryEmails: sendDistributorEnquiryEmails,
   transporter: transporter,
   sendResetPasswordEmail: sendResetPasswordEmail,

@@ -54,7 +54,10 @@ export const columns = (openModal, setId) => [
     accessorKey: "message",
     header: "Message",
     cell: ({ row }) => (
-      <div className="max-w-[300px] break-words whitespace-pre-wrap">
+      <div
+        className="min-w-[200px] max-w-[300px] break-words whitespace-normal line-clamp-2"
+        title={row.getValue("message")}
+      >
         {row.getValue("message")}
       </div>
     ),

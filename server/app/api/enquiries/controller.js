@@ -4,6 +4,7 @@ import table from "../../db/models.js";
 import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../../db/postgres.js";
 import { z } from "zod";
+import { mailer } from "../../services/mailer.js";
 
 export const schema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -19,6 +20,11 @@ const create = async (req, res) => {
     schema.parse(req.body);
 
     await table.EnquiryModel.create(req);
+
+    // fire-and-forget: a mail problem must never fail the form submission
+    mailer
+      .sendContactEnquiryEmails(req.body)
+      .catch((err) => console.error("Contact enquiry mail error:", err));
 
     res.code(StatusCodes.CREATED).send({
       status: true,
