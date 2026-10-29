@@ -6,13 +6,19 @@ import {
   QueryCache,
   MutationCache,
 } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function QueryProvider({ children }) {
-  const queryClient = new QueryClient({
+  // one client per browser session (a new client on every render drops the cache)
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
     defaultOptions: {
       queries: {
         retry: 0,
         refetchOnWindowFocus: false,
+        // server-prefetched data is used as-is instead of refetching on mount
+        staleTime: 60 * 1000,
       },
     },
     queryCache: new QueryCache({
@@ -31,7 +37,8 @@ export default function QueryProvider({ children }) {
         // toast.success("Operation successful!");
       },
     }),
-  });
+  }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

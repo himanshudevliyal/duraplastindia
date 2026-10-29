@@ -1,0 +1,22 @@
+# Dura Plast India
+
+> Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings worldwide.
+
+Products are sold under the RHINO TUFF brand. The main site is in English; country sites use a URL prefix (for example /in, /au, /us, /gb, /ae, /za).
+
+## Main pages
+
+- [Home](https://www.duraplastindia.com/): Overview of Dura Plast and its products
+- [Products](https://www.duraplastindia.com/product): Skylights, glazing and roof ventilation products
+- [About Us](https://www.duraplastindia.com/about): Company information
+- [Our Beginning](https://www.duraplastindia.com/our-begining): Company timeline
+- [Our Works](https://www.duraplastindia.com/our-works): Completed projects
+- [Blog](https://www.duraplastindia.com/blog): Articles
+- [Channel Partners](https://www.duraplastindia.com/channel-partners): Distributor directory
+- [Become a Distributor](https://www.duraplastindia.com/become-a-distributor): Distributor application
+- [Policy Statement](https://www.duraplastindia.com/policy-statement): Company policies
+- [Contact Us](https://www.duraplastindia.com/contact): Contact form, phone and email
+
+## Optional
+
+- [Sitemap](https://www.duraplastindia.com/sitemap.xml): Every public page, including each product and blog post

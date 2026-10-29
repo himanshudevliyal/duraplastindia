@@ -7,6 +7,12 @@ import { useSlider } from "@/lib/use-slider";
 import { cn } from "@/lib/utils";
 import Aurora from "./ui/aurora";
 import { useMessages } from "next-intl";
+import { useMemo, useState } from "react";
+import {
+  HERO_BG_LARGE,
+  HERO_BG_SMALL,
+  optimizedImageUrl,
+} from "@/lib/optimized-image";
 
 const slides = [
   {
@@ -40,9 +46,13 @@ export function SiteHero() {
   // the page H1 any more and the country H1 is rendered visually hidden.
   const countryH1 = useMessages()?.Hero?.h1;
   const TitleTag = countryH1 ? "p" : "h1";
-  const { heroRef, morphRef, current, progress, goTo } = useSlider(
-    slides.map((s) => s.image),
+  const { heroRef, morphRef, ringRef, current, progress, goTo } = useSlider(
+    useMemo(() => slides.map((s) => s.image), []),
   );
+  // Only the current slide (and ones already shown, which are cached) carry a
+  // background, so hidden slides are not downloaded during the first load.
+  const [shown, setShown] = useState(() => new Set([0]));
+  if (!shown.has(current)) setShown(new Set(shown).add(current));
   const active = slides[current];
   const circumference = 2 * Math.PI * 20; // r=20, matches the SVG below
 
@@ -61,9 +71,14 @@ export function SiteHero() {
             key={slide.image}
             className={cn(
               "absolute inset-0 bg-cover bg-center transition-opacity",
+              (i === current || shown.has(i)) &&
+                "bg-[image:var(--hero-bg-sm)] md:bg-[image:var(--hero-bg-lg)]",
               i === current ? "z-[1] opacity-100" : "z-0 opacity-0",
             )}
-            style={{ backgroundImage: `url(${slide.image})` }}
+            style={{
+              "--hero-bg-sm": `url(${optimizedImageUrl(slide.image, HERO_BG_SMALL)})`,
+              "--hero-bg-lg": `url(${optimizedImageUrl(slide.image, HERO_BG_LARGE)})`,
+            }}
             aria-hidden={i !== current}
           >
             <div className="absolute inset-0 bg-graphite/35" />
@@ -80,7 +95,7 @@ export function SiteHero() {
         {/* Copy */}
         <div className="absolute inset-x-0 bottom-24 z-20">
           <div className="mx-auto max-w-7xl px-6">
-            <Image src="/rhinotuff.png" alt="rhinotuff" width={500} height={500} className="w-[200x]  mb-5"></Image>
+            <Image src="/rhinotuff.png" alt="rhinotuff" width={500} height={57} loading="eager" fetchPriority="high" className="w-[200x]  mb-5"></Image>
 
             {countryH1 && <h1 className="sr-only">{countryH1}</h1>}
             <TitleTag className="max-w-2xl font-display text-4xl font-bold uppercase leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
@@ -147,12 +162,14 @@ export function SiteHero() {
             className="absolute inset-0 h-full w-full -rotate-90 stroke-white"
             style={{ strokeWidth: 3, fill: "none" }}
           >
+            {/* offset is animated by useSlider through ringRef */}
             <circle
+              ref={ringRef}
               cx="24"
               cy="24"
               r="20"
               strokeDasharray={circumference}
-              strokeDashoffset={circumference * (1 - progress)}
+              strokeDashoffset={circumference}
             />
           </svg>
           <span aria-hidden>{Math.ceil((1 - progress) * 4.5)}s</span>

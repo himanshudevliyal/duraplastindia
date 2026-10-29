@@ -1,16 +1,22 @@
 import DistributorForm from "@/components/form/distributor-form";
 import { Section } from "@/components/layout/section";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
+import { canonical } from "@/lib/seo";
 
-export const metadata = {
-  title: "Become a Distributor | Dura Plast India",
-  description:
-    "Partner with Dura Plast India as a distributor, importer or dealer for skylighting, roofing, polycarbonate and natural ventilation products.",
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  return {
+    title: "Become a Distributor | Dura Plast India",
+    description:
+      "Partner with Dura Plast India as a distributor, importer or dealer for skylighting, roofing, polycarbonate and natural ventilation products.",
+    alternates: canonical(locale, "/become-a-distributor"),
+  };
+}
 
 export default function BecomeADistributorPage() {
   return (
-    <>
+    <main>
       <BreadcrumbBanner
         title="BECOME A DISTRIBUTOR"
         backgroundImage="/img/become-a-distributor.jpg"
@@ -38,6 +44,6 @@ export default function BecomeADistributorPage() {
           </div>
         </div>
       </Section>
-    </>
+    </main>
   );
 }

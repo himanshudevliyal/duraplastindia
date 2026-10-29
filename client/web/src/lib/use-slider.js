@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { heroBgUrl } from "@/lib/optimized-image";
 
 const PANEL_COUNT = 12;
 const DURATION_MS = 550;
@@ -21,18 +22,41 @@ export function useSlider(images) {
   const autoTimerRef = useRef(null);
   const progressRafRef = useRef(null);
   const preloadedRef = useRef(new Set());
+  // progress ring <circle>: updated directly every frame (no React re-render)
+  const ringRef = useRef(null);
 
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
 
   // Preload every slide image once so the reveal never shows a blank/half-loaded frame.
+  // Waits for page load + idle time so it does not compete with the first paint
+  // (the first slide change is AUTOPLAY_MS after mount).
   useEffect(() => {
-    images.forEach((src) => {
-      if (!src || preloadedRef.current.has(src)) return;
-      const img = new window.Image();
-      img.src = src;
-      preloadedRef.current.add(src);
-    });
+    let idleId;
+    const preload = () => {
+      images.forEach((src) => {
+        const url = src && heroBgUrl(src);
+        if (!url || preloadedRef.current.has(url)) return;
+        const img = new window.Image();
+        img.src = url;
+        preloadedRef.current.add(url);
+      });
+    };
+    const schedule = () => {
+      idleId = window.requestIdleCallback
+        ? window.requestIdleCallback(preload, { timeout: 2000 })
+        : window.setTimeout(preload, 200);
+    };
+
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+
+    return () => {
+      window.removeEventListener("load", schedule);
+      if (idleId === undefined) return;
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+    };
   }, [images]);
 
   const buildPanels = useCallback(() => {
@@ -64,7 +88,7 @@ export function useSlider(images) {
       inner.className = "louver-panel-inner";
       inner.style.left = `${-left}px`;
       inner.style.width = `${width}px`;
-      inner.style.backgroundImage = `url(${images[currentRef.current]})`;
+      inner.style.backgroundImage = `url(${heroBgUrl(images[currentRef.current])})`;
 
       strip.appendChild(inner);
       morphEl.appendChild(strip);
@@ -78,22 +102,40 @@ export function useSlider(images) {
     autoTimerRef.current = null;
   }, []);
 
+  // ring offset = circumference * (1 - p); circumference is its dasharray
+  const drawRing = useCallback((p) => {
+    const ring = ringRef.current;
+    if (!ring) return;
+    const circumference = Number(ring.getAttribute("stroke-dasharray")) || 0;
+    ring.setAttribute("stroke-dashoffset", String(circumference * (1 - p)));
+  }, []);
+
   const stopProgress = useCallback(() => {
     if (progressRafRef.current) cancelAnimationFrame(progressRafRef.current);
     progressRafRef.current = null;
+    drawRing(0);
     setProgress(0);
-  }, []);
+  }, [drawRing]);
 
+  // The ring moves every frame via the DOM; React state (used for the
+  // seconds label) only changes when the shown whole second changes.
   const startProgress = useCallback(() => {
     stopProgress();
     const start = performance.now();
+    const seconds = AUTOPLAY_MS / 1000;
+    let shownSecond = Math.ceil(seconds);
     const tick = (now) => {
       const p = Math.min((now - start) / AUTOPLAY_MS, 1);
-      setProgress(p);
+      drawRing(p);
+      const second = Math.ceil((1 - p) * seconds);
+      if (second !== shownSecond || p >= 1) {
+        shownSecond = second;
+        setProgress(p);
+      }
       if (p < 1) progressRafRef.current = requestAnimationFrame(tick);
     };
     progressRafRef.current = requestAnimationFrame(tick);
-  }, [stopProgress]);
+  }, [stopProgress, drawRing]);
 
   const startAuto = useCallback(() => {
     stopAuto();
@@ -118,7 +160,7 @@ export function useSlider(images) {
       stopAuto();
       stopProgress();
 
-      const nextBg = images[nextIndex];
+      const nextBg = heroBgUrl(images[nextIndex]);
       const panels = panelsRef.current;
 
       panels.forEach(({ strip, inner }) => {
@@ -187,5 +229,5 @@ export function useSlider(images) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { heroRef, morphRef, current, progress, goTo: morphTo };
+  return { heroRef, morphRef, ringRef, current, progress, goTo: morphTo };
 }

@@ -21,13 +21,20 @@ import { JsonLd } from "@/components/layout/json-ld";
 import FAQSection from "../product/_components/faq";
 import { getMessages } from "next-intl/server";
 import { buildSchemas } from "@/lib/messages";
+import { canonical } from "@/lib/seo";
+import { optimizedImageUrl } from "@/lib/optimized-image";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const messages = await getMessages({ locale });
 
   // Seo.about in messages/<locale>.json (no default metadata for this page)
-  return { ...messages.Seo?.about };
+  return {
+    // fallback = the page heading; a country Seo.about title replaces it
+    title: "About Us | Dura Plast India",
+    ...messages.Seo?.about,
+    alternates: canonical(locale, "/about"),
+  };
 }
 
 export default async function About({ params }) {
@@ -62,7 +69,7 @@ export default async function About({ params }) {
   ];
 
   return (
-    <>
+    <main>
       {schemas.length > 0 && <JsonLd data={schemas} />}
 
       <BreadcrumbBanner
@@ -224,9 +231,9 @@ export default async function About({ params }) {
           <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
             <Target className="h-8 w-8 text-foreground" strokeWidth={1.5} />
 
-            <h4 className="mt-5 text-base font-semibold text-foreground">
+            <h3 className="heading-h4-size mt-5 text-base font-semibold text-foreground">
               Mission
-            </h4>
+            </h3>
 
             <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
               We are committed to engineering excellence, world-class
@@ -249,9 +256,9 @@ export default async function About({ params }) {
           <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
             <Eye className="h-8 w-8 text-foreground" strokeWidth={1.5} />
 
-            <h4 className="mt-5 text-base font-semibold text-foreground">
+            <h3 className="heading-h4-size mt-5 text-base font-semibold text-foreground">
               Vision
-            </h4>
+            </h3>
 
             <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
               We aspire to become world’s largest, the most valuable and the
@@ -267,9 +274,9 @@ export default async function About({ params }) {
           <div className="rounded-2xl bg-[#f2efe9] p-8 transition-colors duration-300 hover:bg-[#ebe7de]">
             <Leaf className="h-8 w-8 text-foreground" strokeWidth={1.5} />
 
-            <h4 className="mt-5 text-base font-semibold text-foreground">
+            <h3 className="heading-h4-size mt-5 text-base font-semibold text-foreground">
               Sustainability
-            </h4>
+            </h3>
 
             <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
               We are committed to promoting energy-efficient and eco-friendly
@@ -294,7 +301,9 @@ export default async function About({ params }) {
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/img/global-reach.png')" }}
+          style={{
+            backgroundImage: `url(${optimizedImageUrl("/img/global-reach.png")})`,
+          }}
         />
 
         {/* Dark Overlay */}
@@ -412,6 +421,6 @@ export default async function About({ params }) {
 />
 
       {about.faq?.length > 0 && <FAQSection faq={about.faq} />}
-    </>
+    </main>
   );
 }

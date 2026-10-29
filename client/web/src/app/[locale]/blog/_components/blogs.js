@@ -76,9 +76,9 @@ function BlogCard({ blog }) {
       </div>
 
       <div className="bg-none pt-5">
-        <h3 className="font-display text-xl font-bold leading-snug text-foreground">
+        <h2 className="heading-h3-size font-display text-xl font-bold leading-snug text-foreground">
           {blog.title}
-        </h3>
+        </h2>
 
         <p className="mt-2 text-md leading-relaxed text-muted-foreground  line-clamp-3">
           {blog.description}
@@ -92,6 +92,7 @@ function BlogCard({ blog }) {
             className="group flex items-center gap-3 text-sm font-semibold text-foreground"
           >
             Read More
+            <span className="sr-only"> about {blog.title}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
               <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
             </span>

@@ -109,8 +109,10 @@ const defaultValues = {
   meta_description: "",
   meta_keywords: "",
   jsonld_schema: "",
+  // form-only list of schema boxes [{ value }], saved as jsonld_schema
+  schemas: [],
 
-  // country-wise SEO: { [countryValue]: { meta_title, meta_description, meta_keywords, jsonld_schema } }
+  // country-wise SEO: { [countryValue]: { meta_title, meta_description, meta_keywords, jsonld_schema, faq } }
   country_seo: {},
 };
 
@@ -122,7 +124,77 @@ const seoFieldKeys = [
   "jsonld_schema",
 ];
 
-// Reusable SEO block. prefix "" => Global SEO (existing field names),
+// ================= Schema markup helpers =================
+// Schemas are typed as plain JSON (no <script> tag). Any <script> tag pasted
+// by mistake is removed before saving.
+const stripScriptTag = (value = "") =>
+  value.replace(/<\/?script[^>]*>/gi, "").trim();
+
+const isValidSchemaJson = (value) => {
+  const json = stripScriptTag(value);
+  if (!json) return true; // empty boxes are ignored on save
+  try {
+    const parsed = JSON.parse(json);
+    return typeof parsed === "object" && parsed !== null;
+  } catch {
+    return false;
+  }
+};
+
+const schemaListSchema = z
+  .array(
+    z.object({
+      value: z
+        .string()
+        .refine(
+          isValidSchemaJson,
+          "Invalid JSON. Paste only the JSON, without the <script> tag.",
+        ),
+    }),
+  )
+  .optional()
+  .nullable();
+
+// saved jsonld_schema (old text with <script> tags, JSON text, object or array)
+// => form list [{ value }]
+function toSchemaList(raw) {
+  if (raw === null || raw === undefined || raw === "") return [];
+
+  if (typeof raw !== "string") {
+    const list = Array.isArray(raw) ? raw : [raw];
+    return list.map((item) => ({
+      value: typeof item === "string" ? item : JSON.stringify(item, null, 2),
+    }));
+  }
+
+  const scriptBlocks = [
+    ...raw.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi),
+  ]
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+  if (scriptBlocks.length) return scriptBlocks.map((value) => ({ value }));
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed === "object" && parsed !== null) {
+      return toSchemaList(parsed);
+    }
+  } catch {}
+
+  return raw.trim() ? [{ value: raw.trim() }] : [];
+}
+
+// form list [{ value }] => array of schema objects ("" when none)
+function fromSchemaList(list) {
+  const schemas = (list || [])
+    .map((item) => stripScriptTag(item?.value))
+    .filter(Boolean)
+    .map((json) => JSON.parse(json));
+
+  return schemas.length ? schemas : "";
+}
+
+// Reusable meta block. prefix "" => Global SEO (existing field names),
 // prefix "country_seo.<country>." => country-specific SEO.
 function SeoFields({ prefix = "", label = "", idKey = "" }) {
   const {
@@ -137,8 +209,8 @@ function SeoFields({ prefix = "", label = "", idKey = "" }) {
   const idOf = (name) => (idKey ? `${idKey}_${name}` : name);
 
   return (
-    <div className="space-y-2">
-      <div className="col-span-full space-y-2">
+    <div className="space-y-4">
+      <div className="space-y-2">
         <Label htmlFor={idOf("meta_title")}>{withLabel("Meta title")}</Label>
         <Input
           id={idOf("meta_title")}
@@ -147,7 +219,7 @@ function SeoFields({ prefix = "", label = "", idKey = "" }) {
           placeholder={`Enter ${label ? label + " " : ""}meta title`}
         />
       </div>
-      <div className="col-span-full space-y-2">
+      <div className="space-y-2">
         <Label htmlFor={idOf("meta_description")}>
           {withLabel("Meta description")}
         </Label>
@@ -158,7 +230,7 @@ function SeoFields({ prefix = "", label = "", idKey = "" }) {
           placeholder={`Enter ${label ? label + " " : ""}meta description`}
         />
       </div>
-      <div className="col-span-full space-y-2">
+      <div className="space-y-2">
         <Label htmlFor={idOf("meta_keywords")}>
           {withLabel("Meta keywords")}
         </Label>
@@ -169,19 +241,223 @@ function SeoFields({ prefix = "", label = "", idKey = "" }) {
           placeholder={`Enter ${label ? label + " " : ""}meta keywords`}
         />
       </div>
-      <div className="col-span-full space-y-2">
-        <Label htmlFor={idOf("jsonld_schema")}>
-          {label ? `${label} Schema Markup` : "JsonLD Schema"}
-        </Label>
-        <Textarea
-          id={idOf("jsonld_schema")}
-          {...register(`${prefix}jsonld_schema`)}
-          className={cn("h-40", {
-            "border-red-500": fieldErrors.jsonld_schema,
-          })}
-          placeholder={`Enter ${label ? label + " " : ""}schema`}
-        />
+    </div>
+  );
+}
+
+// Multiple schema markups (form field `<prefix>schemas`, saved as jsonld_schema).
+function SchemaFields({ prefix = "", label = "", hint = "" }) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext();
+  const name = `${prefix}schemas`;
+  const { fields, append, remove } = useFieldArray({ control, name });
+  const schemaErrors = name
+    .split(".")
+    .reduce((acc, key) => acc?.[key], errors);
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <Label>{label ? `${label} Schema Markup` : "Schema Markup"}</Label>
+        <p className="text-muted-foreground text-xs">
+          Paste only the JSON (starting with {"{"}), no {"<script>"} tag
+          needed. Add one box per schema.{hint ? ` ${hint}` : ""}
+        </p>
       </div>
+
+      {fields.map((field, ind) => (
+        <div key={field.id} className="relative rounded-xl border p-3">
+          <Button
+            type="button"
+            onClick={() => remove(ind)}
+            variant="destructive"
+            size="icon"
+            className="absolute -top-2 -right-2"
+          >
+            <Trash2 />
+          </Button>
+          <Label className="mb-2 block">Schema {ind + 1}</Label>
+          <Textarea
+            {...register(`${name}.${ind}.value`)}
+            className={cn("h-48 font-mono text-xs", {
+              "border-red-500": schemaErrors?.[ind]?.value,
+            })}
+            placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "Product",\n  "name": "..."\n}'}
+          />
+          {schemaErrors?.[ind]?.value && (
+            <span className="text-xs text-red-500">
+              {schemaErrors[ind].value.message}
+            </span>
+          )}
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        onClick={() => append({ value: "" })}
+      >
+        <Plus /> Add Schema
+      </Button>
+    </div>
+  );
+}
+
+// FAQ list. name "faq" => global FAQs, "country_seo.<country>.faq" => country FAQs.
+function FaqFields({ name, label = "", hint = "" }) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext();
+  const { fields, append, remove } = useFieldArray({ control, name });
+  const faqErrors = name.split(".").reduce((acc, key) => acc?.[key], errors);
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <Label>{label ? `${label} FAQs` : "FAQs"}</Label>
+        {hint && <p className="text-muted-foreground text-xs">{hint}</p>}
+      </div>
+
+      {fields.map((field, ind) => (
+        <div key={field.id} className="relative space-y-2 rounded-xl border p-3">
+          <Button
+            type="button"
+            onClick={() => remove(ind)}
+            variant="destructive"
+            size="icon"
+            className="absolute -top-2 -right-2"
+          >
+            <Trash2 />
+          </Button>
+          <div className="space-y-1">
+            <Label>Question*</Label>
+            <Input
+              {...register(`${name}.${ind}.q`)}
+              className={cn({ "border-red-500": faqErrors?.[ind]?.q })}
+              placeholder="Question"
+            />
+            {faqErrors?.[ind]?.q && (
+              <span className="text-xs text-red-500">
+                {faqErrors[ind].q.message}
+              </span>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label>Answer*</Label>
+            <Textarea
+              {...register(`${name}.${ind}.a`)}
+              className={cn({ "border-red-500": faqErrors?.[ind]?.a })}
+              placeholder="Answer"
+            />
+            {faqErrors?.[ind]?.a && (
+              <span className="text-xs text-red-500">
+                {faqErrors[ind].a.message}
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        onClick={() => append({ q: "", a: "" })}
+      >
+        <Plus /> Add FAQ
+      </Button>
+    </div>
+  );
+}
+
+// Tabs: Global + one per selected country. Only the active tab's fields are shown.
+function SeoTabs({ countries }) {
+  const {
+    formState: { errors },
+  } = useFormContext();
+  const [activeTab, setActiveTab] = useState("global");
+
+  // fall back to Global when the active country is removed
+  const active = countries.some((c) => c.value === activeTab)
+    ? activeTab
+    : "global";
+
+  const tabs = [{ value: "global", label: "Global" }, ...countries];
+
+  const hasError = (tab) =>
+    tab === "global"
+      ? ["meta_title", "meta_description", "meta_keywords", "schemas", "faq"]
+          .some((key) => errors?.[key])
+      : !!errors?.country_seo?.[tab];
+
+  const activeCountry = countries.find((c) => c.value === active);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-3xl font-semibold">SEO, FAQs & Schema</h3>
+        <p className="text-muted-foreground text-sm">
+          Global is used on the main site and for any country field left
+          empty. Select countries above to get their tabs.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-1 border-b">
+        {tabs.map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            onClick={() => setActiveTab(tab.value)}
+            className={cn(
+              "-mb-px flex items-center gap-1.5 border-b-2 px-4 py-2 text-sm font-medium transition-colors",
+              active === tab.value
+                ? "border-primary text-foreground"
+                : "text-muted-foreground hover:text-foreground border-transparent",
+            )}
+          >
+            {tab.label}
+            {hasError(tab.value) && (
+              <span className="size-2 rounded-full bg-red-500" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {active === "global" ? (
+        <div key="global" className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
+            <SeoFields />
+            <SchemaFields />
+          </div>
+          <FaqFields name="faq" />
+        </div>
+      ) : (
+        <div key={active} className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
+            <SeoFields
+              prefix={`country_seo.${active}.`}
+              label={activeCountry.label}
+              idKey={active}
+            />
+            <SchemaFields
+              prefix={`country_seo.${active}.`}
+              label={activeCountry.label}
+              hint="Leave empty to use the Global schemas."
+            />
+          </div>
+          <FaqFields
+            name={`country_seo.${active}.faq`}
+            label={activeCountry.label}
+            hint={`Leave empty to show the Global FAQs for ${activeCountry.label}.`}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -264,6 +540,8 @@ export const schema = z.object({
 
   jsonld_schema: z.any().optional(),
 
+  schemas: schemaListSchema,
+
   // country-specific SEO (all optional)
   country_seo: z
     .record(
@@ -273,6 +551,22 @@ export const schema = z.object({
         meta_description: z.string().optional().nullable(),
         meta_keywords: z.string().optional().nullable(),
         jsonld_schema: z.any().optional().nullable(),
+        schemas: schemaListSchema,
+        faq: z
+          .array(
+            z.object({
+              q: z
+                .string()
+                .trim()
+                .min(3, "Question must be atleast 3 characters long."),
+              a: z
+                .string()
+                .trim()
+                .min(3, "Answer must be atleast 3 characters long."),
+            }),
+          )
+          .optional()
+          .nullable(),
       }),
     )
     .optional()
@@ -377,12 +671,6 @@ export default function ProductPageForm({ id, type }) {
     watch,
     control,
   } = methods;
-  const {
-    fields: faqFields,
-    append: appendFaq,
-    remove: removeFaq,
-  } = useFieldArray({ control, name: `faq` });
-
   const {
     fields: overviewParagraphs,
     append: appendOverviewParagraph,
@@ -490,15 +778,27 @@ export default function ProductPageForm({ id, type }) {
       });
     });
 
+    // Schema boxes => jsonld_schema (array of schema objects, "" when none)
+    data.jsonld_schema = fromSchemaList(data.schemas);
+    delete data.schemas;
+
     // Country SEO: send only for currently selected countries (skip empty blocks).
     // Data of a removed country stays in form state while editing, so re-selecting
     // the country restores what was typed; it is only dropped on save.
     data.country_seo = Object.fromEntries(
-      Object.entries(data.country_seo || {}).filter(
-        ([country, seo]) =>
-          data.city.includes(country) &&
-          seoFieldKeys.some((key) => seo?.[key]?.toString().trim()),
-      ),
+      Object.entries(data.country_seo || {})
+        .map(([country, { schemas, ...seo }]) => {
+          const jsonld = fromSchemaList(schemas);
+          if (jsonld) seo.jsonld_schema = jsonld;
+          else delete seo.jsonld_schema;
+          return [country, seo];
+        })
+        .filter(
+          ([country, seo]) =>
+            data.city.includes(country) &&
+            (seoFieldKeys.some((key) => seo?.[key]?.toString().trim()) ||
+              seo?.faq?.length),
+        ),
     );
 
     // Other Form Data
@@ -539,6 +839,13 @@ export default function ProductPageForm({ id, type }) {
       reset({
         ...data,
         city: cityOptions.filter((item) => data?.city?.includes(item.value)),
+        schemas: toSchemaList(data?.jsonld_schema),
+        country_seo: Object.fromEntries(
+          Object.entries(data?.country_seo || {}).map(([country, seo]) => [
+            country,
+            { ...seo, schemas: toSchemaList(seo?.jsonld_schema) },
+          ]),
+        ),
       });
     }
   }, [data, type, reset]);
@@ -1145,72 +1452,13 @@ export default function ProductPageForm({ id, type }) {
                 ))}
               </div>
             </div>
-
-            <div className="col-span-full space-y-3">
-              <div>
-                <h3 className="mb-4 text-3xl font-semibold">FAQs</h3>
-
-                <div className="space-y-2">
-                  {faqFields.map((_, ind) => {
-                    return (
-                      <div key={ind} className="relative rounded-xl border p-3">
-                        <Button
-                          type={"button"}
-                          onClick={() => removeFaq(ind)}
-                          variant={"destructive"}
-                          size={"icon"}
-                          className={"absolute -top-2 -right-2"}
-                        >
-                          <Trash2 />
-                        </Button>
-                        <div>
-                          <Label>Question*</Label>
-                          <Input
-                            {...register(`faq.${ind}.q`)}
-                            placeholder="Question"
-                          />
-                        </div>
-                        <div>
-                          <Label>Answer*</Label>
-                          <Textarea
-                            {...register(`faq.${ind}.a`)}
-                            placeholder="Answer"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant={"secondary"}
-                size={"sm"}
-                onClick={() => appendFaq({ q: "", a: "" })}
-              >
-                <Plus /> Add
-              </Button>
-            </div>
           </div>
         </div>
 
-        {/* seo */}
-        <div className="space-y-4">
-          <h3 className="text-3xl font-semibold">SEO</h3>
-          <SeoFields />
-        </div>
+        <Separator />
 
-        {/* country-specific seo (generated from selected countries) */}
-        {selectedCountries.map((country) => (
-          <div key={country.value} className="space-y-4">
-            <h3 className="text-3xl font-semibold">{country.label} SEO</h3>
-            <SeoFields
-              prefix={`country_seo.${country.value}.`}
-              label={country.label}
-              idKey={country.value}
-            />
-          </div>
-        ))}
+        {/* seo, faqs & schema: Global tab + one tab per selected country */}
+        <SeoTabs countries={selectedCountries} />
 
         {/* errors print */}
         {hasErrors && (

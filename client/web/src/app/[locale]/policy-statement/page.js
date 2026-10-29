@@ -14,6 +14,7 @@ import {
 import { Section } from "@/components/layout/section";
 import Heading from "@/components/layout/heading";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
+import { canonical } from "@/lib/seo";
 
 const envPolicy = [
   {
@@ -63,9 +64,18 @@ const envPolicy = [
   },
 ];
 
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  // title = the page heading shown in its banner
+  return {
+    title: "Policy Statement | Dura Plast India",
+    alternates: canonical(locale, "/policy-statement"),
+  };
+}
+
 export default function PolicyStatementPage() {
   return (
-    <>
+    <main>
       <BreadcrumbBanner
         title="Policy Statement"
         // backgroundImage="/img/banner/contact-banner.jpg"
@@ -95,9 +105,9 @@ export default function PolicyStatementPage() {
                 <span className="text-xs font-semibold uppercase tracking-[0.35em] text-red-700">
                   Our Purpose
                 </span>
-                <h3 className="mt-1 text-3xl font-bold text-gray-900">
+                <h2 className="heading-h3-size mt-1 text-3xl font-bold text-gray-900">
                   Mission
-                </h3>
+                </h2>
               </div>
             </div>
 
@@ -137,7 +147,7 @@ export default function PolicyStatementPage() {
                 <span className="text-xs font-semibold uppercase tracking-[0.35em] text-red-100">
                   Our Future
                 </span>
-                <h3 className="mt-1 text-3xl font-bold">Vision</h3>
+                <h2 className="heading-h3-size mt-1 text-3xl font-bold">Vision</h2>
               </div>
             </div>
 
@@ -208,6 +218,6 @@ export default function PolicyStatementPage() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

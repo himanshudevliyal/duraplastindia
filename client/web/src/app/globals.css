@@ -673,3 +673,36 @@ html {
   background: var(--primary);
   color: var(--primary-foreground);
 }
+/* h3 with the h4 size: heading level fixed for accessibility, same look */
+h3.heading-h4-size {
+  font-size: 1.25rem !important;
+}
+
+@media (max-width: 991px) {
+  h3.heading-h4-size {
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 575px) {
+  h3.heading-h4-size {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* h2 with the h3 size: heading level fixed for accessibility, same look */
+h2.heading-h3-size {
+  font-size: 1.5rem !important;
+}
+
+@media (max-width: 991px) {
+  h2.heading-h3-size {
+    font-size: 1.4rem !important;
+  }
+}
+
+@media (max-width: 575px) {
+  h2.heading-h3-size {
+    font-size: 1.25rem !important;
+  }
+}

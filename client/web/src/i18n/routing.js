@@ -41,6 +41,11 @@ export const routing = defineRouting({
   // in the URL (chosen from the country switcher).
   localeDetection: false,
 
+  // next-intl's hreflang Link header uses the raw locale ("global", "au"),
+  // which is not a valid language code. hreflang is set in page metadata
+  // instead (see lib/seo.js).
+  alternateLinks: false,
+
   localeCookie: {
     name: "Dura_Plast",
     maxAge: 60 * 60 * 24 * 365,

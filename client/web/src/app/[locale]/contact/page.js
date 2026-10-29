@@ -2,10 +2,20 @@
 import ContactForm from "@/components/form/contactform";
 import { Section } from "@/components/layout/section";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
+import { canonical } from "@/lib/seo";
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  // title = the page heading shown in its banner
+  return {
+    title: "Contact Us | Dura Plast India",
+    alternates: canonical(locale, "/contact"),
+  };
+}
 
 export default function ContactPage({ className }) {
   return (
-    <>
+    <main>
       <BreadcrumbBanner
         title="CONTACT US"
          backgroundImage="/img/contact-us-bg.jpg"
@@ -136,7 +146,7 @@ export default function ContactPage({ className }) {
           </div>
         </div>
       </Section>
-    </>
+    </main>
   );
 }
 

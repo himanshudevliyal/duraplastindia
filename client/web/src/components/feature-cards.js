@@ -24,9 +24,9 @@ export function FeatureCards({ features, className }) {
               <Check className="h-8 w-8 text-foreground" strokeWidth={1.5} />
             )}
 
-            <h4 className="mt-5 text-base font-semibold text-foreground">
+            <h3 className="heading-h4-size mt-5 text-base font-semibold text-foreground">
               {feature.title}
-            </h4>
+            </h3>
 
             <p className="mt-3 text-[15px] leading-7 text-muted-foreground">
               {feature.description}

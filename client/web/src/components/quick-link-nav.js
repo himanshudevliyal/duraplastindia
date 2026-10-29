@@ -159,6 +159,8 @@ export function SectionNav({
       )}
       aria-label="Page sections"
       aria-hidden={!hidden && !scrolled}
+      // hidden (opacity-0) nav: links must not be reachable by keyboard either
+      inert={!hidden && !scrolled}
     >
       <div
         ref={navRef}

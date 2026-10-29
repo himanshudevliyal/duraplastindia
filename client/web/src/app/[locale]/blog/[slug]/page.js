@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { canonical } from "@/lib/seo";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -63,7 +64,7 @@ export default async function BlogDetailPage({ params }) {
   }
 
   return (
-    <div className={`${display.variable} bg-white`}>
+    <main className={`${display.variable} bg-white`}>
       {/*
         The article body below comes from a rich-text editor as raw HTML
         (blog.content), so its inner h3/h4/p/ul tags can't be styled with
@@ -122,7 +123,7 @@ export default async function BlogDetailPage({ params }) {
                 {blog.title}
               </h1>
 
-              <div className="flex items-center gap-4 text-sm text-gray-400 mb-8">
+              <div className="flex items-center gap-4 text-sm text-gray-500 mb-8">
                 <span>{formatDate(blog.date)}</span>
                 {readMinutes && (
                   <span className="inline-flex items-center gap-1.5 pl-4 border-l border-red-100">
@@ -140,7 +141,9 @@ export default async function BlogDetailPage({ params }) {
                     alt={blog.title}
                     fill
                     className="object-cover"
-                    priority
+                    sizes="(min-width: 1024px) 66vw, 100vw"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
               )}
@@ -190,7 +193,7 @@ export default async function BlogDetailPage({ params }) {
                       return (
                         <Link
                           key={post.id}
-                          href={`/blogs/${post.slug}`}
+                          href={`/blog/${post.slug}`}
                           className="group flex gap-3 pb-5 border-b border-red-50 last:border-0 last:pb-0"
                         >
                           <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-red-50">
@@ -199,6 +202,7 @@ export default async function BlogDetailPage({ params }) {
                                 src={thumb}
                                 alt={post.title}
                                 fill
+                                sizes="80px"
                                 className="object-cover"
                               />
                             )}
@@ -208,11 +212,11 @@ export default async function BlogDetailPage({ params }) {
                               {post.title}
                             </h4>
                             {post.description && (
-                              <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
                                 {post.description}
                               </p>
                             )}
-                            <div className="flex items-center gap-1 text-xs text-gray-400 mt-1.5">
+                            <div className="flex items-center gap-1 text-xs text-gray-500 mt-1.5">
                               <Calendar className="w-3 h-3 text-red-600" />
                               {formatDate(post.date)}
                             </div>
@@ -227,17 +231,18 @@ export default async function BlogDetailPage({ params }) {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const blog = await fetchBlogBySlug(slug);
   if (!blog) return {};
   return {
     title: blog.meta_title || blog.title,
     description: blog.meta_description || blog.description,
     keywords: blog.meta_keywords,
+    alternates: canonical(locale, `/blog/${slug}`),
   };
 }

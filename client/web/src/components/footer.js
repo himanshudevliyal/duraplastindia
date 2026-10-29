@@ -46,8 +46,8 @@ export function SiteFooter() {
             <Image
               src="/logo.png"
               alt="Dura Plast"
-              width={170}
-              height={40}
+              width={122}
+              height={81}
               className="w-[120px]"
             />
 
@@ -98,9 +98,10 @@ export function SiteFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={social.label}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-gray-300 transition-all hover:border-[oklch(0.5164_0.2011_28.1378)] hover:bg-[oklch(0.5164_0.2011_28.1378)] hover:text-white"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                 </a>
               );
             })}
@@ -110,9 +111,9 @@ export function SiteFooter() {
 
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h2 className="heading-h3-size text-lg font-semibold text-white">
               Our Company
-            </h3>
+            </h2>
 
             <ul className="mt-4 space-y-3">
               {footerUsefulLinks.map((link) => (
@@ -130,9 +131,9 @@ export function SiteFooter() {
 
           {/* Offices */}
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h2 className="heading-h3-size text-lg font-semibold text-white">
               Our Offices
-            </h3>
+            </h2>
 
             <div className="mt-4 space-y-4">
               {footerAddresses.map((office) => (
@@ -165,7 +166,7 @@ export function SiteFooter() {
 
       {/* Bottom Footer */}
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-4 text-sm text-gray-500 md:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-4 text-sm text-gray-400 md:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
             <p>
               &copy; {year} Dura Plast. All rights reserved.

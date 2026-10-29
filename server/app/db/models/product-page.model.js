@@ -63,7 +63,7 @@ const init = async (sequelize) => {
 
       // Country-specific SEO, keyed by country code. Shape:
       // {
-      //   "in": { meta_title, meta_description, meta_keywords, jsonld_schema },
+      //   "in": { meta_title, meta_description, meta_keywords, jsonld_schema, faq },
       //   "au": { ... },
       //   "us": { ... }
       // }
@@ -429,6 +429,7 @@ const getBySlug = async (req, slug) => {
     meta_description: pick("meta_description"),
     meta_keywords: pick("meta_keywords"),
     jsonld_schema: pick("jsonld_schema"),
+    faq: countrySeo.faq?.length ? countrySeo.faq : record.faq,
   };
 };
 

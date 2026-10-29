@@ -15,14 +15,14 @@ export default function FilterBar({ options, active, onChange }) {
               ${
                 isActive
                   ? "bg-white text-[#191D22] shadow-[0_1px_2px_rgba(25,29,34,0.12)]"
-                  : "text-[#6B7178] hover:text-[#191D22]"
+                  : "text-[#646970] hover:text-[#191D22]"
               }
             `}
           >
             {opt.label}
             <span
               className={`ml-1.5 font-mono text-[11px] ${
-                isActive ? "text-[#C1602E]" : "text-[#9BA0A6]"
+                isActive ? "text-[#B75B2C]" : "text-[#65686C]"
               }`}
             >
               {String(opt.count).padStart(2, "0")}

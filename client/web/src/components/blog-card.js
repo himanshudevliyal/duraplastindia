@@ -72,6 +72,7 @@ export default function BlogCard({ post }) {
             className="group flex items-center gap-3 text-sm font-semibold text-foreground"
           >
             Read More
+            <span className="sr-only"> about {post.title}</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
               <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
             </span>

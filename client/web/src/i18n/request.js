@@ -6,13 +6,9 @@ import { GLOBAL_LOCALE } from "@/utils/country-mapping";
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
 
-  console.log("requestLocale:", requested);
-
   const locale = hasLocale(routing.locales, requested)
     ? requested
     : routing.defaultLocale;
-
-  console.log("resolved locale:", locale);
 
   return {
     locale,

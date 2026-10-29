@@ -85,7 +85,8 @@ export function ProductShowcase({
                       src={img.src}
                       alt={img.alt}
                       fill
-                      className="   aspect-video"
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      className="   aspect-video object-cover"
                     />
                   </div>
                 </CarouselItem>

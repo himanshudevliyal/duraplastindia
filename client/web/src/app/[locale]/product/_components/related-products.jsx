@@ -43,7 +43,7 @@ export default function RelativeProducts({ categoryId, currentProductId }) {
 
       <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {relatedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} headingAs="h3" />
         ))}
       </div>
     </>

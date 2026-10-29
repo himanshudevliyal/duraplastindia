@@ -301,9 +301,9 @@ export function SiteHeader() {
               <Image
                 src="/logo.png"
                 alt="Dura Plast"
-                width={200}
-                height={200}
-                priority
+                width={122}
+                height={81}
+                loading="eager"
                 className={`h-auto transition-all duration-300 ${
                   isScrolled ? "w-16 lg:w-[72px]" : "w-20 lg:w-24"
                 }`}
@@ -470,6 +470,8 @@ export function SiteHeader() {
           ${isOpen ? "translate-x-0" : "translate-x-full"}
         `}
         aria-hidden={!isOpen}
+        // closed drawer: its links must not be reachable by keyboard either
+        inert={!isOpen}
       >
         {/* Top bar */}
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
@@ -477,8 +479,8 @@ export function SiteHeader() {
             <Image
               src="/logo.png"
               alt="Dura Plast"
-              width={140}
-              height={140}
+              width={122}
+              height={81}
               className="h-auto w-20"
             />
           </Link>

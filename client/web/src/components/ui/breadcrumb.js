@@ -15,7 +15,8 @@ export function BreadcrumbBanner({
         src={backgroundImage}
         alt={title}
         fill
-        priority
+        loading="eager"
+        fetchPriority="high"
         className="object-cover"
       />
 

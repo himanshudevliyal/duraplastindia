@@ -1,4 +1,3 @@
-import { SiteHeader } from "@/components/nav";
 import { SiteHero } from "@/components/hero-section";
 import AboutSection from "@/home/about";
 import { WhyChooseUs } from "@/home/why-choose-us";
@@ -7,15 +6,15 @@ import { BlogSection } from "@/home/blogsection";
 import { OurSolutions } from "@/home/our-solutions";
 import { OurWork } from "@/home/our-work";
 import { OurClinets } from "@/home/our-clinet";
-import { HeroParallax } from "@/home/stats";
 import OurTechnologies from "@/home/our-technologies";
-import Image from "next/image";
-import { Section } from "@/components/layout/section";
+import { getImageProps } from "next/image";
+
 import { JsonLd } from "@/components/layout/json-ld";
 import FootprintSection from "@/home/footprint-section";
 import FAQSection from "./product/_components/faq";
 import { getMessages } from "next-intl/server";
 import { buildSchemas } from "@/lib/messages";
+import { canonical } from "@/lib/seo";
 
 const defaultMetadata = {
   title: "Skylights, Glazing & Roof Ventilation Manufacturer",
@@ -28,8 +27,31 @@ export async function generateMetadata({ params }) {
   const messages = await getMessages({ locale });
 
   // Seo.home in messages/<locale>.json overrides the defaults (per field)
-  return { ...defaultMetadata, ...messages.Seo?.home };
+  return {
+    ...defaultMetadata,
+    ...messages.Seo?.home,
+    alternates: canonical(locale, "/"),
+  };
 }
+
+// "Born in India" banner: separate mobile / desktop images (art direction)
+const {
+  props: { srcSet: bannerMobileSrcSet },
+} = getImageProps({
+  src: "/img/born-in-india-mobile-version.png",
+  alt: "",
+  width: 941,
+  height: 1672,
+  sizes: "100vw",
+});
+const bannerMobile = { srcSet: bannerMobileSrcSet };
+const { props: bannerDesktop } = getImageProps({
+  src: "/img/born-in-india-dasktop-version-v2.png",
+  alt: "Banner",
+  width: 1933,
+  height: 814,
+  sizes: "100vw",
+});
 
 export default async function HomePage({ params }) {
   const { locale } = await params;
@@ -93,20 +115,10 @@ export default async function HomePage({ params }) {
 
       <picture className="block w-full  rounded-xl">
         {/* Mobile Image */}
-        <source
-          media="(max-width: 767px)"
-          srcSet="/img/born-in-india-mobile-version.png"
-        />
+        <source media="(max-width: 767px)" srcSet={bannerMobile.srcSet} />
 
         {/* Desktop Image */}
-        <Image
-          src="/img/born-in-india-dasktop-version-v2.png"
-          alt="Banner"
-          width={1920}
-          height={700}
-          priority
-          className="block h-auto w-full "
-        />
+        <img {...bannerDesktop} alt="Banner" className="block h-auto w-full " />
       </picture>
     
 

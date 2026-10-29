@@ -32,6 +32,7 @@ export function WorkCard({
       <Image
         src={project.image}
         fill
+        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         className={`object-cover transition duration-500 group-hover:scale-105 ${imageClassName}`}
         alt={project.client}
       />

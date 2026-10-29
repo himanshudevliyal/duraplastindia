@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { cloneElement, isValidElement, useId, useState } from "react";
 import { useForm, useFormContext, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -100,14 +100,19 @@ function FieldError({ error }) {
   ) : null;
 }
 
+// the label is tied to its control (id / htmlFor) so screen readers announce it
 function Field({ label, required, error, children }) {
+  const generatedId = useId();
+  const single = isValidElement(children);
+  const controlId = single ? (children.props.id ?? generatedId) : undefined;
+
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium">
+      <label htmlFor={controlId} className="mb-2 block text-sm font-medium">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>
-      {children}
+      {single ? cloneElement(children, { id: controlId }) : children}
       <FieldError error={error} />
     </div>
   );

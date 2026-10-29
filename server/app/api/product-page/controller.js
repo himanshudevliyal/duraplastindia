@@ -41,6 +41,21 @@ export const schema = z.object({
         meta_description: z.string().optional(),
         meta_keywords: z.string().optional(),
         jsonld_schema: z.any().optional(),
+        // country FAQs; empty => global FAQs are shown
+        faq: z
+          .array(
+            z.object({
+              q: z
+                .string()
+                .trim()
+                .min(3, "Question must be at least 3 characters long."),
+              a: z
+                .string()
+                .trim()
+                .min(3, "Answer must be at least 3 characters long."),
+            }),
+          )
+          .optional(),
       }),
     )
     .optional(),

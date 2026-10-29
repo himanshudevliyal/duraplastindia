@@ -71,7 +71,7 @@ export default function DistributorDirectory() {
           --dd-bg: #fbfafa;
           --dd-surface: #ffffff;
           --dd-ink: #241a1c;
-          --dd-muted: #8a7a7c;
+          --dd-muted: #716466; /* was #8a7a7c; darkened to reach WCAG AA 4.5:1 */
           --dd-border: #f1dbdd;
           --dd-primary: #c8102e;
           --dd-primary-dark: #8f0c20;
@@ -315,9 +315,9 @@ function DistributorCard({ d, onClick }) {
           </div>
 
           <div className="min-w-0">
-            <h3 className="dd-serif truncate text-lg font-semibold text-gray-900">
+            <h2 className="heading-h3-size dd-serif truncate text-lg font-semibold text-gray-900">
               {d.country}
-            </h3>
+            </h2>
 
             {d.region && (
               <p className="mt-0.5 text-xs uppercase tracking-wide text-gray-500">

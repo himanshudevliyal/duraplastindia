@@ -9,13 +9,20 @@ import { OurWork } from "@/home/our-work";
 import { OurClinets } from "@/home/our-clinet";
 import { HeroParallax } from "@/home/stats";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
+import { canonical } from "@/lib/seo";
 
-export const metadata = {
-  title: "Skylights, Glazing & Roof Ventilation Manufacturer",
-  description:
-    "Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings worldwide.",
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
 
+  return {
+    title: "Skylights, Glazing & Roof Ventilation Manufacturer",
+    description:
+      "Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings worldwide.",
+    alternates: canonical(locale, "/product"),
+  };
+}
+
+// Products list data is rendered on the server by the layout (lib/menu-data.js).
 export default function HomePage() {
   return (
     <main>

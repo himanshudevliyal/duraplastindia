@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { fetchProductPageBySlug } from "@/services/product-page-services";
 import { LOCALE_TO_COUNTRY } from "@/utils/country-mapping";
+import { JsonLd } from "@/components/layout/json-ld";
 
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
 import { ProductShowcase } from "../_components/overviwe";
@@ -13,6 +14,7 @@ import { SectionNav } from "@/components/quick-link-nav";
 import BenefitsSection from "../_components/benefits-section";
 import RelatedProducts from "../_components/related-products";
 import RelativeProducts from "../_components/related-products";
+import { canonical } from "@/lib/seo";
 
 // One API call per request, shared by generateMetadata and the page.
 // "global" (no URL prefix) has no country => Global SEO; /in, /au ... => that country's SEO.
@@ -20,18 +22,34 @@ const getProduct = cache((slug, locale) =>
   fetchProductPageBySlug(slug, LOCALE_TO_COUNTRY[locale]),
 );
 
-// schema markup is saved as text in the dashboard; only output it if it is valid JSON
-function getJsonLd(raw) {
-  if (!raw) return null;
-  try {
-    const value =
-      typeof raw === "string"
-        ? JSON.parse(raw.replace(/<\/?script[^>]*>/gi, "").trim())
-        : raw;
-    return JSON.stringify(value).replace(/</g, "\\u003c");
-  } catch {
-    return null;
+// Schema markup from the dashboard: a list of schema objects (new), or older
+// text with one/more <script> blocks / a JSON string. Returns valid schema
+// objects only; invalid ones are skipped.
+function getSchemas(raw) {
+  if (!raw) return [];
+
+  if (typeof raw !== "string") {
+    return (Array.isArray(raw) ? raw : [raw]).flatMap((item) =>
+      typeof item === "string"
+        ? getSchemas(item)
+        : item && typeof item === "object"
+          ? [item]
+          : [],
+    );
   }
+
+  const blocks = [...raw.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(
+    (match) => match[1],
+  );
+
+  return (blocks.length ? blocks : [raw]).flatMap((text) => {
+    try {
+      const value = JSON.parse(text.replace(/<\/?script[^>]*>/gi, "").trim());
+      return value && typeof value === "object" ? getSchemas(value) : [];
+    } catch {
+      return [];
+    }
+  });
 }
 
 export async function generateMetadata({ params }) {
@@ -45,6 +63,7 @@ export async function generateMetadata({ params }) {
       title: product.meta_title || product.title,
       description: product.meta_description || product.description || undefined,
       keywords: product.meta_keywords || undefined,
+      alternates: canonical(locale, `/product/${slug}`),
     };
   } catch {
     return {};
@@ -70,16 +89,11 @@ export default async function ProductDetailsPage({ params }) {
     { id: "faq", label: "FAQ" },
   ];
 
-  const jsonLd = getJsonLd(product.jsonld_schema);
+  const schemas = getSchemas(product.jsonld_schema);
 
   return (
-    <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLd }}
-        />
-      )}
+    <main>
+      {schemas.length > 0 && <JsonLd data={schemas} />}
 
       {/* <BreadcrumbBanner
         title={product.title}
@@ -188,6 +202,6 @@ export default async function ProductDetailsPage({ params }) {
 />
       </Section>
       <FAQSection faq={product.faq} />
-    </>
+    </main>
   );
 }

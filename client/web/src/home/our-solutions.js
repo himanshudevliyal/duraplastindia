@@ -19,7 +19,8 @@ import {
 import { sortCategories, sortProducts } from "@/lib/category-order";
 import { getFileUrl } from "@/utils/file-url";
 
-export function ProductCard({ product, prefix }) {
+// headingAs: "h3" where the card follows an h2 directly (keeps the h4 look)
+export function ProductCard({ product, prefix, headingAs: Title = "h4" }) {
   return (
     <article className="group p-4 flex h-full flex-col rounded-[20px] overflow-hidden border border-gray-200 bg-white transition-all duration-500">
       <Link
@@ -42,9 +43,9 @@ export function ProductCard({ product, prefix }) {
       </Link>
 
   <div className="mt-4 flex flex-1 flex-col">
-  <h4 className="min-h-[56px] text-xl font-bold leading-7 text-gray-900 transition-colors duration-300 group-hover:text-primary">
+  <Title className={`min-h-[56px] text-xl font-bold leading-7 text-gray-900 transition-colors duration-300 group-hover:text-primary ${Title === "h3" ? "heading-h4-size" : ""}`}>
     {product.title}
-  </h4>
+  </Title>
 
   <Link
     href={`/product/${product.slug}`}
@@ -52,6 +53,7 @@ export function ProductCard({ product, prefix }) {
   >
     <span className="relative">
       Learn More
+      <span className="sr-only"> about {product.title}</span>
       <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-full" />
     </span>
 

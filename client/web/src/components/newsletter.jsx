@@ -41,9 +41,9 @@ export default function Newsletter() {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white">
+      <h2 className="heading-h3-size text-lg font-semibold text-white">
         Sign Up to Newsletter
-      </h3>
+      </h2>
 
       <p className="mt-4 text-[14px] leading-6 text-gray-400">
         Subscribe for product updates and project stories.
