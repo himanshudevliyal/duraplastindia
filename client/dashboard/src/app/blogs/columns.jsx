@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import moment from "moment";
 import Link from "next/link";
 import { ArrowUpDown } from "lucide-react";
+import { StatusBadge } from "@/components/forms/status-field";
 
 export const columns = (openModal, setId) => [
   {
@@ -27,6 +28,11 @@ export const columns = (openModal, setId) => [
         </Button>
       );
     },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {
     accessorKey: "created_at",

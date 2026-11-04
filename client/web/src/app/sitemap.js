@@ -2,9 +2,11 @@ import { routing } from "@/i18n/routing";
 import { SITE_URL, localePath } from "@/lib/seo";
 import { fetchProductPages } from "@/services/product-page-services";
 import { fetchBlogs } from "@/services/product-service";
+import { fetchCustomPages } from "@/services/custom-page-service";
 import {
   getCountryFromLocale,
   isProductAvailableInCountry,
+  isShownInCountry,
 } from "@/utils/country-mapping";
 
 // Rebuilt at most once an hour so new products / blogs show up.
@@ -36,13 +38,16 @@ async function safe(fn) {
 }
 
 export default async function sitemap() {
-  const [productData, blogData] = await Promise.all([
+  // list APIs return active items only (drafts are never listed)
+  const [productData, blogData, customPageData] = await Promise.all([
     safe(() => fetchProductPages("")),
     safe(() => fetchBlogs("")),
+    safe(() => fetchCustomPages("")),
   ]);
 
   const products = productData?.products ?? [];
   const blogs = blogData?.blogs ?? [];
+  const customPages = customPageData?.pages ?? [];
 
   const entries = [];
 
@@ -62,7 +67,15 @@ export default async function sitemap() {
 
     for (const blog of blogs) {
       if (!blog?.slug) continue;
+      if (!isShownInCountry(blog.city, country)) continue;
       entries.push({ url: url(locale, `/blog/${blog.slug}`) });
+    }
+
+    // custom pages live at /<slug>
+    for (const page of customPages) {
+      if (!page?.slug) continue;
+      if (!isShownInCountry(page.city, country)) continue;
+      entries.push({ url: url(locale, `/${page.slug}`) });
     }
   }
 

@@ -6,6 +6,7 @@ import { cleanupFiles } from "../../helpers/cleanup-files.js";
 import { sequelize } from "../../db/postgres.js";
 import { getItemsToDelete } from "../../helpers/filter.js";
 import { z } from "zod";
+import auth from "../../helpers/auth.js";
 
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -15,6 +16,38 @@ export const schema = z.object({
   meta_title: z.string().optional(),
   meta_description: z.string().optional(),
   meta_keywords: z.string().optional(),
+  jsonld_schema: z.any().optional(),
+  status: z.enum(["active", "draft"]).optional(),
+  // countries the blog is shown in; empty => every country
+  city: z.array(z.string()).optional(),
+  faq: z
+    .array(
+      z.object({
+        q: z.string().trim().min(3, "Question must be at least 3 characters long."),
+        a: z.string().trim().min(3, "Answer must be at least 3 characters long."),
+      }),
+    )
+    .optional(),
+  // country-specific SEO: { India: {...}, Australia: {...} } (all optional)
+  country_seo: z
+    .record(
+      z.string(),
+      z.object({
+        meta_title: z.string().optional(),
+        meta_description: z.string().optional(),
+        meta_keywords: z.string().optional(),
+        jsonld_schema: z.any().optional(),
+        faq: z
+          .array(
+            z.object({
+              q: z.string().trim().min(3, "Question must be at least 3 characters long."),
+              a: z.string().trim().min(3, "Answer must be at least 3 characters long."),
+            }),
+          )
+          .optional(),
+      }),
+    )
+    .optional(),
 });
 
 const create = async (req, res) => {
@@ -88,6 +121,7 @@ const getById = async (req, res) => {
 
 const getBySlug = async (req, res) => {
   try {
+    req.includeDrafts = await auth.canSeeDrafts(req);
     const record = await table.BlogModel.getBySlug(req);
     if (!record) {
       return res
@@ -103,6 +137,7 @@ const getBySlug = async (req, res) => {
 
 const get = async (req, res) => {
   try {
+    req.includeDrafts = await auth.canSeeDrafts(req);
     const data = await table.BlogModel.get(req);
 
     res.code(StatusCodes.OK).send({ status: true, data: data });

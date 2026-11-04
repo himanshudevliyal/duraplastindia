@@ -70,8 +70,33 @@ const verifyRefreshToken = async (req, res) => {
   }
 };
 
+// Public routes: true when the request carries a valid logged-in user's token.
+// Never sends a response (unlike verifyToken).
+const isAuthenticated = async (req) => {
+  const authHeader = req.headers["authorization"] ?? req.cookies?.token;
+  if (!authHeader) return false;
+  const token = authHeader.startsWith("Bearer")
+    ? authHeader.split(" ")[1]
+    : authHeader;
+  if (!token) return false;
+  try {
+    const decoded = jwt.verify(token, config.jwt_secret);
+    const userData = await table.UserModel.getByUsername(req, decoded);
+    return !!userData;
+  } catch {
+    return false;
+  }
+};
+
+// Drafts are returned only to the dashboard: it asks with ?include_drafts=true
+// and sends a valid token. The website never gets drafts.
+const canSeeDrafts = async (req) =>
+  req.query?.include_drafts === "true" && (await isAuthenticated(req));
+
 export default {
   verifyToken,
+  isAuthenticated,
+  canSeeDrafts,
   verifyRefreshToken,
   generateAccessToken,
   generateRefreshToken,

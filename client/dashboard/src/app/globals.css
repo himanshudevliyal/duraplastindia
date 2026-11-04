@@ -264,3 +264,9 @@ body {
 .PhoneInputInput {
   @apply outline-none;
 }
+
+/* TinyMCE: hide its notification popups (premium-plugin / API key warnings) */
+.tox-notifications-container,
+.tox .tox-notification {
+  display: none !important;
+}

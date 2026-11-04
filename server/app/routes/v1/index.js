@@ -9,6 +9,7 @@ import dashboardRoutes from "../../api/dashboard/routes.js";
 import enquiryRoutes from "../../api/enquiries/routes.js";
 import  newsletterRoutes  from "../../api/newsletters/routes.js";
 import distributorEnquiryRoutes from "../../api/distributor-enquiries/routes.js";
+import customPageRoutes from "../../api/custom-page/routes.js";
 
 
 export default async function routes(fastify, options) {
@@ -30,4 +31,5 @@ export default async function routes(fastify, options) {
     fastify.register(distributorEnquiryRoutes, {
     prefix: "distributor-enquiries",
   });
+  fastify.register(customPageRoutes, { prefix: "custom-pages" });
 }

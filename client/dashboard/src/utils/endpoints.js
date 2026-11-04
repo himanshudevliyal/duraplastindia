@@ -16,6 +16,7 @@ export const endpoints = {
   },
   users: { getAll: "/users" },
   blogs: { getAll: "/blogs" },
+  customPages: { getAll: "/custom-pages" },
   cityBlogs: { getAll: "/city-blogs" },
   categories: { getAll: "/categories" },
   productPages: { getAll: "/product-pages" },

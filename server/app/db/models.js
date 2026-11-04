@@ -8,6 +8,7 @@ import channelPartnersModal from "./models/channel-partners.modal.js";
 import enquiryModal from "./models/enquiry.modal.js";
 import newsletterModel from "./models/newsletter.model.js";
 import distributorEnquiryModel from "./models/distributor-enquiry.model.js";
+import customPageModel from "./models/custom-page.model.js";
 
 export default {
   UserModel: userModel,
@@ -19,6 +20,7 @@ export default {
   EnquiryModel: enquiryModal,
   NewsletterModel: newsletterModel,
     DistributorEnquiryModel: distributorEnquiryModel,
+  CustomPageModel: customPageModel,
 
 
 };

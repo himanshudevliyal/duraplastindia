@@ -6,6 +6,7 @@ import { channelPartnerPublicRoutes } from "../../api/channel-partners/routes.js
 import { enquiryPublicRoutes } from "../../api/enquiries/routes.js";
 import { newsletterPublicRoutes } from "../../api/newsletters/routes.js";
 import { distributorEnquiryPublicRoutes } from "../../api/distributor-enquiries/routes.js";
+import { customPagePublicRoutes } from "../../api/custom-page/routes.js";
 
 export default async function routes(fastify, options) {
   fastify.register(blogPublicRoutes, { prefix: "blogs" });
@@ -18,4 +19,5 @@ export default async function routes(fastify, options) {
   fastify.register(distributorEnquiryPublicRoutes, {
     prefix: "distributor-enquiries",
   });
+  fastify.register(customPagePublicRoutes, { prefix: "custom-pages" });
 }

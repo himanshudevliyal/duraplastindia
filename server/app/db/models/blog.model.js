@@ -51,6 +51,38 @@ const init = async (sequelize) => {
       meta_title: { type: DataTypes.TEXT },
       meta_description: { type: DataTypes.TEXT },
       meta_keywords: { type: DataTypes.TEXT },
+      jsonld_schema: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+      },
+
+      // "active" = shown on the website, "draft" = dashboard only
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "active",
+      },
+
+      // Countries the blog is shown in. Empty => shown in every country.
+      city: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+        defaultValue: [],
+      },
+
+      faq: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: [],
+      },
+
+      // Country-specific SEO, keyed by country name (same as product pages):
+      // { "India": { meta_title, meta_description, meta_keywords, jsonld_schema, faq } }
+      country_seo: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
     },
     {
       createdAt: "created_at",
@@ -86,6 +118,11 @@ const create = async (req, transaction) => {
       meta_title: req.body.meta_title,
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
+      jsonld_schema: req.body.jsonld_schema || null,
+      city: Array.isArray(req.body.city) ? req.body.city : [],
+      status: req.body.status === "draft" ? "draft" : "active",
+      faq: req.body.faq || [],
+      country_seo: req.body.country_seo || {},
     },
     options,
   );
@@ -114,6 +151,11 @@ const update = async (req, id, transaction) => {
       meta_title: req.body.meta_title,
       meta_description: req.body.meta_description,
       meta_keywords: req.body.meta_keywords,
+      jsonld_schema: req.body.jsonld_schema || null,
+      city: Array.isArray(req.body.city) ? req.body.city : [],
+      status: req.body.status === "draft" ? "draft" : "active",
+      faq: req.body.faq || [],
+      country_seo: req.body.country_seo || {},
     },
     options,
   );
@@ -126,6 +168,16 @@ const get = async (req) => {
   if (q) {
     whereConditions.push(`(blg.title ILIKE :query)`);
     queryParams.query = `%${q}%`;
+  }
+
+  // website: active blogs only; dashboard (req.includeDrafts): all
+  if (!req.includeDrafts) whereConditions.push(`blg.status = 'active'`);
+
+  // ?country=India => blogs for that country (+ blogs with no country selected)
+  const country = req.query.country ? String(req.query.country) : null;
+  if (country) {
+    whereConditions.push(`(cardinality(blg.city) = 0 OR :country = ANY(blg.city))`);
+    queryParams.country = country;
   }
 
   const categories = req.query.categories
@@ -147,7 +199,7 @@ const get = async (req) => {
 
   const query = `
   SELECT 
-      blg.id, blg.slug, blg.title, blg.pictures, blg.description, blg.date, blg.created_at
+      blg.id, blg.slug, blg.title, blg.pictures, blg.description, blg.date, blg.city, blg.status, blg.created_at
     FROM ${constants.models.BLOG_TABLE} blg
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = blg.category_id
     ${whereClause}
@@ -200,7 +252,7 @@ const getBySlug = async (req, slug) => {
     WHERE blg.slug = :slug
   `;
 
-  return await BlogModel.sequelize.query(query, {
+  const record = await BlogModel.sequelize.query(query, {
     replacements: {
       slug: req.params?.slug || slug,
     },
@@ -208,6 +260,34 @@ const getBySlug = async (req, slug) => {
     raw: true,
     plain: true,
   });
+
+  if (!record) return record;
+  // drafts are not shown on the website
+  if (record.status === "draft" && !req.includeDrafts) return null;
+
+  // ?country=in (URL prefix code) or ?country=India (name), same as product pages.
+  const COUNTRY_ALIASES = { in: "india", au: "australia", us: "united states" };
+  const rawCountry = (req.query?.country || "").toString().trim().toLowerCase();
+  const country = COUNTRY_ALIASES[rawCountry] || rawCountry;
+  const countryKey = Object.keys(record.country_seo || {}).find(
+    (k) => k.toLowerCase() === country,
+  );
+  const countrySeo = (countryKey && record.country_seo[countryKey]) || {};
+
+  // field-level fallback: country value -> global value
+  const pick = (key) => {
+    const v = countrySeo[key];
+    return v !== undefined && v !== null && v !== "" ? v : record[key];
+  };
+
+  return {
+    ...record,
+    meta_title: pick("meta_title"),
+    meta_description: pick("meta_description"),
+    meta_keywords: pick("meta_keywords"),
+    jsonld_schema: pick("jsonld_schema"),
+    faq: countrySeo.faq?.length ? countrySeo.faq : record.faq,
+  };
 };
 
 const deleteById = async (req, id, transaction) => {

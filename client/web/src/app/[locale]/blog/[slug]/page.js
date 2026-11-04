@@ -1,18 +1,23 @@
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
+import { cache } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/services/product-service";
-import { Fraunces } from "next/font/google";
+import { LOCALE_TO_COUNTRY, getCountryFromLocale } from "@/utils/country-mapping";
+import { JsonLd } from "@/components/layout/json-ld";
+import { getSchemas } from "@/lib/schemas";
+import FAQSection from "../../product/_components/faq";
+
+// One API call per request, shared by generateMetadata and the page.
+// "global" (no URL prefix) => global SEO; /in, /au ... => that country's SEO / FAQs.
+const getBlog = cache((slug, locale) =>
+  fetchBlogBySlug(slug, LOCALE_TO_COUNTRY[locale]),
+);
+import { ProseStyle, proseFont as display } from "@/components/layout/prose";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import { canonical } from "@/lib/seo";
 
-const display = Fraunces({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
 
 // Normalizes a raw picture path coming from the API (Windows-style
 // backslashes, "public/images/..." prefix) into a clean web path, then
@@ -41,8 +46,8 @@ function estimateReadMinutes(html) {
 }
 
 export default async function BlogDetailPage({ params }) {
-  const { slug } = await params;
-  const blog = await fetchBlogBySlug(slug);
+  const { slug, locale } = await params;
+  const blog = await getBlog(slug, locale);
 
   if (!blog) {
     notFound();
@@ -56,15 +61,21 @@ export default async function BlogDetailPage({ params }) {
   // this import if the actual service export is called something else.
   let recentPosts = [];
   try {
-    const recentData = await fetchBlogs();
+    // same country rule as the blog list
+    const recentData = await fetchBlogs(
+      `country=${encodeURIComponent(getCountryFromLocale(locale))}`,
+    );
     const allBlogs = recentData?.blogs ?? recentData ?? [];
     recentPosts = allBlogs.filter((b) => b.slug !== slug).slice(0, 7);
   } catch {
     recentPosts = [];
   }
 
+  const schemas = getSchemas(blog.jsonld_schema);
+
   return (
     <main className={`${display.variable} bg-white`}>
+      {schemas.length > 0 && <JsonLd data={schemas} />}
       {/*
         The article body below comes from a rich-text editor as raw HTML
         (blog.content), so its inner h3/h4/p/ul tags can't be styled with
@@ -75,25 +86,7 @@ export default async function BlogDetailPage({ params }) {
         @tailwindcss/typography is installed in this project, this block
         can be deleted and replaced with `className="prose prose-red"`.
       */}
-      <style>{`
-        .blog-prose h3, .blog-prose h4 {
-          font-family: var(--font-display), Georgia, serif;
-          font-weight: 700;
-          color: #111827;
-          margin-top: 2.2rem;
-          margin-bottom: 0.9rem;
-          line-height: 1.3;
-        }
-        .blog-prose h3 { font-size: 1.5rem; }
-        .blog-prose h4 { font-size: 1.2rem; }
-        .blog-prose p { margin-bottom: 1.15rem; color: #374151; }
-        .blog-prose strong { color: #111827; }
-        .blog-prose em { color: #6b7280; }
-        .blog-prose ul { margin: 0 0 1.4rem 0; padding-left: 1.4rem; }
-        .blog-prose li { margin-bottom: 0.6rem; padding-left: 0.3rem; }
-        .blog-prose li::marker { color: #b91c1c; }
-        .blog-prose a { color: #b91c1c; text-decoration: underline; }
-      `}</style>
+      <ProseStyle />
 
       <BreadcrumbBanner
         title={blog.title}
@@ -231,18 +224,20 @@ export default async function BlogDetailPage({ params }) {
           </div>
         </div>
       </section>
+
+      {blog.faq?.length > 0 && <FAQSection faq={blog.faq} />}
     </main>
   );
 }
 
 export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
-  const blog = await fetchBlogBySlug(slug);
+  const blog = await getBlog(slug, locale);
   if (!blog) return {};
   return {
     title: blog.meta_title || blog.title,
     description: blog.meta_description || blog.description,
-    keywords: blog.meta_keywords,
+    keywords: blog.meta_keywords || undefined,
     alternates: canonical(locale, `/blog/${slug}`),
   };
 }

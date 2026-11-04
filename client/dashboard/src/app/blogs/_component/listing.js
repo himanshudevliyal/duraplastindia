@@ -12,7 +12,10 @@ export default function Listing() {
   const [id, setId] = useState(null);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const searchParams = useSearchParams();
-  const searchParamsStr = searchParams.toString();
+  // dashboard lists include drafts (the website never gets them)
+  const searchParamsStr = [searchParams.toString(), "include_drafts=true"]
+    .filter(Boolean)
+    .join("&");
   const { data, isLoading, isError, error } = useBlogs(searchParamsStr);
   const deleteMutation = useDeleteBlog(id, () => {
     setIsDeleteModal(false);

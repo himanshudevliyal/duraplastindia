@@ -34,3 +34,7 @@ export const isProductAvailableInCountry = (city, country) => {
   if (!city) return false;
   return Array.isArray(city) ? city.includes(country) : city === country;
 };
+
+// blogs / custom pages: no country selected => shown in every country
+export const isShownInCountry = (city, country) =>
+  !Array.isArray(city) || city.length === 0 || city.includes(country);

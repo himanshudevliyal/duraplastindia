@@ -7,7 +7,14 @@ export default async function routes(fastify, options) {
     "/",
     {
       preHandler: async (req, res) =>
-        multipartPreHandler(req, res, ["related_products", "date"]),
+        multipartPreHandler(req, res, [
+          "related_products",
+          "date",
+          "city",
+          "faq",
+          "country_seo",
+          "jsonld_schema",
+        ]),
     },
     controller.create,
   );
@@ -19,6 +26,10 @@ export default async function routes(fastify, options) {
           "related_products",
           "picture_urls",
           "date",
+          "city",
+          "faq",
+          "country_seo",
+          "jsonld_schema",
         ]),
     },
     controller.updateById,

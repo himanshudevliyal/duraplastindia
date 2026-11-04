@@ -39,6 +39,17 @@ import { useBlog, useCreateBlog, useUpdateBlog } from "@/hooks/use-blogs";
 import z from "zod";
 import { DatePicker } from "../ui/date-picker";
 import moment from "moment";
+import CustomMultiSelect from "../custom-multi-select";
+import {
+  SeoTabs,
+  applySeoPayload,
+  cityOptions,
+  countrySeoSchema,
+  faqListSchema,
+  schemaListSchema,
+  toSeoFormValues,
+} from "./seo-tabs";
+import { StatusField, statusSchema } from "./status-field";
 
 const defaultValues = {
   pictures: [],
@@ -49,6 +60,15 @@ const defaultValues = {
   meta_title: "",
   meta_description: "",
   meta_keywords: "",
+  status: "active",
+  // countries the blog is shown in (none selected => every country)
+  city: [],
+  faq: [],
+  jsonld_schema: "",
+  // form-only list of schema boxes [{ value }], saved as jsonld_schema
+  schemas: [],
+  // country-wise SEO: { [country]: { meta_title, meta_description, meta_keywords, jsonld_schema, faq } }
+  country_seo: {},
 };
 
 export const schema = z.object({
@@ -60,6 +80,16 @@ export const schema = z.object({
   meta_title: z.string().optional(),
   meta_description: z.string().optional(),
   meta_keywords: z.string().optional(),
+  city: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .optional()
+    .nullable()
+    .transform((data) => (data ?? []).map((d) => d.value)),
+  status: statusSchema,
+  jsonld_schema: z.any().optional(),
+  schemas: schemaListSchema,
+  faq: faqListSchema,
+  country_seo: countrySeoSchema,
 });
 
 export default function BlogForm({ id, type }) {
@@ -117,6 +147,9 @@ export default function BlogForm({ id, type }) {
       });
     }
 
+    // schema boxes => jsonld_schema; country blocks only for selected countries
+    applySeoPayload(data, data.city);
+
     const formData = new FormData();
     Object.entries(files).forEach(([key, value]) => {
       value?.forEach((file) => {
@@ -141,6 +174,8 @@ export default function BlogForm({ id, type }) {
       : updateMutation.mutate(formData);
   };
 
+  const selectedCountries = watch("city") || [];
+
   const formErrors = getFormErrors(errors);
   const hasErrors = formErrors.length > 0;
   const isFormPending =
@@ -156,6 +191,9 @@ export default function BlogForm({ id, type }) {
       reset({
         ...data,
         date: data.date ? moment(data.date) : null,
+        status: data.status || "active",
+        city: cityOptions.filter((item) => data?.city?.includes(item.value)),
+        ...toSeoFormValues(data),
         // related_products: productOptions.filter((i) =>
         //   data?.related_products?.includes(i.value),
         // ),
@@ -292,6 +330,29 @@ export default function BlogForm({ id, type }) {
               />
             </div>
 
+            <StatusField />
+
+            {/* countries */}
+            <div className="space-y-2">
+              <Label>Countries</Label>
+              <Controller
+                control={control}
+                name="city"
+                render={({ field }) => (
+                  <CustomMultiSelect
+                    options={cityOptions}
+                    value={field.value || []}
+                    onChange={(value) => field.onChange(value)}
+                    placeholder="Select Countries"
+                    className={cn({ "border-red-500": errors.city })}
+                  />
+                )}
+              />
+              <p className="text-muted-foreground text-xs">
+                Leave empty to show this blog in every country.
+              </p>
+            </div>
+
             {/* description */}
             <div className="col-span-full space-y-2">
               <Label htmlFor="description">Description</Label>
@@ -356,39 +417,8 @@ export default function BlogForm({ id, type }) {
 
         <Separator className="col-span-full" />
 
-        {/* seo */}
-        <div className="space-y-4">
-          <h3 className="text-3xl font-semibold">SEO</h3>
-          <div className="space-y-2">
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_title">Meta title</Label>
-              <Input
-                id="meta_title"
-                {...register("meta_title")}
-                className={cn({ "border-red-500": errors.meta_title })}
-                placeholder="Enter meta title"
-              />
-            </div>
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_description">Meta description</Label>
-              <Textarea
-                id="meta_description"
-                {...register("meta_description")}
-                className={cn({ "border-red-500": errors.meta_description })}
-                placeholder="Enter meta description"
-              />
-            </div>
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="meta_keywords">Meta keywords</Label>
-              <Textarea
-                id="meta_keywords"
-                {...register("meta_keywords")}
-                className={cn({ "border-red-500": errors.meta_keywords })}
-                placeholder="Enter meta keywords"
-              />
-            </div>
-          </div>
-        </div>
+        {/* seo, faqs & schema: Global tab + one tab per selected country */}
+        <SeoTabs countries={selectedCountries} />
 
         {/* errors print */}
         {hasErrors && (

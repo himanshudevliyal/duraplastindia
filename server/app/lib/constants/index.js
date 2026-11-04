@@ -51,6 +51,7 @@ const constants = {
     ENQUIRY_TABLE: "enquiries",
     NEWSLETTER_TABLE: "newsletters",
     DISTRIBUTOR_ENQUIRY_TABLE: "distributor_enquiries",
+    CUSTOM_PAGE_TABLE: "custom_pages",
 
 
   },

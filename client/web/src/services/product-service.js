@@ -31,9 +31,11 @@ export const deleteBlog = async (id) => {
   return await http().delete(`${endpoints.blogs.getAll}/${id}`);
 };
 
-export const fetchBlogBySlug = async (slug) => {
+// country: "India" | "Australia" ... => that country's SEO / FAQs; empty => global
+export const fetchBlogBySlug = async (slug, country) => {
+  const query = country ? `?country=${encodeURIComponent(country)}` : "";
   const { data } = await http().get(
-    `${endpoints.blogs.getAll}/get-by-slug/${slug}`,
+    `${endpoints.blogs.getAll}/get-by-slug/${slug}${query}`,
   );
   return data;
 };

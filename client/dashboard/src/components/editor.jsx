@@ -24,7 +24,7 @@ export default function TextEditor({ onChange, value }) {
 
   return (
     <Editor
-      apiKey="uditdvblx14iu89wh6lbwv7vpwbsr53jooofnm2g3hgs8n6q"
+      apiKey="w862pfoho7duge4h5w87eylktsnmibi2lneefn6f22dqoitc"
       onInit={(_evt, editor) => (editorRef.current = editor)}
       init={{
         plugins:

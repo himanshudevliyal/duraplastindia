@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Section } from "@/components/layout/section";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale } from "next-intl";
+import { getCountryFromLocale } from "@/utils/country-mapping";
 
 // Normalizes a raw picture path coming from the API (Windows-style
 // backslashes, "public/images/..." prefix) into a clean web path, then
@@ -25,7 +27,11 @@ function formatDate(date) {
 }
 
 export default function BlogsPage() {
-  const { data, isLoading, isError } = useBlogs();
+  // blogs for this country (+ blogs with no country selected), like products
+  const country = getCountryFromLocale(useLocale());
+  const { data, isLoading, isError } = useBlogs(
+    `country=${encodeURIComponent(country)}`,
+  );
   const [query, setQuery] = useState("");
 
   const blogs = data?.blogs ?? [];

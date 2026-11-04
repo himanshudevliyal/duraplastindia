@@ -7,6 +7,7 @@ import {
   MessageSquareMoreIcon,
   MailIcon,
   Building2,
+  FileText,
 } from "lucide-react";
 
 const ROLES = {
@@ -60,6 +61,27 @@ export const sidebarData = [
       {
         title: "Edit",
         url: "/blogs/:id/edit",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+    ],
+  },
+  {
+    title: "Custom Pages",
+    url: "/custom-pages?page=1&limit=10",
+    icon: FileText,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [
+      {
+        title: "Create",
+        url: "/custom-pages/create",
+        roles: [ROLES.ADMIN],
+        isVisible: true,
+      },
+      {
+        title: "Edit",
+        url: "/custom-pages/:id/edit",
         roles: [ROLES.ADMIN],
         isVisible: false,
       },
