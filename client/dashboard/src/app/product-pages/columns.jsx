@@ -41,16 +41,21 @@ export const columns = (openModal, setId) => [
       const { slug, city } = row.original;
       const title = row.getValue("title");
       const site = primarySite(city);
-      if (!site || !slug) return <span>{title ?? "-"}</span>;
+      if (!site || !slug)
+        return (
+          <span className="block max-w-[320px] whitespace-normal">
+            {title ?? "-"}
+          </span>
+        );
       return (
         <a
           target="_blank"
           rel="noreferrer"
           href={productUrl(site, slug)}
-          className="hover:text-primary inline-flex items-center gap-1 font-medium"
+          className="hover:text-primary inline-flex max-w-[320px] items-start gap-1 font-medium whitespace-normal"
         >
           {title ?? "-"}
-          <ExternalLink className="size-3 opacity-60" />
+          <ExternalLink className="mt-1 size-3 shrink-0 opacity-60" />
         </a>
       );
     },
@@ -68,7 +73,10 @@ export const columns = (openModal, setId) => [
       );
     },
     cell: ({ row }) => (
-      <span className="text-muted-foreground font-mono text-xs">
+      <span
+        className="text-muted-foreground block max-w-[240px] truncate font-mono text-xs"
+        title={row.getValue("product_page_slug") ?? ""}
+      >
         {row.getValue("product_page_slug") ?? "-"}
       </span>
     ),
@@ -80,14 +88,26 @@ export const columns = (openModal, setId) => [
       // every saved country (same as the product form)
       const city = row.original.city || [];
       if (!city.length) return <span className="text-muted-foreground">-</span>;
+
+      // compact: Global first, then up to MAX country codes, then "+N"
+      const MAX = 5;
+      const ordered = [
+        ...city.filter((c) => c === GLOBAL_COUNTRY),
+        ...city.filter((c) => c !== GLOBAL_COUNTRY),
+      ];
+      const shown = ordered.slice(0, MAX);
+      const hidden = ordered.slice(MAX);
+
       return (
-        <div className="flex max-w-[260px] flex-wrap gap-1">
-          {city.map((c) => (
+        <div
+          className="flex w-[230px] flex-wrap items-center gap-1"
+          title={ordered.join(", ")}
+        >
+          {shown.map((c) => (
             <Badge
               key={c}
               variant={c === GLOBAL_COUNTRY ? "default" : "outline"}
-              className="h-6 font-normal"
-              title={c}
+              className="h-6 px-2 text-[11px] font-medium"
             >
               {c === GLOBAL_COUNTRY ? (
                 <>
@@ -100,6 +120,14 @@ export const columns = (openModal, setId) => [
               )}
             </Badge>
           ))}
+          {hidden.length > 0 && (
+            <Badge
+              variant="secondary"
+              className="h-6 px-2 text-[11px] font-medium"
+            >
+              +{hidden.length}
+            </Badge>
+          )}
         </div>
       );
     },
