@@ -1,13 +1,12 @@
 "use client";
-// Shared by the product page and blog forms: country list and the
-// "SEO, FAQs & Schema" tabs (Global + one tab per selected country).
+// Shared by the product page, blog and custom page forms: site / country
+// options and the SEO, FAQs & Schema fields.
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 
@@ -89,8 +88,8 @@ export function fromSchemaList(list) {
   return schemas.length ? schemas : "";
 }
 
-// Reusable meta block. prefix "" => Global SEO (existing field names),
-// prefix "country_seo.<country>." => country-specific SEO.
+// Reusable meta block. prefix "" => top-level fields (blogs / custom pages),
+// prefix "country_content.<country>." => a product country tab.
 export function SeoFields({ prefix = "", label = "", idKey = "" }) {
   const {
     register,
@@ -98,7 +97,10 @@ export function SeoFields({ prefix = "", label = "", idKey = "" }) {
   } = useFormContext();
 
   const fieldErrors = prefix
-    ? errors?.country_seo?.[idKey] || {}
+    ? prefix
+        .split(".")
+        .filter(Boolean)
+        .reduce((acc, key) => acc?.[key], errors) || {}
     : errors || {};
   const withLabel = (text) => (label ? `${label} ${text}` : text);
   const idOf = (name) => (idKey ? `${idKey}_${name}` : name);
@@ -202,7 +204,7 @@ export function SchemaFields({ prefix = "", label = "", hint = "" }) {
   );
 }
 
-// FAQ list. name "faq" => global FAQs, "country_seo.<country>.faq" => country FAQs.
+// FAQ list. name "faq" (blogs / pages) or "country_content.<country>.faq".
 export function FaqFields({ name, label = "", hint = "" }) {
   const {
     register,
@@ -271,91 +273,26 @@ export function FaqFields({ name, label = "", hint = "" }) {
   );
 }
 
-// Tabs: Global + one per selected country. Only the active tab's fields are shown.
-export function SeoTabs({ countries }) {
-  const {
-    formState: { errors },
-  } = useFormContext();
-  const [activeTab, setActiveTab] = useState("global");
-
-  // fall back to Global when the active country is removed
-  const active = countries.some((c) => c.value === activeTab)
-    ? activeTab
-    : "global";
-
-  const tabs = [{ value: "global", label: "Global" }, ...countries];
-
-  const hasError = (tab) =>
-    tab === "global"
-      ? ["meta_title", "meta_description", "meta_keywords", "schemas", "faq"]
-          .some((key) => errors?.[key])
-      : !!errors?.country_seo?.[tab];
-
-  const activeCountry = countries.find((c) => c.value === active);
-
+// SEO, FAQs & Schema of a blog / custom page (one site per item).
+export function SeoSection() {
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-3xl font-semibold">SEO, FAQs & Schema</h3>
-        <p className="text-muted-foreground text-sm">
-          Global is used on the main site and for any country field left
-          empty. Select countries above to get their tabs.
-        </p>
-      </div>
-
-      <div className="flex flex-wrap gap-1 border-b">
-        {tabs.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setActiveTab(tab.value)}
-            className={cn(
-              "-mb-px flex items-center gap-1.5 border-b-2 px-4 py-2 text-sm font-medium transition-colors",
-              active === tab.value
-                ? "border-primary text-foreground"
-                : "text-muted-foreground hover:text-foreground border-transparent",
-            )}
-          >
-            {tab.label}
-            {hasError(tab.value) && (
-              <span className="size-2 rounded-full bg-red-500" />
-            )}
-          </button>
-        ))}
-      </div>
-
-      {active === "global" ? (
-        <div key="global" className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-6">
-            <SeoFields />
-            <SchemaFields />
-          </div>
-          <FaqFields name="faq" />
+      <h3 className="text-3xl font-semibold">SEO, FAQs & Schema</h3>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <SeoFields />
+          <SchemaFields />
         </div>
-      ) : (
-        <div key={active} className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-6">
-            <SeoFields
-              prefix={`country_seo.${active}.`}
-              label={activeCountry.label}
-              idKey={active}
-            />
-            <SchemaFields
-              prefix={`country_seo.${active}.`}
-              label={activeCountry.label}
-              hint="Leave empty to use the Global schemas."
-            />
-          </div>
-          <FaqFields
-            name={`country_seo.${active}.faq`}
-            label={activeCountry.label}
-            hint={`Leave empty to show the Global FAQs for ${activeCountry.label}.`}
-          />
-        </div>
-      )}
+        <FaqFields name="faq" />
+      </div>
     </div>
   );
 }
+
+// ================= Sites / countries =================
+// "Global" = the main site (no URL prefix). Chosen like a country; an item
+// without Global is not shown on the main site.
+export const GLOBAL_COUNTRY = "Global";
 
 // Countries that have a website (/in, /au, /za ...). The value is saved in
 // the DB and must match exactly:
@@ -378,6 +315,48 @@ export const websiteCountryOptions = [
   { label: "Tanzania", value: "Tanzania" },
 ];
 
+// Live website + URL prefix of every site (same codes as the website).
+export const WEBSITE_URL = "https://www.duraplastindia.com";
+export const SITE_LOCALES = {
+  India: "in",
+  Australia: "au",
+  "New Zealand": "nz",
+  "United States": "us",
+  "United Kingdom": "gb",
+  UAE: "ae",
+  "South Africa": "za",
+  Egypt: "eg",
+  Nigeria: "ng",
+  Morocco: "ma",
+  Algeria: "dz",
+  Kenya: "ke",
+  Tanzania: "tz",
+};
+
+// Live URL of a product on a site ("Global" = main site, no prefix).
+export const productUrl = (country, slug) =>
+  `${WEBSITE_URL}${
+    country === GLOBAL_COUNTRY || !SITE_LOCALES[country]
+      ? ""
+      : `/${SITE_LOCALES[country]}`
+  }/product/${slug}`;
+
+// Options of the country pickers: Global + every country with a website.
+export const siteOptions = [
+  { label: "Global (main site)", value: GLOBAL_COUNTRY },
+  ...websiteCountryOptions,
+];
+
+// Picker options for an item: every site + any other country already saved
+// on it (e.g. "Canada"), so the form shows exactly what is in the database.
+export const withSavedOptions = (saved = []) => [
+  ...siteOptions,
+  ...[...new Set(Array.isArray(saved) ? saved : [saved])]
+    .filter((c) => c && !siteOptions.some((o) => o.value === c))
+    .map((c) => ({ label: c, value: c })),
+];
+
+// Old, wider list (countries without a website). Not used by the forms.
 export const cityOptions = [
   ...websiteCountryOptions,
   { label: "Canada", value: "Canada" },
@@ -404,15 +383,15 @@ export const cityOptions = [
   { label: "Thailand", value: "Thailand" },
   { label: "Indonesia", value: "Indonesia" },
   { label: "Vietnam", value: "Vietnam" },
-  { label: "Philippines", value: "Philippines" },
+  { label: "Philippines", value: "Philippines" },
   { label: "Saudi Arabia", value: "Saudi Arabia" },
   { label: "Qatar", value: "Qatar" },
   { label: "Oman", value: "Oman" },
   { label: "Kuwait", value: "Kuwait" },
-  { label: "Bahrain", value: "Bahrain" },
+  { label: "Bahrain", value: "Bahrain" },
   { label: "Brazil", value: "Brazil" },
   { label: "Mexico", value: "Mexico" },
-  { label: "Argentina", value: "Argentina" },
+  { label: "Argentina", value: "Argentina" },
   { label: "Sri Lanka", value: "Sri Lanka" },
   { label: "Bangladesh", value: "Bangladesh" },
   { label: "Nepal", value: "Nepal" },
@@ -432,56 +411,15 @@ export const faqListSchema = z
   .optional()
   .nullable();
 
-// country_seo: { [country]: { meta_title, meta_description, meta_keywords, jsonld_schema, schemas, faq } }
-export const countrySeoSchema = z
-  .record(
-    z.string(),
-    z.object({
-      meta_title: z.string().optional().nullable(),
-      meta_description: z.string().optional().nullable(),
-      meta_keywords: z.string().optional().nullable(),
-      jsonld_schema: z.any().optional().nullable(),
-      schemas: schemaListSchema,
-      faq: faqListSchema,
-    }),
-  )
-  .optional()
-  .nullable();
-
-// API record => form values (schema boxes for Global and every country)
+// API record => form values (schema boxes)
 export function toSeoFormValues(data) {
-  return {
-    schemas: toSchemaList(data?.jsonld_schema),
-    country_seo: Object.fromEntries(
-      Object.entries(data?.country_seo || {}).map(([country, seo]) => [
-        country,
-        { ...seo, schemas: toSchemaList(seo?.jsonld_schema) },
-      ]),
-    ),
-  };
+  return { schemas: toSchemaList(data?.jsonld_schema) };
 }
 
-// Form values => API payload (mutates data). `countries` = selected country values.
-// Country blocks are sent only for selected countries and only when not empty.
-export function applySeoPayload(data, countries = []) {
+// Form values => API payload (mutates data): schema boxes => jsonld_schema.
+export function applySeoPayload(data) {
   data.jsonld_schema = fromSchemaList(data.schemas);
   delete data.schemas;
-
-  data.country_seo = Object.fromEntries(
-    Object.entries(data.country_seo || {})
-      .map(([country, { schemas, ...seo }]) => {
-        const jsonld = fromSchemaList(schemas);
-        if (jsonld) seo.jsonld_schema = jsonld;
-        else delete seo.jsonld_schema;
-        return [country, seo];
-      })
-      .filter(
-        ([country, seo]) =>
-          countries.includes(country) &&
-          (seoFieldKeys.some((key) => seo?.[key]?.toString().trim()) ||
-            seo?.faq?.length),
-      ),
-  );
-
+  delete data.country_seo; // old country-wise SEO, no longer used
   return data;
 }

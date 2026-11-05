@@ -51,7 +51,7 @@ function Options({ items, other }) {
 export default function Details({ id }) {
   const { data: record, isLoading, isError, error } = useDistributorEnquiry(id);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader variant="details" />;
   if (isError) return <ErrorMessage error={error} />;
   if (!record) return null;
 

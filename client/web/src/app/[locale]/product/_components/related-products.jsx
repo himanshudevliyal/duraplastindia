@@ -4,16 +4,20 @@ import { Section } from "@/components/layout/section";
 import Heading from "@/components/layout/heading";
 import { useCategoryRelatedProducts } from "@/hooks/use-categories";
 import { useLocale } from "next-intl";
-import { getCountryFromLocale } from "@/utils/country-mapping";
+import {
+  countryQuery,
+  getCountryFromLocale,
+  localizeProduct,
+} from "@/utils/country-mapping";
 import { ProductCard } from "@/home/our-solutions";
 
 export default function RelativeProducts({ categoryId, currentProductId }) {
   const locale = useLocale();
-  const country = getCountryFromLocale(locale); // null => global
+  const country = getCountryFromLocale(locale); // "Global" on the main site
 
   const { data, isLoading } = useCategoryRelatedProducts(
     categoryId,
-    country ? `country=${country}` : "",
+    countryQuery(locale),
   );
 
   if (isLoading) return <div>Loading...</div>;
@@ -25,9 +29,9 @@ export default function RelativeProducts({ categoryId, currentProductId }) {
       );
 
   // Current product ko Related Products se remove karo
-  const relatedProducts = products.filter(
-    (product) => product.id !== currentProductId,
-  );
+  const relatedProducts = products
+    .filter((product) => product.id !== currentProductId)
+    .map((product) => localizeProduct(product, country));
 
   if (!relatedProducts.length) return null;
 

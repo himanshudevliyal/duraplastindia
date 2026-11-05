@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -97,122 +96,115 @@ export function DataTable({
     }
   }, [currentPage, setCurrentPage]);
 
+  const from = paginationState.pageIndex * paginationState.pageSize + 1;
+  const to = Math.min(
+    (paginationState.pageIndex + 1) * paginationState.pageSize,
+    totalItems,
+  );
+  const pagerButton = "size-9 rounded-full p-0";
+
   return (
-    <div className="flex h-[69vh] flex-1 flex-col space-y-4">
-      <ScrollArea className="rounded-xl border">
-        <Table className={""}>
-          <TableHeader className="sticky top-0 z-10">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
+    <div className="bg-card flex flex-col rounded-[28px] border p-2 shadow">
+      <Table containerClassName="max-h-[calc(100svh-320px)] min-h-40 overflow-auto rounded-[22px]">
+        <TableHeader className="bg-muted sticky top-0 z-10 backdrop-blur [&_th:first-child]:rounded-l-2xl [&_th:last-child]:rounded-r-2xl [&_tr]:border-0 [&_tr:hover]:bg-transparent">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} colSpan={header.colSpan}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    style={{
+                      ...getCommonPinningStyles({ column: cell.column }),
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        ...getCommonPinningStyles({ column: cell.column }),
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-
-      <div className="flex flex-col items-center justify-end gap-2 space-x-2 py-4 sm:flex-row">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-muted-foreground flex-1 text-start text-sm">
-            {totalItems > 0 ? (
-              <>
-                Showing{" "}
-                {paginationState.pageIndex * paginationState.pageSize + 1} to{" "}
-                {Math.min(
-                  (paginationState.pageIndex + 1) * paginationState.pageSize,
-                  totalItems,
-                )}{" "}
-                of {totalItems} entries
-              </>
-            ) : (
-              "No entries found"
-            )}
-          </div>
-
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
-            <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium whitespace-nowrap">
-                Rows per page
-              </p>
-              <Select
-                value={`${paginationState.pageSize}`}
-                onValueChange={(value) => {
-                  table.setPageSize(Number(value));
-                }}
+            ))
+          ) : (
+            <TableRow className="hover:bg-transparent">
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="text-muted-foreground h-40 text-center"
               >
-                <SelectTrigger className="h-8 w-[70px]">
-                  <SelectValue placeholder={paginationState.pageSize} />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {pageSizeOptions.map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
+                Nothing here yet.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
-        <div className="flex w-full items-center justify-between gap-2 sm:justify-end">
-          <div className="flex items-center justify-center text-sm font-medium">
-            {totalItems > 0 ? (
-              <>
-                Page {paginationState.pageIndex + 1} of {table.getPageCount()}
-              </>
-            ) : (
-              "No pages"
-            )}
+      {/* footer: count · rows per page · pager */}
+      <div className="flex flex-col gap-3 px-3 pt-3 pb-1 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-muted-foreground text-sm">
+          {totalItems > 0 ? (
+            <>
+              Showing <span className="text-foreground font-medium">{from}</span>
+              –<span className="text-foreground font-medium">{to}</span> of{" "}
+              <span className="text-foreground font-medium">{totalItems}</span>
+            </>
+          ) : (
+            "No entries"
+          )}
+        </p>
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground text-sm whitespace-nowrap">
+              Rows
+            </span>
+            <Select
+              value={`${paginationState.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="h-9 w-[76px]">
+                <SelectValue placeholder={paginationState.pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {pageSizeOptions.map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <div className="flex items-center space-x-2">
+
+          <span className="text-sm whitespace-nowrap">
+            Page{" "}
+            <span className="font-medium">
+              {totalItems > 0 ? paginationState.pageIndex + 1 : 0}
+            </span>{" "}
+            of <span className="font-medium">{table.getPageCount() || 0}</span>
+          </span>
+
+          <div className="flex items-center gap-1">
             <Button
               aria-label="Go to first page"
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className={`${pagerButton} hidden lg:flex`}
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
@@ -221,7 +213,7 @@ export function DataTable({
             <Button
               aria-label="Go to previous page"
               variant="outline"
-              className="h-8 w-8 p-0"
+              className={pagerButton}
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
@@ -230,7 +222,7 @@ export function DataTable({
             <Button
               aria-label="Go to next page"
               variant="outline"
-              className="h-8 w-8 p-0"
+              className={pagerButton}
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
@@ -239,7 +231,7 @@ export function DataTable({
             <Button
               aria-label="Go to last page"
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className={`${pagerButton} hidden lg:flex`}
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >

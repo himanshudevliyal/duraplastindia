@@ -17,13 +17,13 @@ import z from "zod";
 import FileUpload from "@/components/file-uploader";
 import Loader from "../loader";
 import ErrorMessage from "../ui/error";
-import config from "@/config";
 
 import {
   useChannelPartner,
   useCreateChannelPartner,
   useUpdateChannelPartner,
 } from "@/hooks/channel-partner";
+import { fileUrl } from "@/lib/file-url";
 
 const defaultValues = {
   country: "",
@@ -157,7 +157,7 @@ export default function ChannelPartnerForm({ id, type }) {
             {logoUrl && (
               <div className="relative size-28">
                 <Image
-                  src={`${config.file_base}/${logoUrl}`}
+                  src={fileUrl(logoUrl)}
                   width={200}
                   height={200}
                   alt="logo"

@@ -1,6 +1,10 @@
 // Main site (https://duraplastindia.com/) — served without a URL prefix.
 export const GLOBAL_LOCALE = "global";
 
+// The main site's name in the dashboard country pickers. Products / blogs /
+// custom pages are shown on the main site only when "Global" is selected.
+export const GLOBAL_COUNTRY = "Global";
+
 // ================= Single source of countries =================
 // locale: URL prefix (/za ...)
 // name:   EXACT value saved from the dashboard country dropdown (product /
@@ -35,25 +39,53 @@ export const COUNTRY_TO_LOCALE = Object.fromEntries(
   COUNTRIES.map((c) => [c.name, c.locale]),
 );
 
-// Products shown for a locale; global site uses India's products.
+// Dashboard country of a locale; global site (or no locale) => "Global".
 export const getCountryFromLocale = (locale) =>
-  LOCALE_TO_COUNTRY[locale] || "India";
+  LOCALE_TO_COUNTRY[locale] || GLOBAL_COUNTRY;
 
-// Country for per-country SEO (meta / FAQs / schema).
-// Global site => undefined => Global SEO.
-export const getSeoCountry = (locale) => LOCALE_TO_COUNTRY[locale];
+// Country whose content / SEO the API returns for a page of this locale.
+export const getSeoCountry = getCountryFromLocale;
 
 // URL prefix for a locale: "" for global, "/in", "/au" ... for countries
 export const getLocalePrefix = (locale) =>
   !locale || locale === GLOBAL_LOCALE ? "" : `/${locale}`;
 
-// product.city holds the selected countries; global site shows every product
+// Products: shown ONLY on the sites selected for them (Global included).
 export const isProductAvailableInCountry = (city, country) => {
-  if (!country) return true;
   if (!city) return false;
   return Array.isArray(city) ? city.includes(country) : city === country;
 };
 
-// blogs / custom pages: no country selected => shown in every country
+// Blogs / custom pages: one site each ("Global" or a country). Old items
+// without a country count as Global.
 export const isShownInCountry = (city, country) =>
-  !Array.isArray(city) || city.length === 0 || city.includes(country);
+  Array.isArray(city) && city.length
+    ? city.includes(country)
+    : country === GLOBAL_COUNTRY;
+
+// Product of a list with this country's URL slug, category, pictures and
+// title (lists send product.country_titles: { [country]: {...} }).
+// base_title: the product's main title (menu order uses it).
+export const localizeProduct = (product, country) => {
+  const tab = product?.country_titles?.[country];
+  const base = { ...product, base_title: product?.title };
+  if (!tab) return base;
+  return {
+    ...base,
+    slug: tab.slug || product.slug,
+    category_id: tab.category_id ?? product.category_id,
+    pictures: tab.pictures?.length ? tab.pictures : product.pictures,
+    title: tab.title || product.title,
+    description: tab.description ?? product.description,
+  };
+};
+
+// Locales (global + countries) where a product exists — for hreflang.
+export const productLocales = (city, locales) =>
+  locales.filter((l) =>
+    isProductAvailableInCountry(city, getCountryFromLocale(l)),
+  );
+
+// "country=India" / "country=Global" query for list APIs.
+export const countryQuery = (locale) =>
+  `country=${encodeURIComponent(getCountryFromLocale(locale))}`;

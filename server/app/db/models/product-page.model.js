@@ -1,7 +1,25 @@
 "use strict";
 import constants from "../../lib/constants/index.js";
 import { DataTypes, QueryTypes } from "sequelize";
-import { applyCountrySeo } from "../../helpers/country-seo.js";
+import { applyCountryContent } from "../../helpers/country-seo.js";
+
+// { [country]: { slug, category_id, pictures, title, description } } for
+// product lists (each country's own URL, category, picture and title).
+// `alias` = the product_pages table alias in the query.
+export const COUNTRY_TITLES_SQL = (alias) => `COALESCE((
+        SELECT jsonb_object_agg(e.key, jsonb_build_object(
+          'slug', e.value->'slug',
+          'category_id', e.value->'category_id',
+          'pictures', e.value->'pictures',
+          'title', e.value->'title',
+          'description', e.value->'description'))
+        FROM jsonb_each(${alias}.country_content) e
+      ), '{}'::jsonb) AS country_titles`;
+
+// SQL condition: the product uses :slug as its URL in some country
+const SLUG_MATCH_SQL = (alias) => `(${alias}.slug = :slug OR EXISTS (
+        SELECT 1 FROM jsonb_each(${alias}.country_content) e
+        WHERE e.value->>'slug' = :slug))`;
 
 let ProductPageModel = null;
 
@@ -69,6 +87,17 @@ const init = async (sequelize) => {
       //   "us": { ... }
       // }
       country_seo: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
+
+      // Content of every selected country tab, incl. "Global" (main site):
+      // { [country]: { title, description, content, overview, why_choose,
+      //   applications, benefits, meta_*, jsonld_schema, faq } }
+      // The base columns hold a copy of the primary tab (Global if selected,
+      // else the first country) for lists and the dashboard table.
+      country_content: {
         type: DataTypes.JSONB,
         allowNull: false,
         defaultValue: {},
@@ -168,6 +197,7 @@ const create = async (req, transaction) => {
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
       country_seo: req.body.country_seo || {},
+      country_content: req.body.country_content || {},
       faq: req.body.faq || [],
 
       overview: req.body.overview || { heading: "", paragraphs: [] },
@@ -217,6 +247,7 @@ const update = async (req, id, transaction) => {
       meta_keywords: req.body.meta_keywords,
       jsonld_schema: req.body.jsonld_schema,
       country_seo: req.body.country_seo || {},
+      country_content: req.body.country_content || {},
       faq: req.body.faq || [],
 
       overview: req.body.overview || { heading: "", paragraphs: [] },
@@ -303,7 +334,8 @@ const get = async (req) => {
       prdp.pictures,
       prdp.description,
       prdp.created_at,
-      prdp.category_id
+      prdp.category_id,
+      ${COUNTRY_TITLES_SQL("prdp")}
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat
       ON cat.id = prdp.category_id
@@ -385,6 +417,7 @@ const getBySlug = async (req, slug) => {
       prdp.meta_keywords,
       prdp.jsonld_schema,
       prdp.country_seo,
+      prdp.country_content,
       prdp.faq,
 
       prdp.created_at,
@@ -394,7 +427,8 @@ const getBySlug = async (req, slug) => {
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat
       ON cat.id = prdp.category_id
-    WHERE prdp.slug = :slug
+    WHERE ${SLUG_MATCH_SQL("prdp")}
+    LIMIT 1
   `;
 
   const record = await ProductPageModel.sequelize.query(query, {
@@ -408,8 +442,32 @@ const getBySlug = async (req, slug) => {
 
   if (!record) return record;
 
-  // ?country=za (URL code) or ?country=South Africa (name).
-  return applyCountrySeo(record, req.query?.country);
+  // ?country=za (URL code) / South Africa / Global => that country's tab.
+  // Its `slug` may differ from the requested one (the website redirects).
+  return applyCountryContent(record, req.query?.country);
+};
+
+// Slugs (of any country) already used by another product.
+const findUsedSlugs = async (slugs, excludeId) => {
+  if (!slugs.length) return [];
+  const rows = await ProductPageModel.sequelize.query(
+    `
+    SELECT DISTINCT s.slug
+    FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
+    CROSS JOIN LATERAL (
+      SELECT prdp.slug
+      UNION
+      SELECT e.value->>'slug' FROM jsonb_each(prdp.country_content) e
+    ) s(slug)
+    WHERE s.slug IN (:slugs)
+      AND (CAST(:excludeId AS uuid) IS NULL OR prdp.id <> CAST(:excludeId AS uuid))
+    `,
+    {
+      replacements: { slugs, excludeId: excludeId || null },
+      type: QueryTypes.SELECT,
+    },
+  );
+  return rows.map((r) => r.slug);
 };
 
 const deleteById = async (req, id, transaction) => {
@@ -442,6 +500,7 @@ export default {
   update: update,
   getById: getById,
   getBySlug: getBySlug,
+  findUsedSlugs: findUsedSlugs,
   get: get,
   deleteById: deleteById,
   getProductByCategory: getProductByCategory,

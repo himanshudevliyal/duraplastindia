@@ -23,16 +23,27 @@ import { Skeleton } from "./ui/skeleton";
 export function NavUser({}) {
   const { user, isUserLoading } = useAuth();
 
-  if (isUserLoading) return <Skeleton className={"size-5 rounded-full"} />;
+  if (isUserLoading) return <Skeleton className={"size-11 rounded-full"} />;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar>
-          <AvatarFallback className="rounded-lg">
-            <UserRound size={18} />
-          </AvatarFallback>
-        </Avatar>
+        <button
+          type="button"
+          aria-label="Account"
+          className="bg-muted hover:bg-accent flex shrink-0 items-center gap-2 rounded-full border py-1 pr-4 pl-1 transition-colors"
+        >
+          <Avatar className="size-9">
+            <AvatarFallback className="bg-brand rounded-full">
+              {(user?.fullname || user?.username || "A")
+                .charAt(0)
+                .toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="hidden max-w-32 truncate text-sm font-medium lg:block">
+            {user?.fullname || user?.username || "Account"}
+          </span>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
@@ -48,9 +59,12 @@ export function NavUser({}) {
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              {/* <span className="truncate text-xs">
-                {user?.email || user.fullname}
-              </span> */}
+              <span className="truncate font-medium">
+                {user?.fullname || user?.username || "Account"}
+              </span>
+              <span className="text-muted-foreground truncate text-xs">
+                {user?.role}
+              </span>
             </div>
           </div>
         </DropdownMenuLabel>

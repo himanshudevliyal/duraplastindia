@@ -9,6 +9,8 @@ export async function generateMetadata({ params }) {
   // title = the page heading shown in its banner
   return {
     title: "Contact Us | Dura Plast India",
+    description:
+      "Contact Dura Plast for skylights, polycarbonate roofing, glazing and roof ventilation. Get a quote, technical data or project support from our team.",
     alternates: canonical(locale, "/contact"),
   };
 }

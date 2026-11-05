@@ -13,13 +13,20 @@ export const fetchProductPage = async (id) => {
   return data;
 };
 
-// country: "India" | "Australia" ... => that country's SEO; empty => global SEO
+// country: "India" / "Global" ... => that country's content / SEO.
+// Returns null when the slug does not exist.
 export const fetchProductPageBySlug = async (slug, country) => {
   const query = country ? `?country=${encodeURIComponent(country)}` : "";
-  const { data } = await http().get(
-    `${endpoints.productPages.getAll}/get-by-slug/${slug}${query}`,
-  );
-  return data;
+  try {
+    const { data } = await http().get(
+      `${endpoints.productPages.getAll}/get-by-slug/${encodeURIComponent(slug)}${query}`,
+    );
+    return data;
+  } catch (error) {
+    // unknown slug => null => the page shows 404 (not a server error)
+    if (error?.response?.status === 404) return null;
+    throw error;
+  }
 };
 
 export const createProductPage = async (blog) => {

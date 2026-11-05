@@ -5,7 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { useSlider } from "@/lib/use-slider";
 import { cn } from "@/lib/utils";
-import Aurora from "./ui/aurora";
 import { useMessages } from "next-intl";
 import { useMemo, useState } from "react";
 import {
@@ -58,7 +57,6 @@ export function SiteHero() {
 
   return (
     <section className="relative h-screen min-h-[560px] w-full overflow-hidden ">
-      {/* <Aurora blend={0.5} amplitude={1.0} speed={0.5} /> */}
 
       <div
         ref={heroRef}

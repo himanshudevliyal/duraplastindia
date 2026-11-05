@@ -131,11 +131,12 @@ const get = async (req) => {
   // website: active pages only; dashboard (req.includeDrafts): all
   if (!req.includeDrafts) whereConditions.push(`cp.status = 'active'`);
 
-  // ?country=India => pages for that country (+ pages with no country selected)
+  // ?country=India / Global => pages of that site (old rows without a
+  // country count as Global)
   const country = req.query.country ? String(req.query.country) : null;
   if (country) {
     whereConditions.push(
-      `(cardinality(cp.city) = 0 OR :country = ANY(cp.city))`,
+      `(:country = ANY(cp.city) OR (cardinality(cp.city) = 0 AND :country = 'Global'))`,
     );
     queryParams.country = country;
   }

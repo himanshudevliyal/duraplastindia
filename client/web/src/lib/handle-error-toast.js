@@ -1,6 +1,5 @@
-// lib/handleError.ts
-import { toast } from "sonner";
-
+// Shows an error toast. sonner is loaded only when this runs, so it is not
+// part of every page's first load.
 export const handleError = (
   error,
   defaultMessage = "Something went wrong."
@@ -8,5 +7,7 @@ export const handleError = (
   const message =
     error?.response?.data?.message ?? error?.message ?? defaultMessage;
 
-  toast.error("Error", { description: message });
+  import("sonner").then(({ toast }) =>
+    toast.error("Error", { description: message }),
+  );
 };

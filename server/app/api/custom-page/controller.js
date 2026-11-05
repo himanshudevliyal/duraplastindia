@@ -70,7 +70,10 @@ export const schema = z.object({
   jsonld_schema: z.any().optional(),
   status: z.enum(["active", "draft"]).optional(),
   // countries the page is shown in; empty => every country
-  city: z.array(z.string()).optional(),
+  // exactly one site: "Global" (main site) or one country
+  city: z
+    .array(z.string())
+    .length(1, "Select one country (or Global)."),
   faq: faqSchema,
   // country-specific SEO: { India: {...}, Australia: {...} } (all optional)
   country_seo: z

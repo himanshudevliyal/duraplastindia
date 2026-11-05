@@ -1,41 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AlertCircle,
-  LoaderCircleIcon,
-  Plus,
-  Trash,
-  Trash2,
-  XIcon,
-} from "lucide-react";
-import {
-  Controller,
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
+import { AlertCircle, Globe, LoaderCircleIcon } from "lucide-react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "../ui/alert";
 import { getFormErrors } from "@/lib/get-form-errors";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Loader from "../loader";
 import ErrorMessage from "../ui/error";
-import { Textarea } from "../ui/textarea";
 import { useRouter } from "next/navigation";
-import FileUpload from "@/components/file-uploader";
-import { useState } from "react";
-import Image from "next/image";
-import config from "@/config";
-import { useCallback } from "react";
-import { Separator } from "../ui/separator";
 import { toast } from "sonner";
-import TextEditor from "../editor";
-import CustomCommandMenu from "../custom-command-menu";
-import { useFormattedCategories } from "@/hooks/use-categories";
 import { z } from "zod";
 import {
   useCreateProductPage,
@@ -43,231 +19,51 @@ import {
   useUpdateProductPage,
 } from "@/hooks/use-product-pages";
 import CustomMultiSelect from "../custom-multi-select";
+import { GLOBAL_COUNTRY, withSavedOptions } from "./seo-tabs";
 import {
-  SeoTabs,
-  cityOptions,
-  fromSchemaList,
-  schemaListSchema,
-  seoFieldKeys,
-  toSchemaList,
-} from "./seo-tabs";
+  CountryContentTabs,
+  countryTabSchema,
+  emptyTab,
+  fromTabFormValues,
+  toTabFormValues,
+} from "./country-content-tabs";
 
-// ================= Slug Helper =================
-// Agar value hai to usi ko slugify karega (lowercase, spaces/special chars -> hyphen)
-const generateSlug = (value) =>
-  value
-    ?.toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "";
+const IMAGE_SECTIONS = ["applications", "benefits"];
 
 const defaultValues = {
-  pictures: [],
-  title: "",
+  // selected sites: [{ label, value }] — "Global" = main site
   city: [],
-  description: "",
-  content: "",
-  category_id: null,
-  product_page_slug: "",
-
-  overview: {
-    heading: "",
-    paragraphs: [""],
-  },
-
-  why_choose: {
-    heading: "",
-    short_paragraph: "",
-    features: [
-      {
-        heading: "",
-        short_paragraph: "",
-      },
-    ],
-  },
-
-  applications: {
-    heading: "",
-    short_paragraph: "",
-    features: [
-      {
-        heading: "",
-        paragraph: "",
-        img: "",
-      },
-    ],
-  },
-
-  benefits: {
-    heading: "",
-    short_paragraph: "",
-    features: [
-      {
-        heading: "",
-        paragraph: "",
-        img: "",
-      },
-    ],
-  },
-
-  faq: [],
-
-  meta_title: "",
-  meta_description: "",
-  meta_keywords: "",
-  jsonld_schema: "",
-  // form-only list of schema boxes [{ value }], saved as jsonld_schema
-  schemas: [],
-
-  // country-wise SEO: { [countryValue]: { meta_title, meta_description, meta_keywords, jsonld_schema, faq } }
-  country_seo: {},
+  // { [country]: tab content incl. slug, category, pictures }
+  // — see country-content-tabs.jsx
+  country_content: {},
 };
 
 export const schema = z.object({
-  title: z.string().trim().min(1, "Title is required."),
-
   city: z
     .array(z.object({ label: z.string(), value: z.string() }))
-    .min(1, "Atleast 1 city is required.")
+    .min(1, "Select Global and/or at least 1 country.")
     .transform((data) => data.map((d) => d.value)),
-  description: z.string().optional().nullable(),
 
-  content: z.string().optional().nullable(),
-
-  category_id: z.string().uuid().optional().nullable(),
-
-  product_page_slug: z
-    .string()
-    .trim()
-    .min(1, "Product page slug is required.")
-    .regex(/^[a-zA-Z0-9-]+$/, {
-      message: "Invalid slug format",
-    }),
-
-  meta_title: z.string().optional(),
-
-  meta_description: z.string().optional(),
-
-  meta_keywords: z.string().optional(),
-
-  jsonld_schema: z.any().optional(),
-
-  schemas: schemaListSchema,
-
-  // country-specific SEO (all optional)
-  country_seo: z
-    .record(
-      z.string(),
-      z.object({
-        meta_title: z.string().optional().nullable(),
-        meta_description: z.string().optional().nullable(),
-        meta_keywords: z.string().optional().nullable(),
-        jsonld_schema: z.any().optional().nullable(),
-        schemas: schemaListSchema,
-        faq: z
-          .array(
-            z.object({
-              q: z
-                .string()
-                .trim()
-                .min(3, "Question must be atleast 3 characters long."),
-              a: z
-                .string()
-                .trim()
-                .min(3, "Answer must be atleast 3 characters long."),
-            }),
-          )
-          .optional()
-          .nullable(),
-      }),
-    )
-    .optional()
-    .nullable(),
-
-  overview: z
-    .object({
-      heading: z.string().optional(),
-      paragraphs: z.array(z.string()),
-    })
-    .optional()
-    .nullable(),
-
-  why_choose: z
-    .object({
-      heading: z.string().optional(),
-      short_paragraph: z.string().optional(),
-      features: z.array(
-        z.object({
-          heading: z.string().trim().min(1, "Heading is required"),
-          short_paragraph: z
-            .string()
-            .trim()
-            .min(1, "Short paragraph is required"),
-        }),
-      ),
-    })
-    .optional()
-    .nullable(),
-
-  applications: z
-    .object({
-      heading: z.string().optional(),
-      short_paragraph: z.string().optional(),
-      features: z.array(
-        z.object({
-          heading: z.string().trim().min(1, "Heading is required"),
-          paragraph: z.string().trim().min(1, "Paragraph is required"),
-          img: z.string().optional().nullable(),
-        }),
-      ),
-    })
-    .optional()
-    .nullable(),
-
-  benefits: z
-    .object({
-      heading: z.string().optional(),
-      short_paragraph: z.string().optional(),
-      features: z.array(
-        z.object({
-          heading: z.string().trim().min(1, "Heading is required"),
-          paragraph: z.string().trim().min(1, "Paragraph is required"),
-          img: z.string().optional().nullable(),
-        }),
-      ),
-    })
-    .optional()
-    .nullable(),
-
-  faq: z
-    .array(
-      z.object({
-        q: z
-          .string()
-          .trim()
-          .min(3, "Question must be atleast 3 characters long."),
-        a: z
-          .string()
-          .trim()
-          .min(3, "Answer must be atleast 3 characters long."),
-      }),
-    )
-    .optional()
-    .nullable(),
+  // only selected countries are kept in the form (see syncTabs)
+  country_content: z.record(z.string(), countryTabSchema),
 });
+
+// "Global" first, then the countries in the order they were picked
+const orderSites = (values) => [
+  ...values.filter((v) => v === GLOBAL_COUNTRY),
+  ...values.filter((v) => v !== GLOBAL_COUNTRY),
+];
 
 export default function ProductPageForm({ id, type }) {
   const router = useRouter();
 
-  const [files, setFiles] = useState({
-    pictures: [],
-    applications: {},
-    benefits: {},
-  });
-  const [fileUrls, setFileUrls] = useState({
-    picture_urls: [],
-  });
+  // new pictures per country: { [country]: File[] }
+  const [pictureFiles, setPictureFiles] = useState({});
+  // new application / benefit image per feature uid: { [uid]: File[] }
+  const [imageFiles, setImageFiles] = useState({});
+  // tabs of countries removed from the selection, restored if re-selected
+  const removedTabs = useRef({});
+
   const methods = useForm({
     resolver: zodResolver(schema),
     defaultValues,
@@ -284,41 +80,6 @@ export default function ProductPageForm({ id, type }) {
     watch,
     control,
   } = methods;
-  const {
-    fields: overviewParagraphs,
-    append: appendOverviewParagraph,
-    remove: removeOverviewParagraph,
-  } = useFieldArray({
-    control,
-    name: "overview.paragraphs",
-  });
-
-  const {
-    fields: whyChooseFeatures,
-    append: appendWhyChooseFeature,
-    remove: removeWhyChooseFeature,
-  } = useFieldArray({
-    control,
-    name: "why_choose.features",
-  });
-
-  const {
-    fields: applicationFeatures,
-    append: appendApplicationFeature,
-    remove: removeApplicationFeature,
-  } = useFieldArray({
-    control,
-    name: "applications.features",
-  });
-
-  const {
-    fields: benefitFeatures,
-    append: appendBenefitFeature,
-    remove: removeBenefitFeature,
-  } = useFieldArray({
-    control,
-    name: "benefits.features",
-  });
 
   const createMutation = useCreateProductPage(() => {
     reset();
@@ -332,102 +93,101 @@ export default function ProductPageForm({ id, type }) {
   });
 
   const { data, isLoading, isError, error } = useProductPage(id);
-  const {
-    data: categories,
-    isLoading: isCategoryLoading,
-    isError: isCategoryError,
-    error: categoryError,
-  } = useFormattedCategories("");
 
-  // ================= Auto Slug Logic =================
-  // Title change hone par: agar slug field me pehle se value hai to usi ko
-  // slugify karke rakho (title ignore). Agar slug empty hai to title se banao.
-  const titleValue = watch("title");
+  // sites + every country saved on this product (all of them are shown)
+  const countryOptions = useMemo(
+    () => withSavedOptions(data?.city),
+    [data],
+  );
 
-  useEffect(() => {
-    const currentSlug = getValues("product_page_slug");
+  // Keeps one tab per selected country: a new country starts empty ("Copy
+  // from…" in its tab fills it); a removed one is set aside and restored if
+  // it is selected again.
+  const syncTabs = useCallback(
+    (selected) => {
+      const current = getValues("country_content") || {};
+      const values = selected.map((s) => s.value);
+      const next = {};
 
-    if (currentSlug && currentSlug.trim() !== "") {
-      const regeneratedFromSlug = generateSlug(currentSlug);
-      if (regeneratedFromSlug !== currentSlug) {
-        setValue("product_page_slug", regeneratedFromSlug, {
-          shouldValidate: true,
-        });
-      }
-    } else {
-      setValue("product_page_slug", generateSlug(titleValue), {
-        shouldValidate: true,
+      values.forEach((country) => {
+        if (current[country]) {
+          next[country] = current[country];
+        } else if (removedTabs.current[country]) {
+          next[country] = removedTabs.current[country];
+          delete removedTabs.current[country];
+        } else {
+          next[country] = emptyTab();
+        }
       });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [titleValue]);
 
-  const onSubmit = (data) => {
-    if (!fileUrls?.picture_urls?.length && !files.pictures.length) {
-      return setError("pictures", {
-        type: "manual",
-        message: "Atleat 1 picture is required*",
+      Object.keys(current).forEach((country) => {
+        if (!values.includes(country)) {
+          removedTabs.current[country] = current[country];
+        }
       });
+
+      setValue("country_content", next);
+    },
+    [getValues, setValue],
+  );
+
+  const onSubmit = (formValues) => {
+    const countries = orderSites(formValues.city);
+
+    // every tab needs at least 1 picture (saved or new)
+    const noPicture = countries.filter(
+      (c) =>
+        !formValues.country_content[c]?.pictures?.length &&
+        !pictureFiles[c]?.length,
+    );
+    if (noPicture.length) {
+      noPicture.forEach((c) =>
+        setError(`country_content.${c}.pictures`, {
+          type: "manual",
+          message: "At least 1 picture is required.",
+        }),
+      );
+      return;
     }
 
     const formData = new FormData();
 
-    // Product Images
-    files.pictures.forEach((file) => {
-      formData.append("pictures", file);
+    // Country tabs + their new pictures and application / benefit images
+    const countryContent = {};
+    countries.forEach((country) => {
+      const tab = formValues.country_content[country];
+
+      (pictureFiles[country] || []).forEach((file) =>
+        formData.append(`cc_pic__${encodeURIComponent(country)}`, file),
+      );
+
+      IMAGE_SECTIONS.forEach((section) =>
+        (tab[section]?.features || []).forEach((feature, index) => {
+          (imageFiles[feature.uid] || []).forEach((file) =>
+            formData.append(
+              `cc_img__${encodeURIComponent(country)}__${section}__${index}`,
+              file,
+            ),
+          );
+        }),
+      );
+
+      countryContent[country] = fromTabFormValues(tab);
     });
 
-    // Application Images
-    Object.entries(files.applications).forEach(([index, fileList]) => {
-      fileList?.forEach((file) => {
-        formData.append(`applications_image_${index}`, file);
-      });
-    });
+    const payload = {
+      city: countries,
+      country_content: countryContent,
+    };
 
-    // Benefit Images
-    Object.entries(files.benefits).forEach(([index, fileList]) => {
-      fileList?.forEach((file) => {
-        formData.append(`benefits_image_${index}`, file);
-      });
-    });
-
-    // Schema boxes => jsonld_schema (array of schema objects, "" when none)
-    data.jsonld_schema = fromSchemaList(data.schemas);
-    delete data.schemas;
-
-    // Country SEO: send only for currently selected countries (skip empty blocks).
-    // Data of a removed country stays in form state while editing, so re-selecting
-    // the country restores what was typed; it is only dropped on save.
-    data.country_seo = Object.fromEntries(
-      Object.entries(data.country_seo || {})
-        .map(([country, { schemas, ...seo }]) => {
-          const jsonld = fromSchemaList(schemas);
-          if (jsonld) seo.jsonld_schema = jsonld;
-          else delete seo.jsonld_schema;
-          return [country, seo];
-        })
-        .filter(
-          ([country, seo]) =>
-            data.city.includes(country) &&
-            (seoFieldKeys.some((key) => seo?.[key]?.toString().trim()) ||
-              seo?.faq?.length),
-        ),
-    );
-
-    // Other Form Data
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(payload).forEach(([key, value]) => {
       formData.append(
         key,
-        typeof value === "object" ? JSON.stringify(value) : value,
+        typeof value === "object" && value !== null
+          ? JSON.stringify(value)
+          : value,
       );
     });
-
-    // Existing Images (Edit Mode)
-    if (type === "edit") {
-      Object.entries(fileUrls).forEach(([key, values]) => {
-        formData.append(key, JSON.stringify(values));
-      });
-    }
 
     type === "create"
       ? createMutation.mutate(formData)
@@ -437,54 +197,49 @@ export default function ProductPageForm({ id, type }) {
   const selectedCountries = watch("city") || [];
 
   const formErrors = getFormErrors(errors);
-  const hasErrors = formErrors.length > 0;
+  const tabsWithErrors = Object.keys(errors?.country_content || {});
+  const hasErrors = formErrors.length > 0 || tabsWithErrors.length > 0;
   const isFormPending =
     (type === "create" && createMutation.isPending) ||
     (type === "edit" && updateMutation.isPending);
 
   useEffect(() => {
     if (type === "edit" && data) {
-      setFileUrls((prev) => ({
-        ...prev,
-        picture_urls: data?.pictures ?? [],
-      }));
+      const countries = orderSites(data?.city ?? []);
+      const saved = data?.country_content || {};
 
+      removedTabs.current = {};
+      setImageFiles({});
+      setPictureFiles({});
       reset({
-        ...data,
-        city: cityOptions.filter((item) => data?.city?.includes(item.value)),
-        schemas: toSchemaList(data?.jsonld_schema),
-        country_seo: Object.fromEntries(
-          Object.entries(data?.country_seo || {}).map(([country, seo]) => [
-            country,
-            { ...seo, schemas: toSchemaList(seo?.jsonld_schema) },
-          ]),
+        city: countries
+          .map(
+            (c) =>
+              countryOptions.find((o) => o.value === c) ?? {
+                label: c,
+                value: c,
+              },
+          ),
+        country_content: Object.fromEntries(
+          countries
+            // not migrated yet => the product's current content
+            .map((c) => [c, toTabFormValues(saved[c] ?? data, data)]),
         ),
       });
     }
-  }, [data, type, reset]);
+  }, [data, type, reset, countryOptions]);
 
-  const handlePictureChange = useCallback((data) => {
-    setFiles((prev) => ({ ...prev, pictures: data }));
+  const handlePictureFiles = useCallback((country, newFiles) => {
+    setPictureFiles((prev) => ({ ...prev, [country]: newFiles || [] }));
   }, []);
 
-  const handleApplicationImage = useCallback((index, newFiles) => {
-    setFiles((prev) => ({
-      ...prev,
-      applications: {
-        ...prev.applications,
-        [index]: newFiles,
-      },
-    }));
-  }, []);
-
-  const handleBenefitImage = useCallback((index, newFiles) => {
-    setFiles((prev) => ({
-      ...prev,
-      benefits: {
-        ...prev.benefits,
-        [index]: newFiles,
-      },
-    }));
+  const handleImageFile = useCallback((uid, newFiles) => {
+    setImageFiles((prev) => {
+      const next = { ...prev };
+      if (newFiles?.length) next[uid] = newFiles;
+      else delete next[uid];
+      return next;
+    });
   }, []);
 
   useEffect(() => {
@@ -498,584 +253,79 @@ export default function ProductPageForm({ id, type }) {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  if (type === "edit" && isLoading) return <Loader />;
+  if (type === "edit" && isLoading) return <Loader variant="product" />;
   if (type === "edit" && isError) return <ErrorMessage error={error} />;
+
+  const labelOf = (value) =>
+    countryOptions.find((o) => o.value === value)?.label ?? value;
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-3 gap-4">
-          {/* images */}
-          <div className="col-span-full space-y-4">
-            <Label>Pictures</Label>
-            <FileUpload
-              onFileChange={handlePictureChange}
-              inputName={"picture"}
-              className={cn({ "border-red-500": errors.pictures })}
-              initialFiles={[]}
-              multiple={true}
-              maxFiles={50}
-            />
-
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
-              {fileUrls.picture_urls?.map((src, index) => (
-                <div
-                  className="bg-accent relative aspect-square w-24 rounded-md"
-                  key={index}
-                >
-                  <Image
-                    src={`${config.file_base}/${src}`}
-                    width={200}
-                    height={200}
-                    className="size-full rounded-[inherit] object-cover"
-                    alt={`picture-${index}`}
-                    unoptimized
-                  />
-                  <Button
-                    onClick={() =>
-                      setFileUrls((prev) => ({
-                        ...prev,
-                        picture_urls: prev.picture_urls.filter(
-                          (i) => i !== src,
-                        ),
-                      }))
-                    }
-                    size="icon"
-                    className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
-                    aria-label="Remove image"
-                    type="button"
-                  >
-                    <XIcon className="size-3.5" />
-                  </Button>
-                </div>
-              ))}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-8"
+        data-plain
+      >
+        {/* ================= Sites ================= */}
+        <div className="bg-card space-y-5 rounded-[28px] border p-6 shadow">
+          <div className="flex items-center gap-4">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full border">
+              <Globe className="size-[18px]" />
+            </span>
+            <div>
+              <p className="text-base font-semibold">Countries</p>
+              <p className="text-muted-foreground text-xs">
+                Select the countries for this product. Each country gets its own tab below.
+              </p>
             </div>
           </div>
-
-          <Separator className="col-span-full" />
-          <div className="col-span-full grid grid-cols-3 gap-4">
-            {/* product page id */}
+          <div className="grid gap-4">
+            {/* countries */}
             <div className="space-y-2">
-              <Label htmlFor="product_page_slug">Product page slug *</Label>
-              <Input
-                {...register("product_page_slug", {
-                  onChange: (e) => {
-                    setValue("product_page_slug", generateSlug(e.target.value), {
-                      shouldValidate: true,
-                    });
-                  },
-                })}
-                placeholder="Enter product page slug"
-              />
-              {errors?.product_page_slug && (
-                <span className="text-xs text-red-500">
-                  {errors.product_page_slug?.message}
-                </span>
-              )}
-            </div>
-
-            {/* title */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
-              <Input
-                id="title"
-                {...register("title")}
-                className={cn({ "border-red-500": errors.title })}
-                placeholder="Enter title"
-              />
-              {errors?.title && (
-                <span className="text-xs text-red-500">
-                  {errors.title?.message}
-                </span>
-              )}
-            </div>
-
-            {/* city */}
-            <div className="space-y-2">
-              <Label>Countries</Label>
-
+              <Label>Countries *</Label>
               <Controller
                 control={control}
                 name="city"
                 render={({ field }) => (
                   <CustomMultiSelect
-                    options={cityOptions}
+                    options={countryOptions}
                     value={field.value || []}
                     onChange={(value) => {
                       field.onChange(value);
+                      syncTabs(value || []);
                     }}
-                    placeholder="Select Countries"
+                    placeholder="Select countries (Global = main site)"
                     className={cn({
                       "border-red-500": errors.city,
                     })}
                   />
                 )}
               />
-
+              <p className="text-muted-foreground text-xs">
+                The product is shown only in the selected countries. Without
+                Global it is not shown on the main site.
+              </p>
               {errors?.city && (
                 <span className="text-xs text-red-500">
                   {errors.city.message}
                 </span>
               )}
             </div>
-
-            {/*  category */}
-            <div className="space-y-2">
-              <Label>Category</Label>
-              <Controller
-                control={control}
-                name="category_id"
-                render={({ field }) => {
-                  return (
-                    <CustomCommandMenu
-                      data={categories ?? []}
-                      labelKey={"Category"}
-                      searchPlaceholder="Search category"
-                      onChange={field.onChange}
-                      value={field.value}
-                      isLoading={isCategoryLoading}
-                      isError={isCategoryError}
-                      error={categoryError}
-                    />
-                  );
-                }}
-              />
-              {errors?.category_id && (
-                <span className="text-xs text-red-500">
-                  {errors.category_id?.message}
-                </span>
-              )}
-            </div>
-
-            {/* description */}
-            <div className="col-span-full space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                {...register("description")}
-                className={cn({ "border-red-500": errors.description })}
-                placeholder="Enter description"
-              />
-              {errors?.description && (
-                <span className="text-xs text-red-500">
-                  {errors.description?.message}
-                </span>
-              )}
-            </div>
-
-            {/* editor */}
-            <div className="col-span-full space-y-2">
-              <Label>Content</Label>
-              <Controller
-                name="content"
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <TextEditor
-                      onChange={field.onChange}
-                      value={field.value}
-                      className="bg-background"
-                    />
-                  );
-                }}
-              />
-            </div>
-
-            {/* ================= Overview ================= */}
-            <div className="col-span-full space-y-4 rounded-xl border p-5">
-              <h3 className="text-2xl font-semibold">Overview</h3>
-
-              <div className="space-y-2">
-                <Label>Heading</Label>
-                <Input
-                  {...register("overview.heading")}
-                  placeholder="Enter overview heading"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Paragraphs</Label>
-
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => appendOverviewParagraph("")}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Paragraph
-                  </Button>
-                </div>
-
-                {overviewParagraphs.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="relative rounded-lg border p-4"
-                  >
-                    {overviewParagraphs.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2"
-                        onClick={() => removeOverviewParagraph(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    <Textarea
-                      rows={4}
-                      placeholder={`Paragraph ${index + 1}`}
-                      {...register(`overview.paragraphs.${index}`)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ================= Why Choose ================= */}
-            <div className="col-span-full space-y-4 rounded-xl border p-5">
-              <h3 className="text-2xl font-semibold">Why Choose</h3>
-
-              <div className="space-y-2">
-                <Label>Heading</Label>
-                <Input
-                  {...register("why_choose.heading")}
-                  placeholder="Enter heading"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Short Paragraph</Label>
-                <Textarea
-                  rows={3}
-                  {...register("why_choose.short_paragraph")}
-                  placeholder="Enter short paragraph"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Features</Label>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() =>
-                      appendWhyChooseFeature({
-                        heading: "",
-                        short_paragraph: "",
-                      })
-                    }
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Feature
-                  </Button>
-                </div>
-
-                {whyChooseFeatures.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="relative space-y-3 rounded-lg border p-4"
-                  >
-                    {whyChooseFeatures.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2"
-                        onClick={() => removeWhyChooseFeature(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label>Feature Heading</Label>
-                      <Input
-                        {...register(`why_choose.features.${index}.heading`)}
-                        placeholder="Enter feature heading"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Short Paragraph</Label>
-                      <Textarea
-                        rows={3}
-                        {...register(
-                          `why_choose.features.${index}.short_paragraph`,
-                        )}
-                        placeholder="Enter short paragraph"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ================= Applications ================= */}
-            <div className="col-span-full space-y-4 rounded-xl border p-5">
-              <h3 className="text-2xl font-semibold">Applications</h3>
-
-              <div className="space-y-2">
-                <Label>Heading</Label>
-                <Input
-                  {...register("applications.heading")}
-                  placeholder="Enter heading"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Short Paragraph</Label>
-                <Textarea
-                  rows={3}
-                  {...register("applications.short_paragraph")}
-                  placeholder="Enter short paragraph"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Features</Label>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() =>
-                      appendApplicationFeature({
-                        heading: "",
-                        paragraph: "",
-                        img: "",
-                      })
-                    }
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Feature
-                  </Button>
-                </div>
-
-                {applicationFeatures.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="relative space-y-3 rounded-lg border p-4"
-                  >
-                    {applicationFeatures.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2"
-                        onClick={() => removeApplicationFeature(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label>Feature Heading</Label>
-                      <Input
-                        {...register(`applications.features.${index}.heading`)}
-                        placeholder="Feature heading"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Paragraph</Label>
-                      <Textarea
-                        rows={3}
-                        {...register(
-                          `applications.features.${index}.paragraph`,
-                        )}
-                        placeholder="Feature description"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image</Label>
-
-                      <FileUpload
-                        inputName={`applications_image_${index}`}
-                        multiple={false}
-                        maxFiles={1}
-                        initialFiles={[]}
-                        onFileChange={(files) =>
-                          handleApplicationImage(index, files)
-                        }
-                      />
-
-                      {type === "edit" &&
-                        watch(`applications.features.${index}.img`) && (
-                          <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
-                            <div className="bg-accent relative aspect-square w-24 rounded-md">
-                              <Image
-                                src={`${config.file_base}/${watch(`applications.features.${index}.img`)}`}
-                                width={200}
-                                height={200}
-                                className="size-full rounded-[inherit] object-cover"
-                                alt={`application-${index}`}
-                                unoptimized
-                              />
-
-                              <Button
-                                type="button"
-                                size="icon"
-                                className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
-                                onClick={() =>
-                                  setValue(
-                                    `applications.features.${index}.img`,
-                                    "",
-                                  )
-                                }
-                              >
-                                <XIcon className="size-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ================= Benefits ================= */}
-            <div className="col-span-full space-y-4 rounded-xl border p-5">
-              <h3 className="text-2xl font-semibold">Benefits</h3>
-
-              <div className="space-y-2">
-                <Label>Heading</Label>
-                <Input
-                  {...register("benefits.heading")}
-                  placeholder="Enter heading"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Short Paragraph</Label>
-                <Textarea
-                  rows={3}
-                  {...register("benefits.short_paragraph")}
-                  placeholder="Enter short paragraph"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Features</Label>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() =>
-                      appendBenefitFeature({
-                        heading: "",
-                        paragraph: "",
-                        img: "",
-                      })
-                    }
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Feature
-                  </Button>
-                </div>
-
-                {benefitFeatures.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="relative space-y-3 rounded-lg border p-4"
-                  >
-                    {benefitFeatures.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2"
-                        onClick={() => removeBenefitFeature(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label>Feature Heading</Label>
-                      <Input
-                        {...register(`benefits.features.${index}.heading`)}
-                        placeholder="Feature heading"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Paragraph</Label>
-                      <Textarea
-                        rows={3}
-                        {...register(`benefits.features.${index}.paragraph`)}
-                        placeholder="Feature description"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image</Label>
-
-                      <FileUpload
-                        inputName={`benefits_image_${index}`}
-                        multiple={false}
-                        maxFiles={1}
-                        initialFiles={[]}
-                        onFileChange={(files) =>
-                          handleBenefitImage(index, files)
-                        }
-                      />
-
-                      {type === "edit" &&
-                        watch(`benefits.features.${index}.img`) && (
-                          <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
-                            <div className="bg-accent relative aspect-square w-24 rounded-md">
-                              <Image
-                                src={`${config.file_base}/${watch(`benefits.features.${index}.img`)}`}
-                                width={200}
-                                height={200}
-                                className="size-full rounded-[inherit] object-cover"
-                                alt={`benefit-${index}`}
-                                unoptimized
-                              />
-
-                              <Button
-                                type="button"
-                                size="icon"
-                                className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
-                                onClick={() =>
-                                  setValue(
-                                    `benefits.features.${index}.img`,
-                                    "",
-                                  )
-                                }
-                              >
-                                <XIcon className="size-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
-        <Separator />
-
-        {/* seo, faqs & schema: Global tab + one tab per selected country */}
-        <SeoTabs countries={selectedCountries} />
+        {/* ================= Content per country ================= */}
+        <CountryContentTabs
+          countries={selectedCountries}
+          imageFiles={imageFiles}
+          onImageFile={handleImageFile}
+          pictureFiles={pictureFiles}
+          onPictureFiles={handlePictureFiles}
+        />
 
         {/* errors print */}
         {hasErrors && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="rounded-[20px]">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               <div className="mb-2 font-medium">
@@ -1087,16 +337,27 @@ export default function ProductPageForm({ id, type }) {
                     {err}
                   </li>
                 ))}
+                {tabsWithErrors.map((country) => (
+                  <li key={country} className="text-sm">
+                    {labelOf(country)} tab: some fields are missing or invalid.
+                  </li>
+                ))}
               </ul>
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="text-end">
+        {/* sticky action bar */}
+        <div className="bg-card/90 supports-[backdrop-filter]:bg-card/70 sticky bottom-4 z-20 flex items-center justify-between gap-3 rounded-full border px-5 py-3 shadow-lg backdrop-blur">
+          <p className="text-muted-foreground truncate text-sm">
+            {selectedCountries.length
+              ? `${selectedCountries.length} countr${selectedCountries.length === 1 ? "y" : "ies"} · ${type === "edit" ? "editing" : "new product"}`
+              : "Select at least 1 country"}
+          </p>
           <Button
             type="submit"
             disabled={isFormPending}
-            className="w-full sm:w-auto"
+            className="h-10 rounded-full px-6"
           >
             {isFormPending && (
               <LoaderCircleIcon className="-ms-1 animate-spin" size={16} />

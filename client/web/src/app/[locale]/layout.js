@@ -14,7 +14,7 @@ import {
 
 import { routing } from "@/i18n/routing";
 import QueryProvider from "@/providers/query-client-provider";
-import Script from "next/script";
+import DeferredAnalytics from "@/components/deferred-analytics";
 import DistributorPopup from "@/components/distributor-popup";
 import { CLIENT_NAMESPACES, pickMessages } from "@/lib/messages";
 import { htmlLang, siteMetadata } from "@/lib/seo";
@@ -92,21 +92,8 @@ export default async function RootLayout({ children, params }) {
         suppressHydrationWarning
       >
 
-  <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-9HCDEP5C1R"
-          strategy="lazyOnload"
-          nonce={nonce}
-        />
-
-        <Script id="google-analytics" strategy="lazyOnload" nonce={nonce}>
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-9HCDEP5C1R');
-          `}
-        </Script>
+        {/* Google Analytics: loaded on first interaction / 5s after load */}
+        <DeferredAnalytics nonce={nonce} />
 
 
         <NextIntlClientProvider

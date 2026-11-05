@@ -174,10 +174,11 @@ const get = async (req) => {
   // website: active blogs only; dashboard (req.includeDrafts): all
   if (!req.includeDrafts) whereConditions.push(`blg.status = 'active'`);
 
-  // ?country=India => blogs for that country (+ blogs with no country selected)
+  // ?country=India / Global => blogs of that site (old rows without a
+  // country count as Global)
   const country = req.query.country ? String(req.query.country) : null;
   if (country) {
-    whereConditions.push(`(cardinality(blg.city) = 0 OR :country = ANY(blg.city))`);
+    whereConditions.push(`(:country = ANY(blg.city) OR (cardinality(blg.city) = 0 AND :country = 'Global'))`);
     queryParams.country = country;
   }
 

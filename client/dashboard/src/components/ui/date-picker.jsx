@@ -20,7 +20,7 @@ export function DatePicker({ onChange, value, disabled, className = "" }) {
         <Button
           variant="outline"
           id="date"
-          className="w-full justify-between font-normal"
+          className="h-11 w-full justify-between rounded-[14px] px-4 font-normal"
           disabled={disabled}
         >
           {value ? new Date(value).toLocaleDateString() : "Select date"}

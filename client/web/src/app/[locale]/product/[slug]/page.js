@@ -1,6 +1,14 @@
 import { cache } from "react";
 import { fetchProductPageBySlug } from "@/services/product-page-services";
-import { getSeoCountry } from "@/utils/country-mapping";
+import { notFound, permanentRedirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import {
+  getCountryFromLocale,
+  getLocalePrefix,
+  getSeoCountry,
+  isProductAvailableInCountry,
+  productLocales,
+} from "@/utils/country-mapping";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 
@@ -19,9 +27,17 @@ import { canonical } from "@/lib/seo";
 
 // One API call per request, shared by generateMetadata and the page.
 // "global" (no URL prefix) has no country => Global SEO; /in, /au ... => that country's SEO.
-const getProduct = cache((slug, locale) =>
-  fetchProductPageBySlug(slug, getSeoCountry(locale)),
-);
+// A product exists on the global site + only the countries selected for it.
+const getProduct = cache(async (slug, locale) => {
+  const product = await fetchProductPageBySlug(slug, getSeoCountry(locale));
+  if (
+    !product ||
+    !isProductAvailableInCountry(product.city, getCountryFromLocale(locale))
+  ) {
+    return null;
+  }
+  return product;
+});
 
 export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
@@ -30,11 +46,20 @@ export async function generateMetadata({ params }) {
     const product = await getProduct(slug, locale);
     if (!product) return {};
 
+    // every country has its own URL slug
+    const slugOf = (l) =>
+      product.country_slugs?.[getCountryFromLocale(l)] || product.slug;
+
     return {
       title: product.meta_title || product.title,
       description: product.meta_description || product.description || undefined,
       keywords: product.meta_keywords || undefined,
-      alternates: canonical(locale, `/product/${slug}`),
+      alternates: canonical(
+        locale,
+        `/product/${product.slug}`,
+        productLocales(product.city, routing.locales),
+        (l) => `/product/${slugOf(l)}`,
+      ),
     };
   } catch {
     return {};
@@ -44,11 +69,12 @@ export async function generateMetadata({ params }) {
 export default async function ProductDetailsPage({ params }) {
   const { slug, locale } = await params;
 
-  const data = await getProduct(slug, locale);
+  const product = await getProduct(slug, locale);
+  if (!product) notFound();
 
-  const product = data;
-  if (!product) {
-    return <div className="py-20 text-center">Product not found</div>;
+  // another country's slug (e.g. after switching country) => this country's URL
+  if (product.slug && product.slug !== slug) {
+    permanentRedirect(`${getLocalePrefix(locale)}/product/${product.slug}`);
   }
 
   const pageSections = [

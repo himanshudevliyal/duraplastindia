@@ -1,16 +1,32 @@
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
 import { cache } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/services/product-service";
-import { getSeoCountry, getCountryFromLocale } from "@/utils/country-mapping";
+import {
+  countryQuery,
+  getCountryFromLocale,
+  getSeoCountry,
+  isShownInCountry,
+} from "@/utils/country-mapping";
+import { routing } from "@/i18n/routing";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 import FAQSection from "../../product/_components/faq";
 
 // One API call per request, shared by generateMetadata and the page.
-// "global" (no URL prefix) => global SEO; /in, /au ... => that country's SEO / FAQs.
-const getBlog = cache((slug, locale) =>
-  fetchBlogBySlug(slug, getSeoCountry(locale)),
-);
+// A blog belongs to one site (Global or a country); elsewhere => 404.
+const getBlog = cache(async (slug, locale) => {
+  const blog = await fetchBlogBySlug(slug, getSeoCountry(locale));
+  if (!blog || !isShownInCountry(blog.city, getCountryFromLocale(locale))) {
+    return null;
+  }
+  return blog;
+});
+
+// locales where this blog exists (for hreflang)
+const blogLocales = (blog) =>
+  routing.locales.filter((l) =>
+    isShownInCountry(blog.city, getCountryFromLocale(l)),
+  );
 import { ProseStyle, proseFont as display } from "@/components/layout/prose";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
@@ -62,9 +78,7 @@ export default async function BlogDetailPage({ params }) {
   let recentPosts = [];
   try {
     // same country rule as the blog list
-    const recentData = await fetchBlogs(
-      `country=${encodeURIComponent(getCountryFromLocale(locale))}`,
-    );
+    const recentData = await fetchBlogs(countryQuery(locale));
     const allBlogs = recentData?.blogs ?? recentData ?? [];
     recentPosts = allBlogs.filter((b) => b.slug !== slug).slice(0, 7);
   } catch {
@@ -238,6 +252,6 @@ export async function generateMetadata({ params }) {
     title: blog.meta_title || blog.title,
     description: blog.meta_description || blog.description,
     keywords: blog.meta_keywords || undefined,
-    alternates: canonical(locale, `/blog/${slug}`),
+    alternates: canonical(locale, `/blog/${slug}`, blogLocales(blog)),
   };
 }

@@ -70,9 +70,16 @@ export default async function HomePage({ params }) {
       <AboutSection content={home.about} />
       {home.footprint && <FootprintSection content={home.footprint} />}
       <OurSolutions {...home.solutions} />
-      <WhyChooseUs content={home.whyUs} />
-      <Testimonials></Testimonials>
-      <OurWork {...home.projects} />
+      {/* below the fold: rendered when scrolled near (cv-auto, globals.css) */}
+      <div className="cv-auto">
+        <WhyChooseUs content={home.whyUs} />
+      </div>
+      <div className="cv-auto">
+        <Testimonials></Testimonials>
+      </div>
+      <div className="cv-auto">
+        <OurWork {...home.projects} />
+      </div>
       {/* <HeroParallax
         backgroundImage="/img/born-in-India.png"
         foregroundImage="/img/born-in-India.png"
@@ -126,11 +133,21 @@ export default async function HomePage({ params }) {
 
 
 
-<OurTechnologies></OurTechnologies>
-      <OurClinets></OurClinets>
-      <BlogSection></BlogSection>
+      <div className="cv-auto">
+        <OurTechnologies></OurTechnologies>
+      </div>
+      <div className="cv-auto">
+        <OurClinets></OurClinets>
+      </div>
+      <div className="cv-auto">
+        <BlogSection></BlogSection>
+      </div>
 
-      {home.faq?.length > 0 && <FAQSection faq={home.faq} />}
+      {home.faq?.length > 0 && (
+        <div className="cv-auto">
+          <FAQSection faq={home.faq} />
+        </div>
+      )}
     </main>
   );
 }

@@ -67,6 +67,7 @@ const useAnimationLoop = (
   isHovered,
   hoverSpeed,
   isVertical,
+  isVisible = true,
 ) => {
   const rafRef = useRef(null);
   const lastTimestampRef = useRef(null);
@@ -117,6 +118,8 @@ const useAnimationLoop = (
       rafRef.current = requestAnimationFrame(animate);
     };
 
+    // off screen: no per-frame work at all
+    if (!isVisible) return;
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
@@ -134,7 +137,27 @@ const useAnimationLoop = (
     hoverSpeed,
     isVertical,
     trackRef,
+    isVisible,
   ]);
+};
+
+// true while the element is (nearly) in the viewport
+const useInView = (ref) => {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+  return inView;
 };
 
 export const LogoLoop = memo(
@@ -231,6 +254,8 @@ export const LogoLoop = memo(
       isVertical,
     ]);
 
+    const isVisible = useInView(containerRef);
+
     useAnimationLoop(
       trackRef,
       targetVelocity,
@@ -239,6 +264,7 @@ export const LogoLoop = memo(
       isHovered,
       effectiveHoverSpeed,
       isVertical,
+      isVisible,
     );
 
     const cssVariables = useMemo(

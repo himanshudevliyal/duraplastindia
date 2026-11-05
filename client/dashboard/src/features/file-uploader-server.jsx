@@ -6,6 +6,7 @@ import http from "@/utils/http";
 import axios from "axios";
 import { ImageUpIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { fileUrl } from "@/lib/file-url";
 
 export default function FileUploaderServer({
   onFileChange,
@@ -136,7 +137,7 @@ export default function FileUploaderServer({
   });
 
   const previewUrl =
-    files[0]?.preview || value ? `${config.file_base}/${value}` : null || null;
+    files[0]?.preview || (value ? fileUrl(value) : null);
   return (
     <div className="flex flex-col gap-2">
       <div className="relative">

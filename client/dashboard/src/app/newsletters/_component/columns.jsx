@@ -66,7 +66,7 @@ export const columns = (openModal, setId) => [
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="h-8 w-8 p-0"
+              className="size-9 rounded-full p-0"
             >
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>

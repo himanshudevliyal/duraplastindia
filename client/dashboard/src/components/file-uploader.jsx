@@ -16,6 +16,7 @@ export default function FileUpload({
   maxSizeMB = 5,
   accept = "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
   grid = "",
+  compact = false,
 }) {
   const maxSize = maxSizeMB * 1024 * 1024; // 5MB default
 
@@ -56,7 +57,8 @@ export default function FileUpload({
         data-dragging={isDragging || undefined}
         data-files={files.length > 0 || undefined}
         className={cn(
-          "border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center overflow-hidden rounded-xl border border-dashed p-4 transition-colors not-data-[files]:justify-center has-[input:focus]:ring-[3px]",
+          "border-input bg-muted/30 hover:border-[#f5821f]/50 hover:bg-accent/40 data-[dragging=true]:border-[#f5821f] data-[dragging=true]:bg-accent has-[input:focus]:border-ring has-[input:focus]:ring-ring/30 relative flex flex-col items-center overflow-hidden rounded-[20px] border-2 border-dashed transition-colors not-data-[files]:justify-center has-[input:focus]:ring-[3px]",
+          compact ? "min-h-0 p-3" : "min-h-40 p-4",
           className,
         )}
       >
@@ -117,24 +119,31 @@ export default function FileUpload({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
-            <div
-              className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
-              aria-hidden="true"
-            >
-              <ImageIcon className="size-4 opacity-60" />
-            </div>
-            <p className="mb-1.5 text-sm font-medium">Drop your images here</p>
+            {!compact && (
+              <div
+                className="bg-card mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border shadow-xs"
+                aria-hidden="true"
+              >
+                <ImageIcon className="size-4 opacity-60" />
+              </div>
+            )}
+            {!compact && (
+              <p className="mb-1 text-sm font-medium">
+                Drop {multiple ? "images" : "an image"} here
+              </p>
+            )}
             <p className="text-muted-foreground text-xs">
-              SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
+              SVG, PNG, JPG or GIF · max {maxSizeMB}MB
             </p>
             <Button
               variant="outline"
-              className="mt-4"
+              size="sm"
+              className={compact ? "mt-2" : "mt-3"}
               onClick={openFileDialog}
               type="button"
             >
               <UploadIcon className="-ms-1 opacity-60" aria-hidden="true" />
-              Select images
+              {multiple ? "Select images" : "Select image"}
             </Button>
           </div>
         )}

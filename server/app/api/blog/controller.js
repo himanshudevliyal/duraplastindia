@@ -18,8 +18,11 @@ export const schema = z.object({
   meta_keywords: z.string().optional(),
   jsonld_schema: z.any().optional(),
   status: z.enum(["active", "draft"]).optional(),
-  // countries the blog is shown in; empty => every country
-  city: z.array(z.string()).optional(),
+
+  // exactly one site: "Global" (main site) or one country
+  city: z
+    .array(z.string())
+    .length(1, "Select one country (or Global)."),
   faq: z
     .array(
       z.object({
@@ -79,6 +82,9 @@ const updateById = async (req, res) => {
 
     let slug = slugify(req.body.title, { lower: true, strict: true });
     req.body.slug = slug;
+
+    // one site per blog (full schema is only applied on create)
+    schema.pick({ city: true }).parse(req.body);
 
     const documentsToDelete = [];
 

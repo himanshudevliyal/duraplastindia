@@ -1,6 +1,10 @@
 import {
   BookOpenText,
   Box,
+  FolderTree,
+  Handshake,
+  Newspaper,
+  Package,
   LayoutDashboard,
   User,
   Users,
@@ -48,7 +52,7 @@ export const sidebarData = [
   {
     title: "Blogs",
     url: "/blogs?page=1&limit=10",
-    icon: Box,
+    icon: Newspaper,
     roles: [ROLES.ADMIN],
     isVisible: true,
     items: [
@@ -111,7 +115,7 @@ export const sidebarData = [
   {
     title: "Product pages",
     url: "/product-pages?page=1&limit=10",
-    icon: Box,
+    icon: Package,
     roles: [ROLES.ADMIN],
     isVisible: true,
     items: [
@@ -132,7 +136,7 @@ export const sidebarData = [
   {
     title: "Categories",
     url: "/categories?page=1&limit=10",
-    icon: BookOpenText,
+    icon: FolderTree,
     roles: [ROLES.ADMIN],
     isVisible: true,
     items: [
@@ -154,7 +158,7 @@ export const sidebarData = [
   {
     title: "Channel Partners",
     url: "/channel-partners?page=1&limit=10",
-    icon: BookOpenText,
+    icon: Handshake,
     roles: [ROLES.ADMIN],
     isVisible: true,
     items: [

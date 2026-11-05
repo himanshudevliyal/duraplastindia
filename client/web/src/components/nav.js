@@ -21,6 +21,7 @@ import {
   getCountryFromLocale,
   getLocalePrefix,
   isProductAvailableInCountry,
+  localizeProduct,
 } from "@/utils/country-mapping";
 import { sortCategories, sortProducts } from "@/lib/category-order";
 import LanguageSwitcher from "./ui/language-switcher";
@@ -132,9 +133,10 @@ export function SiteHeader() {
   }, [categoryResponse]);
 
   const navItems = useMemo(() => {
-    const filteredProducts = products.filter((product) =>
-      isProductAvailableInCountry(product.city, country),
-    );
+    // this country's slug / category / title for every product
+    const filteredProducts = products
+      .filter((product) => isProductAvailableInCountry(product.city, country))
+      .map((product) => localizeProduct(product, country));
 
     const productCategories = categories
       .map((category) => {

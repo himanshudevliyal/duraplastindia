@@ -71,6 +71,18 @@ const nextConfig = {
     ];
   },
 
+  // Sitemaps: /in/sitemap.xml and /sitemap-global.xml (main site) =>
+  // app/sitemaps/[locale]/route.js (a route under [locale]/sitemap.xml is not
+  // matched by Next). Unknown countries return 404 from the route itself.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/:locale([a-z]{2})/sitemap.xml", destination: "/sitemaps/:locale" },
+        { source: "/sitemap-global.xml", destination: "/sitemaps/global" },
+      ],
+    };
+  },
+
   // non-www => www (permanent 308), keeps path and query
   async redirects() {
     return [

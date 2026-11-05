@@ -15,6 +15,7 @@ import {
   getCountryFromLocale,
   getLocalePrefix,
   isProductAvailableInCountry,
+  localizeProduct,
 } from "@/utils/country-mapping";
 import { sortCategories, sortProducts } from "@/lib/category-order";
 import { getFileUrl } from "@/utils/file-url";
@@ -33,7 +34,8 @@ export function ProductCard({ product, prefix, headingAs: Title = "h4" }) {
       src={getFileUrl(product.pictures?.[0])}
       alt={product.title}
       fill
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      /* desktop cards are ~360-400px wide (3 per row in the content width) */
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
       className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
     />
   )}
@@ -95,7 +97,7 @@ export function OurSolutions({
   const locale = useLocale();
 
   const prefix = getLocalePrefix(locale);
-  const country = getCountryFromLocale(locale); // global => India products
+  const country = getCountryFromLocale(locale); // "Global" on the main site
 
   const { data: productResponse, isLoading } = useProductPages();
   const { data: categoryResponse } = useCategories();
@@ -106,9 +108,10 @@ export function OurSolutions({
     categoryResponse?.categories ?? categoryResponse?.data?.categories ?? [];
 
 const solutionCategories = useMemo(() => {
-  const filteredProducts = products.filter((product) =>
-    isProductAvailableInCountry(product.city, country),
-  );
+  // this country's slug / category / picture / title for every product
+  const filteredProducts = products
+    .filter((product) => isProductAvailableInCountry(product.city, country))
+    .map((product) => localizeProduct(product, country));
 
   return categories
     .map((category) => {
@@ -121,10 +124,7 @@ const solutionCategories = useMemo(() => {
       return {
         id: category.id,
         title: category.title,
-        products: sortProducts(
-          category.title,
-          categoryProducts,
-        ),
+        products: sortProducts(category.title, categoryProducts),
       };
     })
     .filter((category) => category.products.length > 0);

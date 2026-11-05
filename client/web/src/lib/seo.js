@@ -45,12 +45,22 @@ export function localePath(locale, path = "/") {
 
 // Canonical + hreflang alternates for a page (same path in every locale).
 // `locales`: only the locales where the page exists (default: all).
-export function canonical(locale, path = "/", locales = routing.locales) {
+// `pathFor(locale)`: the page's path in another locale (default: same path),
+// e.g. a product with a different slug per country.
+export function canonical(
+  locale,
+  path = "/",
+  locales = routing.locales,
+  pathFor = () => path,
+) {
   const languages = Object.fromEntries(
-    locales.map((l) => [htmlLang(l), localePath(l, path)]),
+    locales.map((l) => [htmlLang(l), localePath(l, pathFor(l))]),
   );
   if (locales.includes(routing.defaultLocale)) {
-    languages["x-default"] = localePath(routing.defaultLocale, path);
+    languages["x-default"] = localePath(
+      routing.defaultLocale,
+      pathFor(routing.defaultLocale),
+    );
   }
 
   return { canonical: localePath(locale, path), languages };

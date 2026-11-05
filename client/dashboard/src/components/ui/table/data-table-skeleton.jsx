@@ -1,95 +1,49 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea, ScrollBar } from "../scroll-area";
 
-export function DataTableSkeleton({
-  columnCount = 1,
-  rowCount = 10,
-  searchableColumnCount = 0,
-  filterableColumnCount = 0,
-  showViewOptions = false,
-}) {
+// Same shape as <DataTable>: card, header strip, rows, footer.
+export function DataTableSkeleton({ columnCount = 4, rowCount = 8 }) {
+  const cols = Math.max(columnCount, 2);
+  const widths = ["w-3/4", "w-1/2", "w-2/3", "w-1/3", "w-3/5"];
+
   return (
-    <div className="w-full space-y-3 overflow-auto">
-      {searchableColumnCount > 0 || filterableColumnCount > 0 ? (
-        <div className="flex w-full items-center justify-between space-x-2 overflow-auto p-1">
-          <div className="flex flex-1 items-center space-y-4 space-x-2">
-            {searchableColumnCount > 0
-              ? Array.from({ length: searchableColumnCount }).map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    className="h-10 w-[150px] lg:w-[250px] dark:bg-gray-800"
-                  />
-                ))
-              : null}
-            {filterableColumnCount > 0
-              ? Array.from({ length: filterableColumnCount }).map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    className="h-10 w-[70px] border-dashed dark:bg-gray-800"
-                  />
-                ))
-              : null}
-          </div>
-          {showViewOptions ? (
-            <Skeleton className="ml-auto hidden h-7 w-[70px] lg:flex dark:bg-gray-800" />
-          ) : null}
-        </div>
-      ) : null}
-      <div className="rounded-md border">
-        <ScrollArea className="h-[calc(80vh-220px)] rounded-md border md:h-[calc(90dvh-220px)]">
-          <Table>
-            <TableHeader>
-              {Array.from({ length: 1 }).map((_, i) => (
-                <TableRow key={i} className="hover:bg-transparent">
-                  {Array.from({ length: columnCount }).map((_, i) => (
-                    <TableHead key={i}>
-                      <Skeleton className="h-8 w-full dark:bg-gray-800" />
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: rowCount }).map((_, i) => (
-                <TableRow key={i} className="hover:bg-transparent">
-                  {Array.from({ length: columnCount }).map((_, i) => (
-                    <TableCell key={i}>
-                      <Skeleton className="h-8 w-full bg-gray-200 dark:bg-gray-800" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+    <div className="bg-card flex flex-col rounded-[28px] border p-2 shadow">
+      {/* header */}
+      <div
+        className="bg-muted/60 grid items-center gap-6 rounded-2xl px-4 py-3.5"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr)) 40px` }}
+      >
+        {Array.from({ length: cols }).map((_, i) => (
+          <Skeleton key={i} className="h-3 w-20 rounded-full" />
+        ))}
+        <span />
       </div>
-      <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
-        <div className="flex-1">
-          <Skeleton className="h-8 w-40 dark:bg-gray-800" />
+
+      {/* rows */}
+      {Array.from({ length: rowCount }).map((_, row) => (
+        <div
+          key={row}
+          className="border-border/60 grid items-center gap-6 border-b px-4 py-4 last:border-0"
+          style={{
+            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr)) 40px`,
+          }}
+        >
+          {Array.from({ length: cols }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className={`h-4 rounded-full ${widths[(row + i) % widths.length]}`}
+            />
+          ))}
+          <Skeleton className="size-8 rounded-full" />
         </div>
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
-          <div className="flex items-center space-x-2">
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-8 w-[70px] dark:bg-gray-800" />
-          </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            <Skeleton className="h-8 w-20 dark:bg-gray-800" />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Skeleton className="hidden size-8 lg:block dark:bg-gray-800" />
-            <Skeleton className="size-8 dark:bg-gray-800" />
-            <Skeleton className="size-8 dark:bg-gray-800" />
-            <Skeleton className="hidden size-8 lg:block dark:bg-gray-800" />
-          </div>
+      ))}
+
+      {/* footer */}
+      <div className="flex items-center justify-between gap-3 px-3 pt-3 pb-1">
+        <Skeleton className="h-4 w-32 rounded-full" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-20 rounded-[14px]" />
+          <Skeleton className="size-9 rounded-full" />
+          <Skeleton className="size-9 rounded-full" />
         </div>
       </div>
     </div>

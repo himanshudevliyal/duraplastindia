@@ -43,7 +43,7 @@ export default function CustomCommandMenu({
           variant="outline"
           role="combobox"
           className={cn(
-            "w-full justify-between",
+            "h-11 w-full justify-between rounded-[14px] px-4 font-normal",
             !value && "text-muted-foreground",
           )}
         >

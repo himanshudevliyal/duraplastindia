@@ -14,12 +14,19 @@ export const ErrorHandler = (error, request, reply) => {
   if (error instanceof ZodError) {
     // Return a 400 Bad Request with the validation error details
     console.error(error);
+    // zod v4: error.issues (v3 called it error.errors)
+    const issues = error.issues ?? error.errors ?? [];
     reply.code(400).send({
       status: false,
       error: "Bad Request",
-      message: error.errors
-        .map((err) => `${err.path.join(".")} - ${err.message}`)
-        .join(", "),
+      message:
+        issues
+          .map((err) =>
+            err.path?.length
+              ? `${err.path.join(".")} - ${err.message}`
+              : err.message,
+          )
+          .join(", ") || "Invalid data.",
     });
   } else if (error.validation) {
     // This handles Fastify's built-in validation errors (e.g., schema validation errors)

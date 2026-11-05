@@ -5,6 +5,7 @@ import config from "./app/config/index.js";
 import server from "./server.js";
 import { sequelize } from "./app/db/postgres.js";
 import migration from "./app/db/index.js";
+import { MIGRATIONS, up as runMigrations } from "./scripts/lib/runner.js";
 
 const numCPUs = os.cpus().length;
 
@@ -16,6 +17,18 @@ async function initDatabase() {
 
   // create tables (DEV ONLY)
   await sequelize.sync({ alter: true });
+
+  // pending migrations (server/migrations, same as `npm run migrate:up`).
+  // Set AUTO_MIGRATE=false to only run them by hand.
+  // A failed migration is rolled back (nothing half-applied); the server still
+  // starts, and `npm run migrate:up` shows the error again.
+  if (process.env.AUTO_MIGRATE !== "false") {
+    try {
+      await runMigrations(MIGRATIONS);
+    } catch (error) {
+      console.error("Migration failed (rolled back):", error.message);
+    }
+  }
 }
 
 if (cluster.isPrimary) {

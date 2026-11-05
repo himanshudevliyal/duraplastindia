@@ -9,7 +9,13 @@
     "dev": "nodemon index.js",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:up": "node scripts/migrate.js up",
+    "migrate:down": "node scripts/migrate.js down",
+    "migrate:status": "node scripts/migrate.js status",
+    "seed": "node scripts/seed.js up",
+    "seed:down": "node scripts/seed.js down",
+    "seed:status": "node scripts/seed.js status"
   },
   "author": "Vishal Gautam",
   "dependencies": {

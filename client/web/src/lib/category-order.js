@@ -66,8 +66,9 @@ export function sortProducts(categoryTitle, products = []) {
   if (!order) return products;
 
   return [...products].sort((a, b) => {
-    const aIndex = order.indexOf(a.title);
-    const bIndex = order.indexOf(b.title);
+    // base_title: main title of a country-localized product
+    const aIndex = order.indexOf(a.base_title ?? a.title);
+    const bIndex = order.indexOf(b.base_title ?? b.title);
 
     // Ordered products first
     if (aIndex !== -1 && bIndex !== -1) {

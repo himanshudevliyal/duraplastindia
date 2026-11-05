@@ -15,27 +15,26 @@ import { Textarea } from "../ui/textarea";
 import { useRouter } from "next/navigation";
 import FileUpload from "@/components/file-uploader";
 import Image from "next/image";
-import config from "@/config";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import TextEditor from "../editor";
 import z from "zod";
-import CustomMultiSelect from "../custom-multi-select";
+import CustomCommandMenu from "../custom-command-menu";
 import {
   useCreateCustomPage,
   useCustomPage,
   useUpdateCustomPage,
 } from "@/hooks/use-custom-pages";
 import {
-  SeoTabs,
+  SeoSection,
   applySeoPayload,
-  cityOptions,
-  countrySeoSchema,
   faqListSchema,
   schemaListSchema,
+  withSavedOptions,
   toSeoFormValues,
 } from "./seo-tabs";
 import { StatusField, statusSchema } from "./status-field";
+import { fileUrl } from "@/lib/file-url";
 
 // While typing: lowercase, anything except a-z / 0-9 becomes "-".
 // Leading / trailing "-" are removed on save (and by the server).
@@ -57,14 +56,12 @@ const defaultValues = {
   meta_description: "",
   meta_keywords: "",
   status: "active",
-  // countries the page is shown in (none selected => every country)
-  city: [],
+  // the one site the page is shown on ("Global" or a country)
+  city: "",
   faq: [],
   jsonld_schema: "",
   // form-only list of schema boxes [{ value }], saved as jsonld_schema
   schemas: [],
-  // country-wise SEO: { [country]: { meta_title, meta_description, meta_keywords, jsonld_schema, faq } }
-  country_seo: {},
 };
 
 export const schema = z.object({
@@ -78,16 +75,18 @@ export const schema = z.object({
   meta_title: z.string().optional().nullable(),
   meta_description: z.string().optional().nullable(),
   meta_keywords: z.string().optional().nullable(),
+  // one site: "Global" (main site) or one country; sent as [value]
   city: z
-    .array(z.object({ label: z.string(), value: z.string() }))
-    .optional()
-    .nullable()
-    .transform((data) => (data ?? []).map((d) => d.value)),
+    .string({
+      required_error: "Select Global or a country.",
+      invalid_type_error: "Select Global or a country.",
+    })
+    .min(1, "Select Global or a country.")
+    .transform((value) => [value]),
   status: statusSchema,
   jsonld_schema: z.any().optional(),
   schemas: schemaListSchema,
   faq: faqListSchema,
-  country_seo: countrySeoSchema,
 });
 
 export default function CustomPageForm({ id, type }) {
@@ -126,8 +125,8 @@ export default function CustomPageForm({ id, type }) {
   const { data, isLoading, isError, error } = useCustomPage(id);
 
   const onSubmit = (data) => {
-    // schema boxes => jsonld_schema; country blocks only for selected countries
-    applySeoPayload(data, data.city);
+    // schema boxes => jsonld_schema
+    applySeoPayload(data);
 
     const formData = new FormData();
     files.pictures.forEach((file) => formData.append("pictures", file));
@@ -152,7 +151,6 @@ export default function CustomPageForm({ id, type }) {
       : updateMutation.mutate(formData);
   };
 
-  const selectedCountries = watch("city") || [];
   const slugValue = watch("slug");
 
   const formErrors = getFormErrors(errors);
@@ -168,7 +166,7 @@ export default function CustomPageForm({ id, type }) {
         ...defaultValues,
         ...data,
         status: data.status || "active",
-        city: cityOptions.filter((item) => data?.city?.includes(item.value)),
+        city: data?.city?.[0] ?? "",
         ...toSeoFormValues(data),
       });
     }
@@ -203,7 +201,7 @@ export default function CustomPageForm({ id, type }) {
                   key={index}
                 >
                   <Image
-                    src={`${config.file_base}/${src}`}
+                    src={fileUrl(src)}
                     width={200}
                     height={200}
                     className="size-full rounded-[inherit] object-cover"
@@ -283,25 +281,30 @@ export default function CustomPageForm({ id, type }) {
               )}
             </div>
 
-            {/* countries */}
+            {/* site */}
             <div className="space-y-2">
-              <Label>Countries</Label>
+              <Label>Country *</Label>
               <Controller
                 control={control}
                 name="city"
                 render={({ field }) => (
-                  <CustomMultiSelect
-                    options={cityOptions}
-                    value={field.value || []}
-                    onChange={(value) => field.onChange(value)}
-                    placeholder="Select Countries"
+                  <CustomCommandMenu
+                    data={withSavedOptions(data?.city)}
+                    searchPlaceholder="Search country"
+                    onChange={field.onChange}
+                    value={field.value}
                     className={cn({ "border-red-500": errors.city })}
                   />
                 )}
               />
               <p className="text-muted-foreground text-xs">
-                Leave empty to show this page in every country.
+                One country per page: Global (main site) or one country.
               </p>
+              {errors?.city && (
+                <span className="text-xs text-red-500">
+                  {errors.city.message}
+                </span>
+              )}
             </div>
 
             <StatusField />
@@ -336,8 +339,8 @@ export default function CustomPageForm({ id, type }) {
 
         <Separator className="col-span-full" />
 
-        {/* seo, faqs & schema: Global tab + one tab per selected country */}
-        <SeoTabs countries={selectedCountries} />
+        {/* seo, faqs & schema */}
+        <SeoSection />
 
         {/* errors print */}
         {hasErrors && (

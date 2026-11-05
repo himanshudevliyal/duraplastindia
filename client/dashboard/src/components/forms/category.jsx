@@ -21,7 +21,7 @@ import { Loader2, XIcon } from "lucide-react";
 import FileUpload from "../file-uploader";
 import { toast } from "sonner";
 import Image from "next/image";
-import config from "@/config";
+import { fileUrl } from "@/lib/file-url";
 
 export default function CategoryForm({ id, type = "create" }) {
   const [files, setFiles] = useState({
@@ -132,7 +132,7 @@ export default function CategoryForm({ id, type = "create" }) {
                 key={index}
               >
                 <Image
-                  src={`${config.file_base}/${src}`}
+                  src={fileUrl(src)}
                   width={200}
                   height={200}
                   className="size-full rounded-[inherit] object-cover"

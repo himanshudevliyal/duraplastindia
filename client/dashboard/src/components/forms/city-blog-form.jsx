@@ -29,7 +29,6 @@ import { useRouter } from "next/navigation";
 import FileUpload from "@/components/file-uploader";
 import { useState } from "react";
 import Image from "next/image";
-import config from "@/config";
 import { useCallback } from "react";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
@@ -42,6 +41,7 @@ import {
   useCreateCityBlog,
   useUpdateCityBlog,
 } from "@/hooks/use-city-blogs";
+import { fileUrl } from "@/lib/file-url";
 
 const defaultValues = {
   pictures: [],
@@ -226,7 +226,7 @@ export default function CityBlogForm({ id, type }) {
                   key={index}
                 >
                   <Image
-                    src={`${config.file_base}/${src}`}
+                    src={fileUrl(src)}
                     width={200}
                     height={200}
                     className="size-full rounded-[inherit] object-cover"

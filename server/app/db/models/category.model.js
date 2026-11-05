@@ -1,6 +1,7 @@
 "use strict";
 import constants from "../../lib/constants/index.js";
 import { DataTypes, Deferrable, QueryTypes } from "sequelize";
+import { COUNTRY_TITLES_SQL } from "./product-page.model.js";
 
 let CategoryModel = null;
 
@@ -179,12 +180,17 @@ const getRelatedProducts = async (categoryId, country) => {
       prdp.product_page_slug,
       prdp.pictures,
       prdp.description,
-      prdp.category_id
+      prdp.category_id,
+      ${COUNTRY_TITLES_SQL("prdp")}
 
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
 
-    WHERE 
-      prdp.category_id = :categoryId
+    WHERE
+      -- category of this country's tab (old rows: the product's category)
+      COALESCE(
+        prdp.country_content->:country->>'category_id',
+        prdp.category_id::text
+      ) = CAST(:categoryId AS text)
       AND :country = ANY(prdp.city)
 
     ORDER BY prdp.created_at DESC

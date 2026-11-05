@@ -6,17 +6,14 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 
 import { useSubscribeNewsletter } from "@/hooks/newsletter";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { z } from "zod";
-
-export const newsletterSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-});
+// same checks / messages as before, without bundling zod in the footer
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRules = {
+  setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
+  required: "Email is required",
+  pattern: { value: EMAIL_RE, message: "Please enter a valid email address" },
+};
 
 export default function Newsletter() {
   const {
@@ -25,7 +22,6 @@ export default function Newsletter() {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(newsletterSchema),
     defaultValues: {
       email: "",
     },
@@ -57,7 +53,7 @@ export default function Newsletter() {
           <input
             type="email"
             placeholder="Your email address"
-            {...register("email")}
+            {...register("email", emailRules)}
             disabled={subscribeMutation.isPending}
             className="h-11 flex-1 bg-transparent px-5 text-sm text-white placeholder:text-gray-500 outline-none"
           />

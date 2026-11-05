@@ -35,7 +35,7 @@ function Section({ title, children }) {
 export default function Details({ id }) {
   const { data: record, isLoading, isError, error } = useEnquiry(id);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader variant="details" />;
   if (isError) return <ErrorMessage error={error} />;
   if (!record) return null;
 

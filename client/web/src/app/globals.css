@@ -256,6 +256,13 @@
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 }
 
+/* Below-the-fold blocks: the browser skips their layout / paint until they
+   come near the viewport (no visual change). */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
