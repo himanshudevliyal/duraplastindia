@@ -10,7 +10,7 @@ import { canonical } from "@/lib/seo";
 import { getSchemas } from "@/lib/schemas";
 import { fetchCustomPageBySlug } from "@/services/custom-page-service";
 import {
-  LOCALE_TO_COUNTRY,
+  getSeoCountry,
   getCountryFromLocale,
   isShownInCountry,
 } from "@/utils/country-mapping";
@@ -20,7 +20,7 @@ import {
 
 // One API call per request, shared by generateMetadata and the page.
 const getPage = cache(async (slug, locale) => {
-  const page = await fetchCustomPageBySlug(slug, LOCALE_TO_COUNTRY[locale]);
+  const page = await fetchCustomPageBySlug(slug, getSeoCountry(locale));
   if (!page || !isShownInCountry(page.city, getCountryFromLocale(locale))) {
     return null;
   }

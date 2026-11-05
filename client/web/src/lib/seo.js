@@ -1,4 +1,5 @@
 import { routing } from "@/i18n/routing";
+import { COUNTRIES, GLOBAL_LOCALE } from "@/utils/country-mapping";
 
 // Live site (www). Canonical URLs always point here, also on localhost.
 export const SITE_URL = "https://www.duraplastindia.com";
@@ -7,20 +8,10 @@ export const SITE_NAME = "Dura Plast India";
 // Locale => BCP 47 language-region code (all country sites are English).
 // Used for <html lang> and hreflang. "global" is the generic English site.
 export const LOCALE_LANG = {
-  global: "en",
-  in: "en-IN",
-  au: "en-AU",
-  nz: "en-NZ",
-  us: "en-US",
-  gb: "en-GB",
-  ae: "en-AE",
-  za: "en-ZA",
-  eg: "en-EG",
-  ng: "en-NG",
-  ma: "en-MA",
-  dz: "en-DZ",
-  ke: "en-KE",
-  tz: "en-TZ",
+  [GLOBAL_LOCALE]: "en",
+  ...Object.fromEntries(
+    COUNTRIES.map((c) => [c.locale, `en-${c.locale.toUpperCase()}`]),
+  ),
 };
 
 export const htmlLang = (locale) => LOCALE_LANG[locale] || "en";

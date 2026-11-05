@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { fetchProductPageBySlug } from "@/services/product-page-services";
-import { LOCALE_TO_COUNTRY } from "@/utils/country-mapping";
+import { getSeoCountry } from "@/utils/country-mapping";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 
@@ -20,7 +20,7 @@ import { canonical } from "@/lib/seo";
 // One API call per request, shared by generateMetadata and the page.
 // "global" (no URL prefix) has no country => Global SEO; /in, /au ... => that country's SEO.
 const getProduct = cache((slug, locale) =>
-  fetchProductPageBySlug(slug, LOCALE_TO_COUNTRY[locale]),
+  fetchProductPageBySlug(slug, getSeoCountry(locale)),
 );
 
 export async function generateMetadata({ params }) {

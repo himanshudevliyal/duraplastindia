@@ -1,7 +1,7 @@
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
 import { cache } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/services/product-service";
-import { LOCALE_TO_COUNTRY, getCountryFromLocale } from "@/utils/country-mapping";
+import { getSeoCountry, getCountryFromLocale } from "@/utils/country-mapping";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 import FAQSection from "../../product/_components/faq";
@@ -9,7 +9,7 @@ import FAQSection from "../../product/_components/faq";
 // One API call per request, shared by generateMetadata and the page.
 // "global" (no URL prefix) => global SEO; /in, /au ... => that country's SEO / FAQs.
 const getBlog = cache((slug, locale) =>
-  fetchBlogBySlug(slug, LOCALE_TO_COUNTRY[locale]),
+  fetchBlogBySlug(slug, getSeoCountry(locale)),
 );
 import { ProseStyle, proseFont as display } from "@/components/layout/prose";
 import Image from "next/image";

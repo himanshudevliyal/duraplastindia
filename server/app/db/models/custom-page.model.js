@@ -1,6 +1,7 @@
 "use strict";
 import constants from "../../lib/constants/index.js";
 import { DataTypes, QueryTypes } from "sequelize";
+import { applyCountrySeo } from "../../helpers/country-seo.js";
 
 // Custom pages: standalone website pages served at /<slug> (and /<country>/<slug>).
 let CustomPageModel = null;
@@ -201,29 +202,8 @@ const getBySlug = async (req, slug) => {
   // drafts are not shown on the website
   if (record.status === "draft" && !req.includeDrafts) return null;
 
-  // ?country=India (name) or ?country=in (code), same as blogs / product pages.
-  const COUNTRY_ALIASES = { in: "india", au: "australia", us: "united states" };
-  const rawCountry = (req.query?.country || "").toString().trim().toLowerCase();
-  const country = COUNTRY_ALIASES[rawCountry] || rawCountry;
-  const countryKey = Object.keys(record.country_seo || {}).find(
-    (k) => k.toLowerCase() === country,
-  );
-  const countrySeo = (countryKey && record.country_seo[countryKey]) || {};
-
-  // field-level fallback: country value -> global value
-  const pick = (key) => {
-    const v = countrySeo[key];
-    return v !== undefined && v !== null && v !== "" ? v : record[key];
-  };
-
-  return {
-    ...record,
-    meta_title: pick("meta_title"),
-    meta_description: pick("meta_description"),
-    meta_keywords: pick("meta_keywords"),
-    jsonld_schema: pick("jsonld_schema"),
-    faq: countrySeo.faq?.length ? countrySeo.faq : record.faq,
-  };
+  // ?country=za (URL code) or ?country=South Africa (name).
+  return applyCountrySeo(record, req.query?.country);
 };
 
 const deleteById = async (req, id, transaction) => {

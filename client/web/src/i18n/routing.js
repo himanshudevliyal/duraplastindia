@@ -1,38 +1,20 @@
 import { defineRouting } from "next-intl/routing";
+import { COUNTRY_LOCALES, GLOBAL_LOCALE } from "../utils/country-mapping";
 
 /**
  * Central routing configuration for the app's internationalization.
- *
- * - `en` (English) is the default locale and is served without a URL
- *   prefix (e.g. `/about`), preserving existing, already-indexed URLs.
- * - `hi` (Hindi) is served with a `/hi` prefix (e.g. `/hi/about`).
- *
- * Add new locales here only - every other part of the i18n setup
- * (proxy, navigation helpers, language switcher) reads from this file.
+ * Countries (locales) are added in utils/country-mapping.js (COUNTRIES) —
+ * routing, the country switcher, product filters and SEO all read from there.
+ * Each new country also needs a messages/<locale>.json file.
  */
-
 
 export const routing = defineRouting({
   // "global" = the main site (https://duraplastindia.com/) — no URL prefix.
   // Every other locale is a country site with a prefix (/in, /au, /us ...).
-  locales: [
-    "global",
-    "in",
-    "au",
-    "nz",
-    "us",
-    "gb",
-    "ae",
-    "za",
-    "eg",
-    "ng",
-    "ma",
-    "dz",
-    "ke",
-    "tz",
-  ],
+  // Country list lives in utils/country-mapping.js (COUNTRIES).
+  locales: [GLOBAL_LOCALE, ...COUNTRY_LOCALES],
 
-  defaultLocale: "global",
+  defaultLocale: GLOBAL_LOCALE,
 
   // default (global) locale => no prefix, country locales => prefix
   localePrefix: "as-needed",

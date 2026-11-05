@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { COUNTRIES } from "@/utils/country-mapping";
 
 // Native-language labels, so each locale is always legible to its own
 // speakers regardless of which language is currently active.
@@ -21,20 +22,9 @@ import { cn } from "@/lib/utils";
 
 const LOCALE_LABELS = {
   global: { native: "Global", short: "GLOBAL" },
-  in: { native: "India", short: "IN" },
-  au: { native: "Australia", short: "AU" },
-  nz: { native: "New Zealand", short: "NZ" },
-  us: { native: "United States", short: "US" },
-  gb: { native: "United Kingdom", short: "UK" },
-  ae: { native: "United Arab Emirates", short: "UAE" },
-
-  za: { native: "South Africa", short: "ZA" },
-  eg: { native: "Egypt", short: "EG" },
-  ng: { native: "Nigeria", short: "NG" },
-  ma: { native: "Morocco", short: "MA" },
-  dz: { native: "Algeria", short: "DZ" },
-  ke: { native: "Kenya", short: "KE" },
-  tz: { native: "Tanzania", short: "TZ" },
+  ...Object.fromEntries(
+    COUNTRIES.map((c) => [c.locale, { native: c.label, short: c.short }]),
+  ),
 };
 
 export default function LanguageSwitcher({ className, align = "end" }) {

@@ -357,11 +357,29 @@ export function SeoTabs({ countries }) {
   );
 }
 
-export const cityOptions = [
+// Countries that have a website (/in, /au, /za ...). The value is saved in
+// the DB and must match exactly:
+//   - client/web/src/utils/country-mapping.js (COUNTRIES[].name)
+//   - server/app/helpers/country-seo.js (COUNTRIES[].name)
+// Do not rename a value (e.g. "UAE") — saved products/blogs use it.
+export const websiteCountryOptions = [
   { label: "India", value: "India" },
   { label: "Australia", value: "Australia" },
+  { label: "New Zealand", value: "New Zealand" },
   { label: "United States", value: "United States" },
   { label: "United Kingdom", value: "United Kingdom" },
+  { label: "UAE", value: "UAE" },
+  { label: "South Africa", value: "South Africa" },
+  { label: "Egypt", value: "Egypt" },
+  { label: "Nigeria", value: "Nigeria" },
+  { label: "Morocco", value: "Morocco" },
+  { label: "Algeria", value: "Algeria" },
+  { label: "Kenya", value: "Kenya" },
+  { label: "Tanzania", value: "Tanzania" },
+];
+
+export const cityOptions = [
+  ...websiteCountryOptions,
   { label: "Canada", value: "Canada" },
   { label: "Germany", value: "Germany" },
   { label: "France", value: "France" },
@@ -386,21 +404,15 @@ export const cityOptions = [
   { label: "Thailand", value: "Thailand" },
   { label: "Indonesia", value: "Indonesia" },
   { label: "Vietnam", value: "Vietnam" },
-  { label: "Philippines", value: "Philippines" },
-  { label: "UAE", value: "UAE" },
+  { label: "Philippines", value: "Philippines" },
   { label: "Saudi Arabia", value: "Saudi Arabia" },
   { label: "Qatar", value: "Qatar" },
   { label: "Oman", value: "Oman" },
   { label: "Kuwait", value: "Kuwait" },
-  { label: "Bahrain", value: "Bahrain" },
-  { label: "South Africa", value: "South Africa" },
-  { label: "Nigeria", value: "Nigeria" },
-  { label: "Kenya", value: "Kenya" },
-  { label: "Egypt", value: "Egypt" },
+  { label: "Bahrain", value: "Bahrain" },
   { label: "Brazil", value: "Brazil" },
   { label: "Mexico", value: "Mexico" },
-  { label: "Argentina", value: "Argentina" },
-  { label: "New Zealand", value: "New Zealand" },
+  { label: "Argentina", value: "Argentina" },
   { label: "Sri Lanka", value: "Sri Lanka" },
   { label: "Bangladesh", value: "Bangladesh" },
   { label: "Nepal", value: "Nepal" },
