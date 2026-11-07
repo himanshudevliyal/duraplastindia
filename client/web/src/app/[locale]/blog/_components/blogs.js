@@ -47,7 +47,13 @@ export default function BlogsPage() {
           </div>
         )}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isError && blogs.length === 0 && (
+          <p className="mx-auto max-w-xl rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-8 text-center text-base text-gray-600">
+            No articles for this country yet. Please check back soon.
+          </p>
+        )}
+
+        {!isLoading && !isError && blogs.length > 0 && (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog) => (
               <div key={blog.id}>

@@ -9,6 +9,7 @@ import enquiryModal from "./models/enquiry.modal.js";
 import newsletterModel from "./models/newsletter.model.js";
 import distributorEnquiryModel from "./models/distributor-enquiry.model.js";
 import customPageModel from "./models/custom-page.model.js";
+import solutionModel from "./models/solution.model.js";
 
 export default {
   UserModel: userModel,
@@ -21,6 +22,7 @@ export default {
   NewsletterModel: newsletterModel,
     DistributorEnquiryModel: distributorEnquiryModel,
   CustomPageModel: customPageModel,
+  SolutionModel: solutionModel,
 
 
 };

@@ -20,9 +20,17 @@ export function BreadcrumbBanner({
         className="object-cover"
       />
 
-      <div className="absolute inset-0 bg-black/55" />
+      {/* light dark overlay so the heading stays readable on bright photos */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-[1]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.42) 50%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-5 text-center text-white">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-5 text-center text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
         {/* Breadcrumb */}
         <nav className="mb-3 flex flex-wrap items-center justify-center gap-2 text-sm">
           {breadcrumbs.map((item, index) => (

@@ -12,7 +12,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import moment from "moment";
 import Link from "next/link";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columns = (openModal, setId) => [
   {
@@ -29,16 +29,22 @@ export const columns = (openModal, setId) => [
     },
     cell: ({ row }) => {
       const company = row.getValue("company");
-      const slug = row.original.slug;
+      // partner's own website (if filled in); add https:// when missing
+      const raw = (row.original.website || "").trim();
+      const website = raw && !/^https?:\/\//i.test(raw) ? `https://${raw}` : raw;
+
+      if (!website) return <span className="font-medium">{company}</span>;
 
       return (
         <a
           target="_blank"
-          href={`https://timeskrane.com/${slug}`}
-          referrerPolicy="no-referrer"
-          className="hover:text-primary underline"
+          rel="noopener noreferrer"
+          href={website}
+          className="hover:text-primary inline-flex items-center gap-1 font-medium underline-offset-4 hover:underline"
+          title={website}
         >
           {company}
+          <ExternalLink className="size-3 opacity-60" />
         </a>
       );
     },

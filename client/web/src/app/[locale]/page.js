@@ -11,6 +11,7 @@ import { getImageProps } from "next/image";
 
 import { JsonLd } from "@/components/layout/json-ld";
 import FootprintSection from "@/home/footprint-section";
+import ClosingSection from "@/home/closing-section";
 import FAQSection from "./product/_components/faq";
 import { getMessages } from "next-intl/server";
 import { buildSchemas } from "@/lib/messages";
@@ -147,6 +148,10 @@ export default async function HomePage({ params }) {
         <div className="cv-auto">
           <FAQSection faq={home.faq} />
         </div>
+      )}
+
+      {home.closing?.text && (
+        <ClosingSection text={home.closing.text} cta={home.closing.cta} />
       )}
     </main>
   );

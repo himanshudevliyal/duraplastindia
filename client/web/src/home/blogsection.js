@@ -3,8 +3,17 @@
 import BlogsPage from "@/app/[locale]/blog/_components/blogs";
 import Heading from "@/components/layout/heading";
 import { Section } from "@/components/layout/section";
+import { useBlogs } from "@/hooks/use-blogs";
+import { countryQuery } from "@/utils/country-mapping";
+import { useLocale } from "next-intl";
 
 export function BlogSection() {
+  // same query as <BlogsPage> (shared cache): no blogs for this country =>
+  // the whole section is hidden, not just an empty heading
+  const { data, isLoading } = useBlogs(countryQuery(useLocale()));
+  const blogs = data?.blogs ?? [];
+  if (!isLoading && blogs.length === 0) return null;
+
   return (
     <Section id="blog" className="bg-gray-100 ">
       <Heading

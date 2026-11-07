@@ -1,3 +1,4 @@
+import { getMessages } from "next-intl/server";
 import {
   ShieldCheck,
   ScrollText,
@@ -66,18 +67,24 @@ const envPolicy = [
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
+  const messages = await getMessages({ locale });
   // title = the page heading shown in its banner
   return {
     title: "Policy Statement | Dura Plast India",
+    // Seo.policyStatement in messages/<locale>.json (title, description, keywords)
+    ...messages.Seo?.policyStatement,
     alternates: canonical(locale, "/policy-statement"),
   };
 }
 
-export default function PolicyStatementPage() {
+export default async function PolicyStatementPage({ params }) {
+  const { locale } = await params;
+  // Pages.policyStatement.h1 in messages/<locale>.json replaces the banner heading
+  const h1 = (await getMessages({ locale })).Pages?.policyStatement?.h1;
   return (
     <main>
       <BreadcrumbBanner
-        title="Policy Statement"
+        title={h1 ?? "Policy Statement"}
         // backgroundImage="/img/banner/contact-banner.jpg"
         breadcrumbs={[
           { label: "Home", href: "/" },

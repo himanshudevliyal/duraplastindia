@@ -4,11 +4,40 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function SectionNav({
-  sections,
+  sections: allSections,
   offset = 128,
   showAfter = 320,
   className,
 }) {
+  // only links whose section is on the page (e.g. no "FAQ" / "Related
+  // products" link when that section is not rendered); re-checked when the
+  // page changes, because some sections load later
+  const [sections, setSections] = React.useState(allSections);
+  React.useEffect(() => {
+    let frame;
+    const check = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const present = allSections.filter((s) =>
+          document.getElementById(s.id),
+        );
+        setSections((prev) =>
+          prev.length === present.length &&
+          prev.every((s, i) => s.id === present[i].id)
+            ? prev
+            : present,
+        );
+      });
+    };
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [allSections]);
+
   const [activeId, setActiveId] = React.useState(sections[0]?.id);
 
   // Header Behaviour

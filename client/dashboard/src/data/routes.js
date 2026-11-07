@@ -1,5 +1,6 @@
 import {
   BookOpenText,
+  Lightbulb,
   Box,
   FolderTree,
   Handshake,
@@ -65,6 +66,27 @@ export const sidebarData = [
       {
         title: "Edit",
         url: "/blogs/:id/edit",
+        roles: [ROLES.ADMIN],
+        isVisible: false,
+      },
+    ],
+  },
+  {
+    title: "Solutions",
+    url: "/solutions?page=1&limit=10",
+    icon: Lightbulb,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [
+      {
+        title: "Create",
+        url: "/solutions/create",
+        roles: [ROLES.ADMIN],
+        isVisible: true,
+      },
+      {
+        title: "Edit",
+        url: "/solutions/:id/edit",
         roles: [ROLES.ADMIN],
         isVisible: false,
       },

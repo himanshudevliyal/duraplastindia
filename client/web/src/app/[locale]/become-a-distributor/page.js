@@ -1,3 +1,4 @@
+import { getMessages } from "next-intl/server";
 import DistributorForm from "@/components/form/distributor-form";
 import { Section } from "@/components/layout/section";
 import { BreadcrumbBanner } from "@/components/ui/breadcrumb";
@@ -5,20 +6,26 @@ import { canonical } from "@/lib/seo";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
+  const messages = await getMessages({ locale });
 
   return {
     title: "Become a Distributor | Dura Plast India",
     description:
       "Partner with Dura Plast India as a distributor, importer or dealer for skylighting, roofing, polycarbonate and natural ventilation products.",
+    // Seo.becomeADistributor in messages/<locale>.json (title, description, keywords)
+    ...messages.Seo?.becomeADistributor,
     alternates: canonical(locale, "/become-a-distributor"),
   };
 }
 
-export default function BecomeADistributorPage() {
+export default async function BecomeADistributorPage({ params }) {
+  const { locale } = await params;
+  // Pages.becomeADistributor.h1 in messages/<locale>.json replaces the banner heading
+  const h1 = (await getMessages({ locale })).Pages?.becomeADistributor?.h1;
   return (
     <main>
       <BreadcrumbBanner
-        title="BECOME A DISTRIBUTOR"
+        title={h1 ?? "BECOME A DISTRIBUTOR"}
         backgroundImage="/img/become-a-distributor.jpg"
         breadcrumbs={[
           { label: "Home", href: "/" },

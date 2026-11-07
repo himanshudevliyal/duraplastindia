@@ -208,6 +208,7 @@ const get = async (req) => {
       cp.logo,
       cp.mobile,
       cp.email,
+      cp.website,
       cp.map_iframe,
       cp.created_at
     FROM ${constants.models.CHANNEL_PARTNER_TABLE} cp

@@ -28,18 +28,8 @@ export const columns = (openModal, setId) => [
       );
     },
     cell: ({ row }) => {
-      const name = row.getValue("title");
-      const slug = row.original.slug;
-      return (
-        <a
-          target="_blank"
-          href={`https://timeskrane.com/${slug}`}
-          referrerPolicy="no-referrer"
-          className="hover:text-primary underline"
-        >
-          {name}
-        </a>
-      );
+      // (old link pointed to another site's domain)
+      return <span className="font-medium">{row.getValue("title")}</span>;
     },
   },
   {

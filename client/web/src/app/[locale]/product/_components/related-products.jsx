@@ -20,7 +20,7 @@ export default function RelativeProducts({ categoryId, currentProductId }) {
     countryQuery(locale),
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return null;
 
   const products = data?.products?.length
     ? data.products
@@ -36,7 +36,7 @@ export default function RelativeProducts({ categoryId, currentProductId }) {
   if (!relatedProducts.length) return null;
 
   return (
-    <>
+    <Section className="bg-gray-50" id="relative-products">
       <Heading
         eyebrow="Products"
         heading="Related Products"
@@ -50,6 +50,6 @@ export default function RelativeProducts({ categoryId, currentProductId }) {
           <ProductCard key={product.id} product={product} headingAs="h3" />
         ))}
       </div>
-    </>
+    </Section>
   );
 }

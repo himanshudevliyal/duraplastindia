@@ -1,0 +1,187 @@
+"use strict";
+import table from "../../db/models.js";
+import slugify from "slugify";
+import { StatusCodes } from "http-status-codes";
+import { cleanupFiles } from "../../helpers/cleanup-files.js";
+import { sequelize } from "../../db/postgres.js";
+import { getItemsToDelete } from "../../helpers/filter.js";
+import { z } from "zod";
+import auth from "../../helpers/auth.js";
+
+export const schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  category_id: z.uuid({ message: "Category required*" }),
+  date: z.coerce.date().optional(),
+  meta_title: z.string().optional(),
+  meta_description: z.string().optional(),
+  meta_keywords: z.string().optional(),
+  jsonld_schema: z.any().optional(),
+  status: z.enum(["active", "draft"]).optional(),
+
+  // exactly one site: "Global" (main site) or one country
+  city: z
+    .array(z.string())
+    .length(1, "Select one country (or Global)."),
+  faq: z
+    .array(
+      z.object({
+        q: z.string().trim().min(3, "Question must be at least 3 characters long."),
+        a: z.string().trim().min(3, "Answer must be at least 3 characters long."),
+      }),
+    )
+    .optional(),
+  // country-specific SEO: { India: {...}, Australia: {...} } (all optional)
+  country_seo: z
+    .record(
+      z.string(),
+      z.object({
+        meta_title: z.string().optional(),
+        meta_description: z.string().optional(),
+        meta_keywords: z.string().optional(),
+        jsonld_schema: z.any().optional(),
+        faq: z
+          .array(
+            z.object({
+              q: z.string().trim().min(3, "Question must be at least 3 characters long."),
+              a: z.string().trim().min(3, "Answer must be at least 3 characters long."),
+            }),
+          )
+          .optional(),
+      }),
+    )
+    .optional(),
+});
+
+const create = async (req, res) => {
+  try {
+    let slug = slugify(req.body.title, { lower: true });
+    req.body.slug = slug;
+
+    const validateData = schema.parse(req.body);
+
+    await table.SolutionModel.create(req);
+
+    res
+      .code(StatusCodes.CREATED)
+      .send({ status: true, message: "Solution created." });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateById = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const record = await table.SolutionModel.getById(req, req.params.id);
+    if (!record) {
+      return res
+        .code(StatusCodes.NOT_FOUND)
+        .send({ message: "Solution not found!" });
+    }
+
+    let slug = slugify(req.body.title, { lower: true, strict: true });
+    req.body.slug = slug;
+
+    // one site per solution (full schema is only applied on create)
+    schema.pick({ city: true }).parse(req.body);
+
+    const documentsToDelete = [];
+
+    const existingPictures = record.pictures;
+    const updatedPictures = req.body.picture_urls;
+    if (updatedPictures) {
+      req.body.pictures = [...(req.body?.pictures ?? []), ...updatedPictures];
+      documentsToDelete.push(
+        ...getItemsToDelete(existingPictures, updatedPictures)
+      );
+    }
+
+    await table.SolutionModel.update(req, 0, transaction);
+    await cleanupFiles(documentsToDelete);
+
+    await transaction.commit();
+    res.code(StatusCodes.OK).send({ status: true, message: "Solution updated." });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+const getById = async (req, res) => {
+  try {
+    const record = await table.SolutionModel.getById(req, req.params.id);
+    if (!record) {
+      return res
+        .code(StatusCodes.NOT_FOUND)
+        .send({ message: "Solution not found!" });
+    }
+
+    const data = await table.SolutionModel.getById(req);
+
+    res.code(StatusCodes.OK).send({ status: true, data: data });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getBySlug = async (req, res) => {
+  try {
+    req.includeDrafts = await auth.canSeeDrafts(req);
+    const record = await table.SolutionModel.getBySlug(req);
+    if (!record) {
+      return res
+        .code(StatusCodes.NOT_FOUND)
+        .send({ message: "Solution not found!" });
+    }
+
+    res.code(StatusCodes.OK).send({ status: true, data: record });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const get = async (req, res) => {
+  try {
+    req.includeDrafts = await auth.canSeeDrafts(req);
+    const data = await table.SolutionModel.get(req);
+
+    res.code(StatusCodes.OK).send({ status: true, data: data });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteById = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const record = await table.SolutionModel.getById(req);
+    if (!record) {
+      return res
+        .code(StatusCodes.NOT_FOUND)
+        .send({ message: "Solution not found!" });
+    }
+
+    await table.SolutionModel.deleteById(req, 0, transaction);
+
+    const documentsToDelete = [];
+    record.pictures?.forEach((image) => documentsToDelete.push(image));
+    await cleanupFiles(documentsToDelete);
+
+    await transaction.commit();
+    res.status(StatusCodes.OK).send(record);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+export default {
+  create: create,
+  updateById: updateById,
+  getById: getById,
+  get: get,
+  deleteById: deleteById,
+  getBySlug: getBySlug,
+};

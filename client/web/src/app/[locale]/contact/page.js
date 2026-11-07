@@ -1,3 +1,4 @@
+import { getMessages } from "next-intl/server";
 
 import ContactForm from "@/components/form/contactform";
 import { Section } from "@/components/layout/section";
@@ -6,20 +7,26 @@ import { canonical } from "@/lib/seo";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
+  const messages = await getMessages({ locale });
   // title = the page heading shown in its banner
   return {
     title: "Contact Us | Dura Plast India",
     description:
       "Contact Dura Plast for skylights, polycarbonate roofing, glazing and roof ventilation. Get a quote, technical data or project support from our team.",
+    // Seo.contact in messages/<locale>.json (title, description, keywords)
+    ...messages.Seo?.contact,
     alternates: canonical(locale, "/contact"),
   };
 }
 
-export default function ContactPage({ className }) {
+export default async function ContactPage({ params, className }) {
+  const { locale } = await params;
+  // Pages.contact.h1 in messages/<locale>.json replaces the banner heading
+  const h1 = (await getMessages({ locale })).Pages?.contact?.h1;
   return (
     <main>
       <BreadcrumbBanner
-        title="CONTACT US"
+        title={h1 ?? "CONTACT US"}
          backgroundImage="/img/contact-us-bg.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact Us" }]}
       />

@@ -93,6 +93,9 @@ function SolutionCategory({ category, prefix }) {
 export function OurSolutions({
   heading = "World Class Skylighting & Natural Ventilation Solutions",
   subheading = "Innovative & technologically advanced products engineered to match the diverse natural lighting & ventilation requirements of buildings that are meant to be green, carbon neutral and energy efficient besides being safe, reliable & high performing",
+  // no products for this country: hide the section (home) or show a note
+  // (products page, hideIfEmpty={false})
+  hideIfEmpty = true,
 } = {}) {
   const locale = useLocale();
 
@@ -132,6 +135,9 @@ const solutionCategories = useMemo(() => {
 
 
   const orderedCategories = sortCategories(solutionCategories);
+  const isEmpty = !isLoading && orderedCategories.length === 0;
+
+  if (isEmpty && hideIfEmpty) return null;
 
   return (
     <Section className="bg-gray-100">
@@ -139,14 +145,19 @@ const solutionCategories = useMemo(() => {
         eyebrow="Our Solutions"
         heading={heading}
         subheading={subheading}
-        className="mx-auto capitalize max-w-4xl"
+        className="mx-auto max-w-4xl"
         eyebrowClassName="justify-center"
-        headingClassName="text-2xl font-bold  tracking-wide sm:text-3xl"
-        subheadingClassName="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground"
+        headingClassName="text-2xl font-bold capitalize tracking-wide sm:text-3xl"
+        subheadingClassName="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground normal-case"
       />
 
       {isLoading ? (
         <div className="text-center mt-10">Loading...</div>
+      ) : isEmpty ? (
+        <p className="mx-auto mt-12 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-8 text-center text-base text-gray-600">
+          Products for this country are being added. Contact us for a quote
+          and we will share the right Rhino Tuff products for your project.
+        </p>
       ) : (
         <div className="mt-14 space-y-16">
           {orderedCategories.map((category) => (

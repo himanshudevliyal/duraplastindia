@@ -1,6 +1,7 @@
 import { SITE_URL, localePath } from "@/lib/seo";
 import { fetchProductPages } from "@/services/product-page-services";
 import { fetchBlogs } from "@/services/product-service";
+import { fetchSolutions } from "@/services/solution-service";
 import { fetchCustomPages } from "@/services/custom-page-service";
 import {
   getCountryFromLocale,
@@ -26,6 +27,7 @@ const STATIC_PATHS = [
   "/about",
   "/product",
   "/blog",
+  "/solutions",
   "/contact",
   "/our-works",
   "/our-begining",
@@ -70,15 +72,18 @@ async function safe(fn) {
 export async function getLocaleEntries(locale) {
   const country = getCountryFromLocale(locale);
 
-  const [productData, blogData, customPageData] = await Promise.all([
-    safe(() => fetchProductPages("")),
-    safe(() => fetchBlogs("")),
-    safe(() => fetchCustomPages("")),
-  ]);
+  const [productData, blogData, customPageData, solutionData] =
+    await Promise.all([
+      safe(() => fetchProductPages("")),
+      safe(() => fetchBlogs("")),
+      safe(() => fetchCustomPages("")),
+      safe(() => fetchSolutions("")),
+    ]);
 
   const products = productData?.products ?? [];
   const blogs = blogData?.blogs ?? [];
   const customPages = customPageData?.pages ?? [];
+  const solutions = solutionData?.solutions ?? [];
 
   const entries = STATIC_PATHS.map((path) => ({ loc: absolute(locale, path) }));
 
@@ -99,6 +104,15 @@ export async function getLocaleEntries(locale) {
     entries.push({
       loc: absolute(locale, `/blog/${blog.slug}`),
       lastmod: lastmod(blog),
+    });
+  }
+
+  for (const solution of solutions) {
+    if (!solution?.slug) continue;
+    if (!isShownInCountry(solution.city, country)) continue;
+    entries.push({
+      loc: absolute(locale, `/solutions/${solution.slug}`),
+      lastmod: lastmod(solution),
     });
   }
 

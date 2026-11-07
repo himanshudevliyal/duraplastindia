@@ -1,1 +1,243 @@
-{}
+{
+  "Seo": {
+    "home": {
+      "title": "Skylight Nigeria | Skylights & Roofing | Dura Plast",
+      "description": "Skylight Nigeria: industrial skylights, FRP and polycarbonate roofing and roof ventilators from Dura Plast. Share your roof details for a Nigeria quote.",
+      "keywords": "skylight, skylight company, skylights nigeria, industrial skylights nigeria"
+    },
+    "about": {
+      "title": "About Dura Plast Nigeria | Skylight & Roofing Manufacturer",
+      "description": "Founded in 2010, Dura Plast manufactures skylights, roofing and ventilators in India and supplies Nigeria. Share your roof details for a Nigeria quote.",
+      "keywords": "dura plast nigeria, skylight manufacturer, polycarbonate roofing manufacturer, roof ventilation manufacturer"
+    },
+    "product": {
+      "title": "Skylight and Roofing Products Nigeria | Dura Plast",
+      "description": "Skylight and roofing products Nigeria: Rhino Tuff skylights, FRP and polycarbonate roofing, curbs and ventilators. Get a Nigeria project quote now.",
+      "keywords": "skylight and roofing products nigeria, industrial skylight products, roof ventilation products, frp roofing products, daylighting and ventilation solutions"
+    },
+    "contact": {
+      "title": "Contact Dura Plast Nigeria | Request a Skylight Quote",
+      "description": "Contact Dura Plast for Nigeria projects: request a quote on skylights, polycarbonate and FRP roofing and ventilators. Call or send roof details by form.",
+      "keywords": "contact dura plast nigeria, request a skylight quote nigeria, roofing products quote nigeria, skylight supplier enquiry nigeria"
+    },
+    "ourWorks": {
+      "title": "Skylight and Roofing Projects Nigeria | Dura Plast",
+      "description": "Browse Dura Plast's project gallery of skylight, roofing and ventilation installations and request a similar solution for your Nigerian building site.",
+      "keywords": "skylight and roofing projects nigeria, skylight project gallery, daylighting project references, industrial roofing projects"
+    },
+    "ourBeginning": {
+      "title": "Dura Plast Company Story: Our Beginning | Nigeria",
+      "description": "Our beginning: how Dura Plast started in 2010 and grew into a Rhino Tuff skylight, roofing and ventilation manufacturer serving Nigeria and other markets.",
+      "keywords": "dura plast company story, skylight manufacturer since 2010, dura plast history, rhino tuff brand"
+    },
+    "channelPartners": {
+      "title": "Dura Plast Channel Partners Nigeria | Distributor Network",
+      "description": "Find Dura Plast channel partners and the Rhino Tuff distributor network for Nigeria. Contact us to locate a partner or apply to represent Dura Plast.",
+      "keywords": "dura plast channel partners nigeria, skylight dealers nigeria, roofing distributor network, rhino tuff partners"
+    },
+    "becomeADistributor": {
+      "title": "Become a Roofing Products Distributor Nigeria | Dura Plast",
+      "description": "Distributor opportunity in Nigeria: sell Rhino Tuff roofing, skylighting and natural ventilation products. Share your business details with Dura Plast.",
+      "keywords": "become a roofing products distributor nigeria, skylight distributor opportunity, rhino tuff distributor, distributor enquiry nigeria"
+    },
+    "policyStatement": {
+      "title": "Dura Plast Policy Statement: Mission & Vision | Nigeria",
+      "description": "Dura Plast policy statement for buyers in Nigeria: our mission, vision, environmental protection commitments and compliance obligations. Contact us.",
+      "keywords": "dura plast policy statement"
+    }
+  },
+  "Hero": {
+    "h1": "Industrial Skylights, Polycarbonate Roofing & Roof Ventilation for Nigeria"
+  },
+  "Home": {
+    "about": [
+      "For skylights Nigeria projects, Dura Plast supplies Rhino Tuff dome skylights, polycarbonate roofing sheets and roof ventilation for factories, warehouses and commercial buildings in Lagos, Abuja, Port Harcourt and across Nigeria. We have designed and manufactured skylights and natural ventilation systems since 2010, with turn-key support from design to delivery and installation. Share your roof type, size and location, and our team will suggest the right skylight, sheet or ventilator.",
+      "Dura Plast is a skylight and roof ventilation design and development company, established in **2010**. We offer tailor-made, turn-key solutions that cover design, manufacturing, delivery and installation.",
+      "Our Rhino Tuff range brings together skylights, polycarbonate and FRP roofing sheets and natural roof ventilation, so one supplier can handle daylight, roofing and airflow on the same project.",
+      "For Nigerian buyers, we work from your roof drawing or site details: roof type, span, sheet profile and quantity. We then recommend a product and send a quote."
+    ],
+    "footprint": [
+      {
+        "heading": "Industrial skylights for Nigeria",
+        "paragraphs": [
+          "A well-placed skylight cuts daytime lighting load and makes a warehouse or factory floor brighter and easier to work in. Skylights Nigeria buyers ask for most often are dome skylights for steel roofs, flat roof skylights and thermal insulated skylights for sandwich panels."
+        ],
+        "items": [
+          {
+            "label": "Dome skylights for steel roofs:",
+            "text": "for metal-sheet roofs on factories and warehouses."
+          },
+          {
+            "label": "Flat roof skylight domes:",
+            "text": "for concrete and flat roofs on commercial and institutional buildings."
+          },
+          {
+            "label": "Insulated skylights for sandwich panels:",
+            "text": "for roofs built from sandwich panels."
+          },
+          {
+            "label": "Tubular skylights:",
+            "text": "a solar tube skylight brings daylight into rooms with little or no roof access."
+          }
+        ],
+        "outro": [
+          "Tell us your roof type and we will match the skylight to it."
+        ]
+      },
+      {
+        "heading": "Roof ventilation for Nigerian warehouses and factories",
+        "paragraphs": [
+          "Hot air collects under metal roofs, especially over production lines and storage areas. Roof ventilators let it escape without using electricity for the airflow."
+        ],
+        "items": [
+          {
+            "label": "Wind-driven turbine ventilators:",
+            "text": "spin with the wind and draw hot air out of the building."
+          },
+          {
+            "label": "Hybrid ventilators:",
+            "text": "for sites that want ventilation to continue in low wind."
+          },
+          {
+            "label": "Skylight and turbine ventilator combos:",
+            "text": "one roof opening that gives daylight and ventilation together."
+          }
+        ],
+        "outro": [
+          "Send the building size and roof layout and we will suggest how many ventilators suit it."
+        ]
+      },
+      {
+        "heading": "Polycarbonate roofing sheets for Nigeria",
+        "paragraphs": [
+          "Polycarbonate roofing sheets are used for translucent roofs, skylight panels, walkway covers and wall glazing. We supply flat and corrugated polycarbonate sheet, and FRP roof sheets for translucent panels on metal roofs."
+        ],
+        "items": [
+          {
+            "label": "Flat polycarbonate sheets:",
+            "text": "a polycarbonate skylight sheet for glazing, canopies and cut-to-size panels."
+          },
+          {
+            "label": "Corrugated polycarbonate sheets:",
+            "text": "profiled to match common metal roofing so they sit in the same roof line."
+          },
+          {
+            "label": "FRP roof sheets:",
+            "text": "translucent panels for industrial roofs."
+          }
+        ],
+        "outro": [
+          "Polycarbonate sheet price in Nigeria depends on thickness, sheet size, profile and quantity, so we quote against your specification instead of a fixed list price. Comparing Danpalon-type multiwall sheets? Send your specification and we will confirm what we can supply."
+        ]
+      }
+    ],
+    "solutions": {
+      "subheading": "From a single warehouse to a multi-building plant, we scope the roof, supply the products and support installation. Industries we serve include manufacturing, warehousing and logistics, retail and commercial buildings, and institutions."
+    },
+    "whyUs": {
+      "items": [
+        {
+          "title": "Capability",
+          "description": "Since 2010, Dura Plast has designed and made skylights and roof ventilation systems, and supplies them with turn-key support."
+        }
+      ]
+    },
+    "faq": [
+      {
+        "q": "What types of skylights can I get for a factory or warehouse in Nigeria?",
+        "a": "Dome skylights for steel roofs, flat roof skylight domes, insulated skylights for sandwich panel roofs and tubular skylights. The right one depends on your roof type and size."
+      },
+      {
+        "q": "What is a dome skylight?",
+        "a": "A dome skylight is a raised, domed polycarbonate panel fitted over an opening in the roof. It lets daylight into the building while sealing the opening against the weather."
+      },
+      {
+        "q": "Can a skylight be fitted on a flat roof?",
+        "a": "Yes. Flat roof skylight domes are made for concrete and other flat roofs. Send us the roof drawing and the opening size you have in mind."
+      },
+      {
+        "q": "What is a solar tube skylight?",
+        "a": "A solar tube skylight is a tubular skylight that carries daylight through a tube into a room with little or no roof access, such as a corridor or store room."
+      },
+      {
+        "q": "What types of polycarbonate roofing sheets are available?",
+        "a": "Flat and corrugated polycarbonate sheets, plus FRP roof sheets for translucent panels. Corrugated sheets are profiled to sit alongside metal roofing."
+      },
+      {
+        "q": "What is the polycarbonate sheet price in Nigeria?",
+        "a": "Price depends on thickness, sheet size, profile and quantity, so we quote against your specification. Send those details and we will reply with a quote."
+      },
+      {
+        "q": "Do you supply multiwall or Danpalon-type polycarbonate sheets?",
+        "a": "Send us your specification, including thickness and size, and we will confirm what we can supply for it."
+      },
+      {
+        "q": "How do roof ventilators work without electricity?",
+        "a": "Wind-driven turbine ventilators spin with the wind and pull hot air out through the roof. Hybrid ventilators are an option where wind is low."
+      },
+      {
+        "q": "How do I get a quote?",
+        "a": "Share your roof type, approximate size, city and the product you need through the Get a Quote page, or email sales@duraplastindia.com."
+      }
+    ],
+    "closing": {
+      "text": "Planning skylights Nigeria wide, from Lagos to Abuja? Send your roof details and we will reply with a recommendation and quote.",
+      "cta": "Get a Quote"
+    }
+  },
+  "About": {
+    "h1": "About Dura Plast Nigeria: Skylight, Roofing & Ventilation Manufacturer"
+  },
+  "Pages": {
+    "product": {
+      "h1": "Rhino Tuff Skylight, Roofing & Ventilation Products for Nigeria"
+    },
+    "contact": {
+      "h1": "Contact Dura Plast for Nigeria Projects"
+    },
+    "ourWorks": {
+      "h1": "Skylight & Roofing Project Gallery for Nigeria Buyers"
+    },
+    "ourBeginning": {
+      "h1": "Our Beginning: The Dura Plast Story for Nigeria Partners"
+    },
+    "channelPartners": {
+      "h1": "Dura Plast Channel Partners and Distributor Network for Nigeria"
+    },
+    "becomeADistributor": {
+      "h1": "Become a Rhino Tuff Distributor in Nigeria"
+    },
+    "policyStatement": {
+      "h1": "Dura Plast Policy Statement: Mission, Vision and Compliance (Nigeria)"
+    }
+  },
+  "Schema": {
+    "home": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://www.duraplastindia.com/#organization",
+        "name": "Dura Plast",
+        "url": "https://www.duraplastindia.com/",
+        "foundingDate": "2010",
+        "email": "sales@duraplastindia.com",
+        "description": "Skylight and roof ventilation design and development company offering turn-key solutions from design to installation."
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://www.duraplastindia.com/ng#webpage",
+        "url": "https://www.duraplastindia.com/ng",
+        "name": "Skylight Nigeria | Skylights & Roofing | Dura Plast",
+        "description": "Skylight Nigeria: industrial skylights, FRP and polycarbonate roofing and roof ventilators from Dura Plast. Share your roof details for a Nigeria quote.",
+        "inLanguage": "en-NG",
+        "isPartOf": {
+          "@id": "https://www.duraplastindia.com/#organization"
+        },
+        "about": {
+          "@id": "https://www.duraplastindia.com/#organization"
+        }
+      }
+    ]
+  }
+}

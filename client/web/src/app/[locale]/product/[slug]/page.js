@@ -192,12 +192,11 @@ export default async function ProductDetailsPage({ params }) {
           ))}
         </div>
       </Section>
-      <Section className="bg-gray-50" id="relative-products">
-       <RelativeProducts
-  categoryId={product.category_id}
-  currentProductId={product.id}
-/>
-      </Section>
+      {/* renders its own section, only when there are related products */}
+      <RelativeProducts
+        categoryId={product.category_id}
+        currentProductId={product.id}
+      />
       <FAQSection faq={product.faq} />
     </main>
   );

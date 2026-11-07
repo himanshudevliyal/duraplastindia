@@ -62,11 +62,13 @@ export function WhyChooseUs({ content } = {}) {
       },
     ],
   };
+  // country copy: heading, optional subheading, optional per-card overrides
   if (content) {
-    data.heading = content.heading;
+    if (content.heading) data.heading = content.heading;
+    if (content.subheading) data.subheading = content.subheading;
     data.items = data.items.map((item, i) => ({
       ...item,
-      ...content.items[i],
+      ...content.items?.[i],
     }));
   }
 
