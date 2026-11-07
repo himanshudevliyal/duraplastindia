@@ -11,7 +11,12 @@ import {
 } from "@/components/ui/select";
 import { z } from "zod";
 
-export const statusSchema = z.enum(["active", "draft"]).default("active");
+// empty / missing status (old records, or the Select clearing itself on a
+// form reset) counts as "active"
+export const statusSchema = z.preprocess(
+  (v) => (v === "draft" ? "draft" : v || "active"),
+  z.enum(["active", "draft"]),
+);
 
 export function StatusField() {
   const { control } = useFormContext();
@@ -23,7 +28,11 @@ export function StatusField() {
         control={control}
         name="status"
         render={({ field }) => (
-          <Select value={field.value || "active"} onValueChange={field.onChange}>
+          <Select
+            value={field.value || "active"}
+            // Radix Select fires onValueChange("") on reset — ignore it
+            onValueChange={(v) => v && field.onChange(v)}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
