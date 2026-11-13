@@ -1,4 +1,26 @@
 "use strict";
+import {
+  clashMessage,
+  cleanTranslations,
+} from "../../helpers/translations.js";
+
+// feature images of a language version come from its country tab
+const stripImages = (translations) =>
+  Object.fromEntries(
+    Object.entries(translations).map(([lang, v]) => {
+      const out = { ...v };
+      for (const section of ["applications", "benefits"]) {
+        if (out[section]?.features) {
+          out[section] = {
+            ...out[section],
+            features: out[section].features.map(({ img, uid, ...f }) => f),
+          };
+        }
+      }
+      return [lang, out];
+    }),
+  );
+
 import table from "../../db/models.js";
 import { StatusCodes } from "http-status-codes";
 import { cleanupFiles } from "../../helpers/cleanup-files.js";
@@ -130,6 +152,9 @@ const prepareCountryContent = async (req, oldImages, productId) => {
       );
     }
     const tab = countryContentSchema.parse(tabs[country]);
+    // language versions (the schema above drops unknown keys). Images
+    // always come from this tab, so they are not kept in a version.
+    tab.translations = stripImages(cleanTranslations(tabs[country].translations) ?? {});
 
     tab.pictures = [
       ...(tab.pictures || []).map(kept).filter(Boolean),
@@ -161,6 +186,24 @@ const prepareCountryContent = async (req, oldImages, productId) => {
       ["country_content"],
       `Slug already used by another product: ${used.join(", ")}`,
     );
+  }
+
+  // a language slug may be shared by the tabs of one product, never by two
+  const langPairs = [
+    ...new Map(
+      Object.values(content).flatMap((t) =>
+        Object.entries(t.translations || {})
+          .filter(([, v]) => v.slug)
+          .map(([lang, v]) => [
+          `${lang}:${v.slug}`,
+          { lang, slug: v.slug },
+        ]),
+      ),
+    ).values(),
+  ];
+  const usedLang = await table.ProductPageModel.findUsedTranslationSlugs(langPairs, productId);
+  if (usedLang.length) {
+    throw zodError(["country_content"], clashMessage(usedLang));
   }
 
   req.body.country_content = content;

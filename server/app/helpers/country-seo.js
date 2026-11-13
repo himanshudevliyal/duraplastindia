@@ -2,6 +2,8 @@
 // or a country name like "South Africa"). country_seo keys are the country
 // names selected in the dashboard. Missing country fields fall back to global.
 
+import { mergeVersion, translationSlugs } from "./translations.js";
+
 // Website country locales -> dashboard country names. Keep in sync with:
 //   - client/web/src/utils/country-mapping.js (COUNTRIES)
 //   - client/dashboard/src/components/forms/seo-tabs.jsx (websiteCountryOptions)
@@ -99,12 +101,14 @@ export const findCountryKey = (map, rawCountry) => {
 // Product for one site: that country's tab content (?country=za / India /
 // Global; none => Global). Records without country_content (not yet
 // migrated) keep the old behaviour (base content + country SEO).
-export const applyCountryContent = (record, rawCountry) => {
+// lang: a language version of that tab (country_content[c].translations[lang]);
+// null when it does not exist.
+export const applyCountryContent = (record, rawCountry, lang) => {
   if (!record) return record;
 
   const { country_content: content, ...rest } = record;
   const key = findCountryKey(content, rawCountry || GLOBAL_COUNTRY);
-  if (!key) return applyCountrySeo(rest, rawCountry);
+  if (!key) return lang ? null : applyCountrySeo(rest, rawCountry);
 
   const tab = content[key] || {};
   const picked = Object.fromEntries(
@@ -117,6 +121,84 @@ export const applyCountryContent = (record, rawCountry) => {
       .filter((c) => content[c])
       .map((c) => [c, content[c].slug || record.slug]),
   );
+  // language versions of every site: { Morocco: { fr: "slug-fr" } }
+  const country_translation_slugs = Object.fromEntries(
+    (record.city || [])
+      .filter((c) => content[c]?.translations)
+      .map((c) => [
+        c,
+        translationSlugs(content[c].translations, content[c].slug || record.slug),
+      ]),
+  );
+  const result = {
+    ...rest,
+    ...picked,
+    country_slugs,
+    country_translation_slugs,
+    translation_slugs: country_translation_slugs[key] || {},
+    lang: null,
+  };
+  if (!lang) return result;
 
-  return { ...rest, ...picked, country_slugs };
+  const version = tab.translations?.[lang];
+  if (!version || isBlank(version.title)) return null;
+  const { slug: versionSlug, ...versionFields } = version;
+  return {
+    ...mergeVersion(result, versionFields),
+    slug: versionSlug || result.slug,
+    base_slug: result.slug,
+    lang,
+  };
+};
+
+// ================= Country-wise content (categories) =================
+// A category page exists on every site in record.city ("Global" + countries).
+// country_content[country] holds that site's content; a blank field falls
+// back to the category's base value. Language versions (e.g. French on
+// /ma/fr/category/<slug>) go in country_content[country].translations[lang]
+// with the same fields.
+export const CATEGORY_FIELDS = [
+  "title",
+  "h1",
+  "description",
+  "content",
+  "meta_title",
+  "meta_description",
+  "meta_keywords",
+  "jsonld_schema",
+  "faq",
+];
+
+const pickFilled = (tab = {}) =>
+  Object.fromEntries(
+    CATEGORY_FIELDS.filter((f) => !isBlank(tab[f])).map((f) => [f, tab[f]]),
+  );
+
+// Category for one site (+ optional language). Returns null when the
+// category is not on that site, or the language version does not exist.
+export const applyCategoryContent = (record, rawCountry, lang) => {
+  if (!record) return record;
+
+  const { country_content: content = {}, ...rest } = record;
+  const sites = record.city || [];
+  const siteKey = sites.find(
+    (c) => normalizeCountry(c) === normalizeCountry(rawCountry || GLOBAL_COUNTRY),
+  );
+  if (!siteKey) return null;
+
+  const tab = content[siteKey] || {};
+  let picked = pickFilled(tab);
+
+  if (lang) {
+    const version = tab.translations?.[lang];
+    if (!version || isBlank(version.title)) return null;
+    picked = { ...picked, ...pickFilled(version) };
+  }
+
+  // languages that have a version on this site (language switcher / hreflang)
+  const languages = Object.entries(tab.translations || {})
+    .filter(([, v]) => !isBlank(v?.title))
+    .map(([code]) => code);
+
+  return { ...rest, ...picked, country: siteKey, languages };
 };

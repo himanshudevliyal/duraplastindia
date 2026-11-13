@@ -89,3 +89,11 @@ export const productLocales = (city, locales) =>
 // "country=India" / "country=Global" query for list APIs.
 export const countryQuery = (locale) =>
   `country=${encodeURIComponent(getCountryFromLocale(locale))}`;
+
+// Categories: a category page exists on the sites selected for it (city:
+// "Global" + countries) unless it is a draft. Lists send status + city.
+export const isCategoryOnSite = (category, country) =>
+  !!category?.slug &&
+  category.status !== "draft" &&
+  Array.isArray(category.city) &&
+  category.city.includes(country);

@@ -6,7 +6,9 @@ import Image from "next/image";
 import { renderBold } from "@/lib/render-bold";
 import { Link } from "@/i18n/navigation";
 
-export default function AboutSection({ content } = {}) {
+// heading: optional H2 from messages (Home.aboutHeading); "About Us" then
+// becomes the small label above it
+export default function AboutSection({ content, heading } = {}) {
   return (
     <Section className="bg-white">
       <div className="mx-auto max-w-[1500px] px-6 md:px-10 lg:px-16">
@@ -30,9 +32,9 @@ export default function AboutSection({ content } = {}) {
   {/* Text - Bottom on mobile / Left on desktop */}
   <div className="order-2 lg:order-1">
     <Heading
-      heading="About Us"
+      {...(heading ? { eyebrow: "About Us", heading } : { heading: "About Us" })}
       className="max-w-3xl text-start"
-      eyebrowClassName="justify-center"
+      eyebrowClassName="justify-start"
     />
 
     <div className="mt-6 space-y-7 text-base leading-7 md:text-lg md:leading-8">

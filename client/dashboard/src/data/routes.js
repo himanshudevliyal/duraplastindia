@@ -13,6 +13,7 @@ import {
   MailIcon,
   Building2,
   FileText,
+  Languages,
 } from "lucide-react";
 
 const ROLES = {
@@ -91,6 +92,14 @@ export const sidebarData = [
         isVisible: false,
       },
     ],
+  },
+  {
+    title: "Languages",
+    url: "/languages",
+    icon: Languages,
+    roles: [ROLES.ADMIN],
+    isVisible: true,
+    items: [],
   },
   {
     title: "Custom Pages",

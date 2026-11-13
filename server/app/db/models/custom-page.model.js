@@ -2,6 +2,10 @@
 import constants from "../../lib/constants/index.js";
 import { DataTypes, QueryTypes } from "sequelize";
 import { applyCountrySeo } from "../../helpers/country-seo.js";
+import {
+  TRANSLATION_SLUGS_SQL,
+  applyTranslation,
+} from "../../helpers/translations.js";
 
 // Custom pages: standalone website pages served at /<slug> (and /<country>/<slug>).
 let CustomPageModel = null;
@@ -71,6 +75,15 @@ const init = async (sequelize) => {
         allowNull: false,
         defaultValue: {},
       },
+
+      // Language versions (e.g. French on /ma/fr/<slug>), each with its own
+      // slug: { fr: { title, slug, description, content, meta_*, ... } }
+      // — see helpers/translations.js
+      translations: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
     },
     {
       createdAt: "created_at",
@@ -95,6 +108,8 @@ const fields = (req) => ({
   status: req.body.status === "draft" ? "draft" : "active",
   faq: req.body.faq || [],
   country_seo: req.body.country_seo || {},
+  // not sent => unchanged (undefined is skipped)
+  translations: req.body.translations,
 });
 
 const create = async (req, transaction) => {
@@ -152,7 +167,7 @@ const get = async (req) => {
   const query = `
     SELECT
       cp.id, cp.slug, cp.title, cp.pictures, cp.description, cp.city, cp.status,
-      cp.created_at, cp.updated_at
+      cp.created_at, cp.updated_at, ${TRANSLATION_SLUGS_SQL("cp")}
     FROM ${constants.models.CUSTOM_PAGE_TABLE} cp
     ${whereClause}
     ORDER BY cp.created_at DESC
@@ -197,14 +212,29 @@ const getBySlugRaw = async (slug) => {
   });
 };
 
+// page whose <lang> version uses this slug
+const getByTranslationSlug = async (slug, lang) => {
+  const rows = await CustomPageModel.sequelize.query(
+    `SELECT * FROM ${constants.models.CUSTOM_PAGE_TABLE} cp
+      WHERE cp.translations->(:lang)->>'slug' = :slug
+      LIMIT 1`,
+    { replacements: { slug, lang }, type: QueryTypes.SELECT, raw: true },
+  );
+  return rows[0] ?? null;
+};
+
 const getBySlug = async (req, slug) => {
-  const record = await getBySlugRaw(req.params?.slug || slug);
+  const lang = req.query?.lang || null;
+  const record = lang
+    ? await getByTranslationSlug(req.params?.slug || slug, lang)
+    : await getBySlugRaw(req.params?.slug || slug);
   if (!record) return record;
   // drafts are not shown on the website
   if (record.status === "draft" && !req.includeDrafts) return null;
 
-  // ?country=za (URL code) or ?country=South Africa (name).
-  return applyCountrySeo(record, req.query?.country);
+  // ?country=za (URL code) or ?country=South Africa (name); ?lang=fr =>
+  // that language version (null when it does not exist).
+  return applyTranslation(applyCountrySeo(record, req.query?.country), lang);
 };
 
 const deleteById = async (req, id, transaction) => {

@@ -7,6 +7,24 @@ import { sequelize } from "../../db/postgres.js";
 import { getItemsToDelete } from "../../helpers/filter.js";
 import { z } from "zod";
 import auth from "../../helpers/auth.js";
+import constants from "../../lib/constants/index.js";
+import {
+  clashMessage,
+  cleanTranslations,
+  findSlugClashes,
+} from "../../helpers/translations.js";
+
+// language versions: clean them; null when fine, else the clash message
+const checkTranslations = async (req, ownId) => {
+  req.body.translations = cleanTranslations(req.body.translations);
+  const clashes = await findSlugClashes(
+    sequelize,
+    constants.models.BLOG_TABLE,
+    req.body.translations,
+    ownId,
+  );
+  return clashes.length ? clashMessage(clashes) : null;
+};
 
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -60,6 +78,9 @@ const create = async (req, res) => {
 
     const validateData = schema.parse(req.body);
 
+    const clash = await checkTranslations(req);
+    if (clash) return res.code(StatusCodes.CONFLICT).send({ message: clash });
+
     await table.BlogModel.create(req);
 
     res
@@ -85,6 +106,12 @@ const updateById = async (req, res) => {
 
     // one site per blog (full schema is only applied on create)
     schema.pick({ city: true }).parse(req.body);
+
+    const clash = await checkTranslations(req, record.id);
+    if (clash) {
+      await transaction.rollback();
+      return res.code(StatusCodes.CONFLICT).send({ message: clash });
+    }
 
     const documentsToDelete = [];
 

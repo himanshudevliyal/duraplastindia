@@ -33,25 +33,23 @@ export default function LanguageSwitcher({ className, align = "end" }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  console.log({
-    locale,
-    pathname,
-    href: searchParams.toString()
-      ? `${pathname}?${searchParams.toString()}`
-      : pathname,
-  });
   const handleSelect = (nextLocale) => {
     if (nextLocale === locale || isPending) return;
 
     const query = searchParams.toString();
-    const href = query ? `${pathname}?${query}` : pathname;
+    // on a language URL (/ma/fr/...) open the other country's default page
+    const lang = document.documentElement.dataset.lang;
+    const path =
+      lang && (pathname === `/${lang}` || pathname.startsWith(`/${lang}/`))
+        ? pathname.slice(lang.length + 1) || "/"
+        : pathname;
+    const href = query ? `${path}?${query}` : path;
 
     startTransition(() => {
       router.replace(href, { locale: nextLocale });
     });
   };
 
-  console.log({ locale });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

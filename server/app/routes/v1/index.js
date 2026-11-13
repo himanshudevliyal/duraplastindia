@@ -11,6 +11,7 @@ import  newsletterRoutes  from "../../api/newsletters/routes.js";
 import distributorEnquiryRoutes from "../../api/distributor-enquiries/routes.js";
 import customPageRoutes from "../../api/custom-page/routes.js";
 import solutionRoutes from "../../api/solution/routes.js";
+import languageRoutes from "../../api/language/routes.js";
 
 
 export default async function routes(fastify, options) {
@@ -34,4 +35,5 @@ export default async function routes(fastify, options) {
   });
   fastify.register(customPageRoutes, { prefix: "custom-pages" });
   fastify.register(solutionRoutes, { prefix: "solutions" });
+  fastify.register(languageRoutes, { prefix: "languages" });
 }

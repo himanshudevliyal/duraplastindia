@@ -17,7 +17,10 @@ import QueryProvider from "@/providers/query-client-provider";
 import DeferredAnalytics from "@/components/deferred-analytics";
 import DistributorPopup from "@/components/distributor-popup";
 import { CLIENT_NAMESPACES, pickMessages } from "@/lib/messages";
-import { htmlLang, siteMetadata } from "@/lib/seo";
+import { siteMetadata } from "@/lib/seo";
+import { htmlLangOf } from "@/lib/lang";
+import { LANG_PAGE_HEADER, LANG_PATH_HEADER } from "@/lib/lang-routes";
+import { loadLangMessages } from "@/i18n/lang-messages";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import {
@@ -61,20 +64,33 @@ export default async function RootLayout({ children, params }) {
   }
 
   // CSP nonce from proxy.js (for the analytics scripts below)
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get("x-nonce") ?? undefined;
 
-  // Enable static rendering
+  // language URL (/<country>/<lang>/...) — see proxy.js / lib/lang-routes.js.
+  // Home, about, lists ... exist in a language only when its texts file
+  // (messages/<country>.<lang>.json) lists the page in "_pages".
+  const lang = requestHeaders.get("x-lang");
+  if (lang && requestHeaders.get(LANG_PAGE_HEADER) === "static") {
+    const texts = await loadLangMessages(locale, lang);
+    if (!texts?._pages?.includes(requestHeaders.get(LANG_PATH_HEADER))) {
+      notFound();
+    }
+  }
+
+  // locale first, so the messages below are this site's (also on language
+  // URLs, where proxy.js skips next-intl's middleware)
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   // Header menu + products list data rendered on the server (see lib/menu-data.js)
   const queryClient = new QueryClient();
   seedMenuQueries(queryClient, await getMenuData());
 
-  setRequestLocale(locale);
-
   return (
     <html
-      lang={htmlLang(locale)}
+      lang={htmlLangOf(locale, lang)}
+      data-lang={lang || undefined}
       className={`
         ${universalSans.variable}
         ${universalDisplay.variable}

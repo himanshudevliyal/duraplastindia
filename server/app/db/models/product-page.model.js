@@ -12,11 +12,21 @@ export const COUNTRY_TITLES_SQL = (alias) => `COALESCE((
           'category_id', e.value->'category_id',
           'pictures', e.value->'pictures',
           'title', e.value->'title',
-          'description', e.value->'description'))
+          'description', e.value->'description',
+          'translation_slugs', COALESCE((
+            SELECT jsonb_object_agg(t.key, COALESCE(NULLIF(t.value->>'slug', ''), e.value->>'slug'))
+            FROM jsonb_each(COALESCE(e.value->'translations', '{}'::jsonb)) t
+            WHERE COALESCE(t.value->>'title', '') <> ''
+          ), '{}'::jsonb)))
         FROM jsonb_each(${alias}.country_content) e
       ), '{}'::jsonb) AS country_titles`;
 
 // SQL condition: the product uses :slug as its URL in some country
+// SQL condition: some country tab has a :lang version with URL :slug
+const LANG_SLUG_MATCH_SQL = (alias) => `EXISTS (
+        SELECT 1 FROM jsonb_each(${alias}.country_content) e
+        WHERE e.value->'translations'->(:lang)->>'slug' = :slug)`;
+
 const SLUG_MATCH_SQL = (alias) => `(${alias}.slug = :slug OR EXISTS (
         SELECT 1 FROM jsonb_each(${alias}.country_content) e
         WHERE e.value->>'slug' = :slug))`;
@@ -427,13 +437,14 @@ const getBySlug = async (req, slug) => {
     FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat
       ON cat.id = prdp.category_id
-    WHERE ${SLUG_MATCH_SQL("prdp")}
+    WHERE ${req.query?.lang ? LANG_SLUG_MATCH_SQL("prdp") : SLUG_MATCH_SQL("prdp")}
     LIMIT 1
   `;
 
   const record = await ProductPageModel.sequelize.query(query, {
     replacements: {
       slug: req.params?.slug || slug,
+      lang: req.query?.lang || null,
     },
     type: QueryTypes.SELECT,
     raw: true,
@@ -444,7 +455,27 @@ const getBySlug = async (req, slug) => {
 
   // ?country=za (URL code) / South Africa / Global => that country's tab.
   // Its `slug` may differ from the requested one (the website redirects).
-  return applyCountryContent(record, req.query?.country);
+  // ?lang=fr => that language version of the tab (null when missing).
+  return applyCountryContent(record, req.query?.country, req.query?.lang || null);
+};
+
+// Language slugs already used by another product: [{ lang, slug }]
+const findUsedTranslationSlugs = async (pairs, excludeId) => {
+  const used = [];
+  for (const { lang, slug } of pairs) {
+    const rows = await ProductPageModel.sequelize.query(
+      `SELECT 1 FROM ${constants.models.PRODUCT_PAGE_TABLE} prdp
+        WHERE ${LANG_SLUG_MATCH_SQL("prdp")}
+          AND (CAST(:excludeId AS uuid) IS NULL OR prdp.id <> CAST(:excludeId AS uuid))
+        LIMIT 1`,
+      {
+        replacements: { lang, slug, excludeId: excludeId || null },
+        type: QueryTypes.SELECT,
+      },
+    );
+    if (rows.length) used.push({ lang, slug });
+  }
+  return used;
 };
 
 // Slugs (of any country) already used by another product.
@@ -494,6 +525,7 @@ const getProductByCategory = async () => {
 };
 
 export default {
+  findUsedTranslationSlugs,
   init: init,
   bulkCreate: bulkCreate,
   create: create,

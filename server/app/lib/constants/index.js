@@ -53,6 +53,8 @@ const constants = {
     NEWSLETTER_TABLE: "newsletters",
     DISTRIBUTOR_ENQUIRY_TABLE: "distributor_enquiries",
     CUSTOM_PAGE_TABLE: "custom_pages",
+    LANGUAGE_TABLE: "languages",
+    COUNTRY_LANGUAGE_TABLE: "country_languages",
 
 
   },

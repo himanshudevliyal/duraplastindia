@@ -6,12 +6,28 @@ import { sequelize } from "../../db/postgres.js";
 import { categorySchema } from "../../validation-schema/category.schema.js";
 import { cleanupFiles } from "../../helpers/cleanup-files.js";
 import { getItemsToDelete } from "../../helpers/filter.js";
+import auth from "../../helpers/auth.js";
+
+// slug from the form, or from the title when left empty
+const normalizeSlug = (body) =>
+  slugify(body.slug || body.title || "", { lower: true, strict: true });
+
+const slugTaken = async (slug, ownId) => {
+  const existing = await table.CategoryModel.getBySlugRaw(slug);
+  return existing && existing.id !== ownId;
+};
+
+const SLUG_TAKEN = { message: "A category with this URL slug already exists." };
 
 const create = async (req, res) => {
   try {
-    const validateData = categorySchema.parse(req.body);
-    let slug = slugify(req.body.title, { lower: true });
-    req.body.slug = slug;
+    req.body.slug = normalizeSlug(req.body);
+    categorySchema.parse(req.body);
+
+    if (await slugTaken(req.body.slug)) {
+      if (req.filePaths?.length) await cleanupFiles(req.filePaths);
+      return res.code(StatusCodes.CONFLICT).send(SLUG_TAKEN);
+    }
 
     await table.CategoryModel.create(req);
 
@@ -19,6 +35,7 @@ const create = async (req, res) => {
       .code(StatusCodes.CREATED)
       .send({ status: true, message: "Category created." });
   } catch (error) {
+    if (req.filePaths?.length) await cleanupFiles(req.filePaths);
     throw error;
   }
 };
@@ -28,13 +45,21 @@ const updateById = async (req, res) => {
   try {
     const record = await table.CategoryModel.getById(req);
     if (!record) {
+      await transaction.rollback();
       return res
         .code(StatusCodes.NOT_FOUND)
         .send({ message: "Category not found!" });
     }
-    if (req.body.title) {
-      let slug = slugify(req.body.title, { lower: true, strict: true });
-      req.body.slug = slug;
+
+    // full form save (the list's "featured" switch sends only `featured`)
+    if (req.body.title !== undefined) {
+      req.body.slug = normalizeSlug(req.body);
+      categorySchema.parse(req.body);
+
+      if (await slugTaken(req.body.slug, record.id)) {
+        await transaction.rollback();
+        return res.code(StatusCodes.CONFLICT).send(SLUG_TAKEN);
+      }
     }
 
     const documentsToDelete = [];
@@ -45,12 +70,14 @@ const updateById = async (req, res) => {
       documentsToDelete.push(
         ...getItemsToDelete(existingPictures, updatedPictures),
       );
+    } else if (req.body.pictures?.length) {
+      // new pictures only: keep the existing ones too
+      req.body.pictures = [...req.body.pictures, ...(existingPictures ?? [])];
     }
 
     await table.CategoryModel.update(req, 0, transaction);
-    await cleanupFiles(documentsToDelete);
-
     await transaction.commit();
+    await cleanupFiles(documentsToDelete);
 
     res
       .code(StatusCodes.OK)
@@ -70,12 +97,31 @@ const getById = async (req, res) => {
         .send({ message: "Category not found!" });
     }
 
-    const data = await table.CategoryModel.getById(req);
-
-    res.code(StatusCodes.OK).send({ status: true, data: data });
+    res.code(StatusCodes.OK).send({ status: true, data: record });
   } catch (error) {
     throw error;
   }
+};
+
+// Category page: /categories/get-by-slug/:slug?country=za&lang=fr
+// => this site's category content + its products on this site.
+const getBySlug = async (req, res) => {
+  req.includeDrafts = await auth.canSeeDrafts(req);
+  const record = await table.CategoryModel.getBySlug(req);
+  if (!record) {
+    return res
+      .code(StatusCodes.NOT_FOUND)
+      .send({ message: "Category not found!" });
+  }
+
+  const products = await table.CategoryModel.getProducts(
+    record.id,
+    record.country,
+  );
+
+  res
+    .code(StatusCodes.OK)
+    .send({ status: true, data: { ...record, products } });
 };
 
 const getRelatedProducts = async (req, res) => {
@@ -107,6 +153,7 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.CategoryModel.getById(req);
     if (!record) {
+      await transaction.rollback();
       return res
         .code(StatusCodes.NOT_FOUND)
         .send({ message: "Category not found!" });
@@ -130,6 +177,7 @@ export default {
   create: create,
   updateById: updateById,
   getById: getById,
+  getBySlug: getBySlug,
   get: get,
   deleteById: deleteById,
   getRelatedProducts: getRelatedProducts,

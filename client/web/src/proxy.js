@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { getSiteLanguages } from "@/lib/site-languages";
+import { loadLangMessages } from "@/i18n/lang-messages";
+import {
+  LANG_PAGE_HEADER,
+  LANG_PATH_HEADER,
+  langPageType,
+} from "@/lib/lang-routes";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -52,7 +59,57 @@ function contentSecurityPolicy(nonce) {
   ].join("; ");
 }
 
-export default function proxy(request) {
+// /<country>/<lang>/<path> => the /<country>/<path> page in that language
+// (x-lang header), when <lang> is a live extra language of that country
+// (Dashboard > Languages). /<country>/<default lang>/... => /<country>/...
+// Returns a response, or null when the URL is not a language URL.
+async function languageResponse(request, csp) {
+  const { pathname, search } = request.nextUrl;
+  const [, locale, lang, ...rest] = pathname.split("/");
+  if (!locale || !lang || !/^[a-z]{2,3}$/.test(lang)) return null;
+  if (locale === routing.defaultLocale || !routing.locales.includes(locale)) return null;
+
+  const site = (await getSiteLanguages())?.[locale];
+  if (!site) return null;
+  // without a trailing slash
+  let path = `/${rest.join("/")}`;
+  while (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+
+  if (lang === site.default) {
+    const target = new URL(`/${locale}${path === "/" ? "" : path}${search}`, request.url);
+    return NextResponse.redirect(target, 308);
+  }
+  if (!site.languages.some((l) => l.code === lang)) return null;
+
+  // a fixed page (home, about ...) without texts in this language: the
+  // site's 404 page (a missing route => app/[locale]/[...rest])
+  const pageType = langPageType(path);
+  if (pageType === "static") {
+    const texts = await loadLangMessages(locale, lang);
+    if (!texts?._pages?.includes(path)) {
+      const response = NextResponse.rewrite(
+        new URL(`/${locale}/_page-not-found`, request.url),
+        { request: { headers: request.headers } },
+      );
+      response.headers.set("Content-Security-Policy", csp);
+      return response;
+    }
+  }
+
+  request.headers.set("x-lang", lang);
+  request.headers.set(LANG_PAGE_HEADER, pageType);
+  request.headers.set(LANG_PATH_HEADER, path);
+  // next-intl's middleware is skipped here: pass the locale it would set
+  request.headers.set("X-NEXT-INTL-LOCALE", locale);
+  const target = new URL(`/${locale}${path === "/" ? "" : path}${search}`, request.url);
+  const response = NextResponse.rewrite(target, {
+    request: { headers: request.headers },
+  });
+  response.headers.set("Content-Security-Policy", csp);
+  return response;
+}
+
+export default async function proxy(request) {
   const nonce = btoa(crypto.randomUUID());
   const csp = contentSecurityPolicy(nonce);
 
@@ -60,6 +117,13 @@ export default function proxy(request) {
   // (next-intl forwards these request headers).
   request.headers.set("x-nonce", nonce);
   request.headers.set("Content-Security-Policy", csp);
+  // never trust these from the browser
+  request.headers.delete("x-lang");
+  request.headers.delete(LANG_PAGE_HEADER);
+  request.headers.delete(LANG_PATH_HEADER);
+
+  const languageUrl = await languageResponse(request, csp);
+  if (languageUrl) return languageUrl;
 
   const response = handleI18nRouting(request);
 

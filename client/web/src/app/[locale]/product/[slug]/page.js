@@ -24,12 +24,14 @@ import BenefitsSection from "../_components/benefits-section";
 import RelatedProducts from "../_components/related-products";
 import RelativeProducts from "../_components/related-products";
 import { canonical } from "@/lib/seo";
+import { getRequestLang, langPath, withLanguages } from "@/lib/lang";
 
 // One API call per request, shared by generateMetadata and the page.
 // "global" (no URL prefix) has no country => Global SEO; /in, /au ... => that country's SEO.
 // A product exists on the global site + only the countries selected for it.
-const getProduct = cache(async (slug, locale) => {
-  const product = await fetchProductPageBySlug(slug, getSeoCountry(locale));
+// lang: language version (/<country>/<lang>/product/<slug>), null = default
+const getProduct = cache(async (slug, locale, lang) => {
+  const product = await fetchProductPageBySlug(slug, getSeoCountry(locale), lang);
   if (
     !product ||
     !isProductAvailableInCountry(product.city, getCountryFromLocale(locale))
@@ -43,22 +45,33 @@ export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
 
   try {
-    const product = await getProduct(slug, locale);
+    const lang = await getRequestLang();
+    const product = await getProduct(slug, locale, lang);
     if (!product) return {};
 
     // every country has its own URL slug
     const slugOf = (l) =>
-      product.country_slugs?.[getCountryFromLocale(l)] || product.slug;
+      product.country_slugs?.[getCountryFromLocale(l)] || product.base_slug || product.slug;
 
     return {
       title: product.meta_title || product.title,
       description: product.meta_description || product.description || undefined,
       keywords: product.meta_keywords || undefined,
-      alternates: canonical(
-        locale,
-        `/product/${product.slug}`,
-        productLocales(product.city, routing.locales),
-        (l) => `/product/${slugOf(l)}`,
+      alternates: await withLanguages(
+        canonical(
+          locale,
+          `/product/${product.base_slug || product.slug}`,
+          productLocales(product.city, routing.locales),
+          (l) => `/product/${slugOf(l)}`,
+        ),
+        {
+          locale,
+          lang,
+          path: `/product/${product.slug}`,
+          versions: Object.fromEntries(
+            Object.entries(product.translation_slugs || {}).map(([code, s]) => [code, `/product/${s}`]),
+          ),
+        },
       ),
     };
   } catch {
@@ -69,12 +82,13 @@ export async function generateMetadata({ params }) {
 export default async function ProductDetailsPage({ params }) {
   const { slug, locale } = await params;
 
-  const product = await getProduct(slug, locale);
+  const lang = await getRequestLang();
+  const product = await getProduct(slug, locale, lang);
   if (!product) notFound();
 
   // another country's slug (e.g. after switching country) => this country's URL
   if (product.slug && product.slug !== slug) {
-    permanentRedirect(`${getLocalePrefix(locale)}/product/${product.slug}`);
+    permanentRedirect(langPath(locale, lang, `/product/${product.slug}`));
   }
 
   const pageSections = [

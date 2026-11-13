@@ -8,14 +8,16 @@ import {
   isShownInCountry,
 } from "@/utils/country-mapping";
 import { routing } from "@/i18n/routing";
+import { getRequestLang, withLanguages } from "@/lib/lang";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 import FAQSection from "../../product/_components/faq";
 
 // One API call per request, shared by generateMetadata and the page.
 // A solution belongs to one site (Global or a country); elsewhere => 404.
-const getSolution = cache(async (slug, locale) => {
-  const solution = await fetchSolutionBySlug(slug, getSeoCountry(locale));
+// lang: language version (/<country>/<lang>/solutions/<slug>), null = default
+const getSolution = cache(async (slug, locale, lang) => {
+  const solution = await fetchSolutionBySlug(slug, getSeoCountry(locale), lang);
   if (!solution || !isShownInCountry(solution.city, getCountryFromLocale(locale))) {
     return null;
   }
@@ -63,7 +65,8 @@ function estimateReadMinutes(html) {
 
 export default async function SolutionDetailPage({ params }) {
   const { slug, locale } = await params;
-  const solution = await getSolution(slug, locale);
+  const lang = await getRequestLang();
+  const solution = await getSolution(slug, locale, lang);
 
   if (!solution) {
     notFound();
@@ -246,12 +249,23 @@ export default async function SolutionDetailPage({ params }) {
 
 export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
-  const solution = await getSolution(slug, locale);
+  const lang = await getRequestLang();
+  const solution = await getSolution(slug, locale, lang);
   if (!solution) return {};
   return {
     title: solution.meta_title || solution.title,
     description: solution.meta_description || solution.description,
     keywords: solution.meta_keywords || undefined,
-    alternates: canonical(locale, `/solutions/${slug}`, solutionLocales(solution)),
+    alternates: await withLanguages(
+      canonical(locale, `/solutions/${solution.base_slug || solution.slug}`, solutionLocales(solution)),
+      {
+        locale,
+        lang,
+        path: `/solutions/${solution.slug}`,
+        versions: Object.fromEntries(
+          Object.entries(solution.translation_slugs || {}).map(([code, s]) => [code, `/solutions/${s}`]),
+        ),
+      },
+    ),
   };
 }

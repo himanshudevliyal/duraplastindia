@@ -16,6 +16,7 @@ import FAQSection from "./product/_components/faq";
 import { getMessages } from "next-intl/server";
 import { buildSchemas } from "@/lib/messages";
 import { canonical } from "@/lib/seo";
+import { getRequestLang, staticVersions, withLanguages } from "@/lib/lang";
 
 const defaultMetadata = {
   title: "Skylights, Glazing & Roof Ventilation Manufacturer",
@@ -31,7 +32,13 @@ export async function generateMetadata({ params }) {
   return {
     ...defaultMetadata,
     ...messages.Seo?.home,
-    alternates: canonical(locale, "/"),
+    // + language versions (e.g. /ma/fr) — messages/<country>.<lang>.json
+    alternates: await withLanguages(canonical(locale, "/"), {
+      locale,
+      lang: await getRequestLang(),
+      path: "/",
+      versions: await staticVersions(locale, "/"),
+    }),
   };
 }
 
@@ -68,7 +75,7 @@ export default async function HomePage({ params }) {
 
       <SiteHero />
 
-      <AboutSection content={home.about} />
+      <AboutSection content={home.about} heading={home.aboutHeading} />
       {home.footprint && <FootprintSection content={home.footprint} />}
       <OurSolutions {...home.solutions} />
       {/* below the fold: rendered when scrolled near (cv-auto, globals.css) */}

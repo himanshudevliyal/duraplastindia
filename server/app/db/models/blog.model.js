@@ -2,6 +2,10 @@
 import constants from "../../lib/constants/index.js";
 import { DataTypes, QueryTypes } from "sequelize";
 import { applyCountrySeo } from "../../helpers/country-seo.js";
+import {
+  TRANSLATION_SLUGS_SQL,
+  applyTranslation,
+} from "../../helpers/translations.js";
 
 let BlogModel = null;
 
@@ -84,6 +88,15 @@ const init = async (sequelize) => {
         allowNull: false,
         defaultValue: {},
       },
+
+      // Language versions (e.g. French on /ma/fr/...):
+      // { fr: { title, slug, description, content, meta_*, jsonld_schema, faq } }
+      // — see helpers/translations.js
+      translations: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
     },
     {
       createdAt: "created_at",
@@ -124,6 +137,8 @@ const create = async (req, transaction) => {
       status: req.body.status === "draft" ? "draft" : "active",
       faq: req.body.faq || [],
       country_seo: req.body.country_seo || {},
+      // not sent => unchanged (undefined is skipped)
+      translations: req.body.translations,
     },
     options,
   );
@@ -157,6 +172,8 @@ const update = async (req, id, transaction) => {
       status: req.body.status === "draft" ? "draft" : "active",
       faq: req.body.faq || [],
       country_seo: req.body.country_seo || {},
+      // not sent => unchanged (undefined is skipped)
+      translations: req.body.translations,
     },
     options,
   );
@@ -201,7 +218,8 @@ const get = async (req) => {
 
   const query = `
   SELECT 
-      blg.id, blg.slug, blg.title, blg.pictures, blg.description, blg.date, blg.city, blg.status, blg.created_at
+      blg.id, blg.slug, blg.title, blg.pictures, blg.description, blg.date, blg.city, blg.status, blg.created_at,
+      blg.updated_at, ${TRANSLATION_SLUGS_SQL("blg")}
     FROM ${constants.models.BLOG_TABLE} blg
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = blg.category_id
     ${whereClause}
@@ -251,12 +269,17 @@ const getBySlug = async (req, slug) => {
       cat.title as category_title
     FROM ${constants.models.BLOG_TABLE} blg
     LEFT JOIN ${constants.models.CATEGORY_TABLE} cat ON cat.id = blg.category_id
-    WHERE blg.slug = :slug
+    WHERE ${
+      req.query?.lang
+        ? "blg.translations->(:lang)->>'slug' = :slug"
+        : "blg.slug = :slug"
+    }
   `;
 
   const record = await BlogModel.sequelize.query(query, {
     replacements: {
       slug: req.params?.slug || slug,
+      lang: req.query?.lang || null,
     },
     type: QueryTypes.SELECT,
     raw: true,
@@ -267,8 +290,12 @@ const getBySlug = async (req, slug) => {
   // drafts are not shown on the website
   if (record.status === "draft" && !req.includeDrafts) return null;
 
-  // ?country=za (URL code) or ?country=South Africa (name).
-  return applyCountrySeo(record, req.query?.country);
+  // ?country=za (URL code) or ?country=South Africa (name); ?lang=fr =>
+  // that language version (null when it does not exist).
+  return applyTranslation(
+    applyCountrySeo(record, req.query?.country),
+    req.query?.lang || null,
+  );
 };
 
 const deleteById = async (req, id, transaction) => {

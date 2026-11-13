@@ -7,6 +7,7 @@ import { ProseStyle, proseFont } from "@/components/layout/prose";
 import FAQSection from "../product/_components/faq";
 import { routing } from "@/i18n/routing";
 import { canonical } from "@/lib/seo";
+import { getRequestLang, withLanguages } from "@/lib/lang";
 import { getSchemas } from "@/lib/schemas";
 import { fetchCustomPageBySlug } from "@/services/custom-page-service";
 import {
@@ -19,8 +20,9 @@ import {
 // Missing, draft, or not selected for this country => 404.
 
 // One API call per request, shared by generateMetadata and the page.
-const getPage = cache(async (slug, locale) => {
-  const page = await fetchCustomPageBySlug(slug, getSeoCountry(locale));
+// lang: language version (/<country>/<lang>/<slug>), null = default
+const getPage = cache(async (slug, locale, lang) => {
+  const page = await fetchCustomPageBySlug(slug, getSeoCountry(locale), lang);
   if (!page || !isShownInCountry(page.city, getCountryFromLocale(locale))) {
     return null;
   }
@@ -40,20 +42,32 @@ const fileUrl = (picture) =>
 
 export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
-  const page = await getPage(slug, locale);
+  const lang = await getRequestLang();
+  const page = await getPage(slug, locale, lang);
   if (!page) return {};
 
   return {
     title: page.meta_title || page.title,
     description: page.meta_description || page.description || undefined,
     keywords: page.meta_keywords || undefined,
-    alternates: canonical(locale, `/${slug}`, pageLocales(page)),
+    alternates: await withLanguages(
+      canonical(locale, `/${page.base_slug || page.slug}`, pageLocales(page)),
+      {
+        locale,
+        lang,
+        path: `/${page.slug}`,
+        versions: Object.fromEntries(
+          Object.entries(page.translation_slugs || {}).map(([code, s]) => [code, `/${s}`]),
+        ),
+      },
+    ),
   };
 }
 
 export default async function CustomPage({ params }) {
   const { slug, locale } = await params;
-  const page = await getPage(slug, locale);
+  const lang = await getRequestLang();
+  const page = await getPage(slug, locale, lang);
 
   if (!page) notFound();
 

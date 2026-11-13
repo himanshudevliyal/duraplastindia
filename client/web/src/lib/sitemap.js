@@ -1,13 +1,17 @@
 import { SITE_URL, localePath } from "@/lib/seo";
+import { langPath, staticVersions } from "@/lib/lang";
+import { getExtraLanguages } from "@/lib/site-languages";
 import { fetchProductPages } from "@/services/product-page-services";
 import { fetchBlogs } from "@/services/product-service";
 import { fetchSolutions } from "@/services/solution-service";
 import { fetchCustomPages } from "@/services/custom-page-service";
+import { fetchCategories } from "@/services/category-service";
 import {
   getCountryFromLocale,
   isProductAvailableInCountry,
   localizeProduct,
   isShownInCountry,
+  isCategoryOnSite,
 } from "@/utils/country-mapping";
 
 // Sitemaps listed in /sitemap.xml: the main site ("global", served at
@@ -71,21 +75,41 @@ async function safe(fn) {
 // List APIs return active items only (drafts are never listed).
 export async function getLocaleEntries(locale) {
   const country = getCountryFromLocale(locale);
+  // live extra languages of this site (/<country>/<lang>/...)
+  const live = await getExtraLanguages(locale);
+  // language URLs of an item: versions = { fr: "<slug>" }, route = "/blog"
+  const addVersions = (versions, route, item) => {
+    for (const [code, slug] of Object.entries(versions || {})) {
+      if (!live.includes(code) || !slug) continue;
+      entries.push({
+        loc: `${SITE_URL}${langPath(locale, code, `${route}/${slug}`)}`,
+        lastmod: lastmod(item),
+      });
+    }
+  };
 
-  const [productData, blogData, customPageData, solutionData] =
+  const [productData, blogData, customPageData, solutionData, categoryData] =
     await Promise.all([
       safe(() => fetchProductPages("")),
       safe(() => fetchBlogs("")),
       safe(() => fetchCustomPages("")),
       safe(() => fetchSolutions("")),
+      safe(() => fetchCategories("")),
     ]);
 
   const products = productData?.products ?? [];
   const blogs = blogData?.blogs ?? [];
   const customPages = customPageData?.pages ?? [];
   const solutions = solutionData?.solutions ?? [];
+  const categories = categoryData?.categories ?? [];
 
   const entries = STATIC_PATHS.map((path) => ({ loc: absolute(locale, path) }));
+  // fixed pages that have a language version (e.g. /ma/fr home)
+  for (const path of STATIC_PATHS) {
+    for (const code of Object.keys(await staticVersions(locale, path))) {
+      entries.push({ loc: `${SITE_URL}${langPath(locale, code, path)}` });
+    }
+  }
 
   for (const product of products) {
     if (!product?.slug) continue;
@@ -96,6 +120,23 @@ export async function getLocaleEntries(locale) {
       loc: absolute(locale, `/product/${slug}`),
       lastmod: lastmod(product),
     });
+    addVersions(product.country_titles?.[country]?.translation_slugs, "/product", product);
+  }
+
+  // category pages (drafts and other sites' categories are skipped)
+  for (const category of categories) {
+    if (!isCategoryOnSite(category, country)) continue;
+    entries.push({
+      loc: absolute(locale, `/category/${category.slug}`),
+      lastmod: lastmod(category),
+    });
+    addVersions(
+      Object.fromEntries(
+        (category.country_titles?.[country]?.languages ?? []).map((code) => [code, category.slug]),
+      ),
+      "/category",
+      category,
+    );
   }
 
   for (const blog of blogs) {
@@ -105,6 +146,7 @@ export async function getLocaleEntries(locale) {
       loc: absolute(locale, `/blog/${blog.slug}`),
       lastmod: lastmod(blog),
     });
+    addVersions(blog.translation_slugs, "/blog", blog);
   }
 
   for (const solution of solutions) {
@@ -114,6 +156,7 @@ export async function getLocaleEntries(locale) {
       loc: absolute(locale, `/solutions/${solution.slug}`),
       lastmod: lastmod(solution),
     });
+    addVersions(solution.translation_slugs, "/solutions", solution);
   }
 
   // custom pages live at /<slug>
@@ -124,6 +167,7 @@ export async function getLocaleEntries(locale) {
       loc: absolute(locale, `/${page.slug}`),
       lastmod: lastmod(page),
     });
+    addVersions(page.translation_slugs, "", page);
   }
 
   // no duplicate URLs

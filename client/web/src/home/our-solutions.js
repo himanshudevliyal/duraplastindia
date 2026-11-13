@@ -68,7 +68,11 @@ export function ProductCard({ product, prefix, headingAs: Title = "h4" }) {
   );
 }
 
-function SolutionCategory({ category, prefix }) {
+// "SKYLIGHTING AND GLAZING" / "Skylighting & Glazing" => "skylightingandglazing"
+const titleKey = (title = "") =>
+  title.toLowerCase().replace(/&/g, "and").replace(/[^a-z]/g, "");
+
+function SolutionCategory({ category, prefix, description }) {
   return (
     <section>
       <div className="mb-8 flex flex-col gap-4 border-b border-primary/15 pb-5 sm:flex-row sm:items-center sm:justify-between">
@@ -78,6 +82,11 @@ function SolutionCategory({ category, prefix }) {
           </h3>
 
           <div className="mt-2 h-1 w-16 rounded-full bg-primary" />
+          {description && (
+            <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
+              {description}
+            </p>
+          )}
         </div>
       </div>
 
@@ -96,6 +105,8 @@ export function OurSolutions({
   // no products for this country: hide the section (home) or show a note
   // (products page, hideIfEmpty={false})
   hideIfEmpty = true,
+  // { "Skylighting and Glazing": "text" } — shown under each category title
+  categoryDescriptions = {},
 } = {}) {
   const locale = useLocale();
 
@@ -165,6 +176,11 @@ const solutionCategories = useMemo(() => {
               key={category.id}
               category={category}
               prefix={prefix}
+              description={
+                Object.entries(categoryDescriptions).find(
+                  ([title]) => titleKey(title) === titleKey(category.title),
+                )?.[1]
+              }
             />
           ))}
         </div>

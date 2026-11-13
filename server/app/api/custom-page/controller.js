@@ -7,6 +7,12 @@ import { sequelize } from "../../db/postgres.js";
 import { getItemsToDelete } from "../../helpers/filter.js";
 import { z } from "zod";
 import auth from "../../helpers/auth.js";
+import constants from "../../lib/constants/index.js";
+import {
+  clashMessage,
+  cleanTranslations,
+  findSlugClashes,
+} from "../../helpers/translations.js";
 
 // Custom pages live at the website root (/<slug>), so a slug must not take
 // the place of an existing website route or a country prefix.
@@ -23,6 +29,7 @@ const RESERVED_SLUGS = [
   "policy-statement",
   "product",
   "products",
+  "category",
   "login",
   "api",
   "sitemap",
@@ -94,6 +101,33 @@ export const schema = z.object({
 const normalizeSlug = (body) =>
   slugify(body.slug || body.title || "", { lower: true, strict: true });
 
+// /<country>/<lang>/... : a page slug must not be a language code
+const LANGUAGE_SLUG = {
+  message: "This slug is a language code (used in URLs like /in/hi/...). Use another slug.",
+};
+const isLanguageCode = async (slug) =>
+  !!(await table.LanguageModel.getLanguage(slug));
+
+// language versions: clean them; null when fine, else the error message
+// (a language slug must not be reserved / a language code / used by
+// another page in that language)
+const checkTranslations = async (req, ownId) => {
+  req.body.translations = cleanTranslations(req.body.translations);
+  for (const [lang, version] of Object.entries(req.body.translations || {})) {
+    if (!version.slug) continue; // not filled yet
+    if (RESERVED_SLUGS.includes(version.slug) || (await isLanguageCode(version.slug))) {
+      return `${lang.toUpperCase()} slug "${version.slug}" is reserved. Use another slug.`;
+    }
+  }
+  const clashes = await findSlugClashes(
+    sequelize,
+    constants.models.CUSTOM_PAGE_TABLE,
+    req.body.translations,
+    ownId,
+  );
+  return clashes.length ? clashMessage(clashes) : null;
+};
+
 const slugTaken = async (slug, ownId) => {
   const existing = await table.CustomPageModel.getBySlugRaw(slug);
   return existing && existing.id !== ownId;
@@ -103,6 +137,13 @@ const create = async (req, res) => {
   try {
     req.body.slug = normalizeSlug(req.body);
     schema.parse(req.body);
+
+    if (await isLanguageCode(req.body.slug)) {
+      return res.code(StatusCodes.BAD_REQUEST).send(LANGUAGE_SLUG);
+    }
+
+    const clash = await checkTranslations(req);
+    if (clash) return res.code(StatusCodes.CONFLICT).send({ message: clash });
 
     if (await slugTaken(req.body.slug)) {
       return res
@@ -134,6 +175,17 @@ const updateById = async (req, res) => {
 
     req.body.slug = normalizeSlug(req.body);
     schema.parse(req.body);
+
+    if (await isLanguageCode(req.body.slug)) {
+      await transaction.rollback();
+      return res.code(StatusCodes.BAD_REQUEST).send(LANGUAGE_SLUG);
+    }
+
+    const clash = await checkTranslations(req, record.id);
+    if (clash) {
+      await transaction.rollback();
+      return res.code(StatusCodes.CONFLICT).send({ message: clash });
+    }
 
     if (await slugTaken(req.body.slug, record.id)) {
       await transaction.rollback();

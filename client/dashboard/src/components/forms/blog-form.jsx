@@ -47,6 +47,13 @@ import {
   toSeoFormValues,
 } from "./seo-tabs";
 import { StatusField, statusSchema } from "./status-field";
+import {
+  PageLanguagePicker,
+  PageLanguageVersions,
+  fromVersionsForm,
+  toVersionsForm,
+  versionsSchema,
+} from "./language-versions";
 import { fileUrl } from "@/lib/file-url";
 
 const defaultValues = {
@@ -65,6 +72,8 @@ const defaultValues = {
   jsonld_schema: "",
   // form-only list of schema boxes [{ value }], saved as jsonld_schema
   schemas: [],
+  // language versions { fr: {...} } — see language-versions.jsx
+  translations: {},
 };
 
 export const schema = z.object({
@@ -88,6 +97,7 @@ export const schema = z.object({
   jsonld_schema: z.any().optional(),
   schemas: schemaListSchema,
   faq: faqListSchema,
+  translations: versionsSchema,
 });
 
 export default function BlogForm({ id, type }) {
@@ -147,6 +157,7 @@ export default function BlogForm({ id, type }) {
 
     // schema boxes => jsonld_schema
     applySeoPayload(data);
+    data.translations = fromVersionsForm(data.translations);
 
     const formData = new FormData();
     Object.entries(files).forEach(([key, value]) => {
@@ -191,6 +202,7 @@ export default function BlogForm({ id, type }) {
         status: data.status || "active",
         city: data?.city?.[0] ?? "",
         ...toSeoFormValues(data),
+        translations: toVersionsForm(data.translations),
         // related_products: productOptions.filter((i) =>
         //   data?.related_products?.includes(i.value),
         // ),
@@ -355,6 +367,9 @@ export default function BlogForm({ id, type }) {
               )}
             </div>
 
+            {/* languages of this page (besides the main English content) */}
+            <PageLanguagePicker />
+
             {/* description */}
             <div className="col-span-full space-y-2">
               <Label htmlFor="description">Description</Label>
@@ -421,6 +436,9 @@ export default function BlogForm({ id, type }) {
 
         {/* seo, faqs & schema */}
         <SeoSection />
+
+        {/* other languages of the selected country (e.g. French) */}
+        <PageLanguageVersions path="blog" />
 
         {/* errors print */}
         {hasErrors && (

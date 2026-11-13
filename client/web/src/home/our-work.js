@@ -34,7 +34,7 @@ export function WorkCard({
         fill
         sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         className={`object-cover transition duration-500 group-hover:scale-105 ${imageClassName}`}
-        alt={project.client}
+        alt={`Skylight installation at ${project.client}`}
       />
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent ${overlayClassName}`}

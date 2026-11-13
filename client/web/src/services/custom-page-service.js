@@ -11,8 +11,12 @@ export const fetchCustomPages = async (searchParams = "") => {
 
 // country: "India" | "Australia" ... => that country's SEO / FAQs; empty => global.
 // Returns null when the page does not exist (or is a draft).
-export const fetchCustomPageBySlug = async (slug, country) => {
-  const query = country ? `?country=${encodeURIComponent(country)}` : "";
+// lang: a language version (e.g. "fr"); null when it does not exist (404)
+export const fetchCustomPageBySlug = async (slug, country, lang) => {
+  const params = new URLSearchParams();
+  if (country) params.set("country", country);
+  if (lang) params.set("lang", lang);
+  const query = params.size ? `?${params}` : "";
   try {
     const { data } = await http().get(
       `${endpoints.customPages.getAll}/get-by-slug/${encodeURIComponent(slug)}${query}`,

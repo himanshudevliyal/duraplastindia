@@ -1,0 +1,102 @@
+{
+  "Seo": {
+    "home": {
+      "title": "Polycarbonate Skylights & Roof Ventilation | Dura Plast",
+      "description": "Dura Plast manufactures and exports RHINO TUFF polycarbonate skylights, glazing sheets and roof ventilation systems for natural light and air. Request a quote.",
+      "keywords": "polycarbonate skylights, skylight manufacturer, polycarbonate sheets, polycarbonate roofing sheets, multiwall polycarbonate sheets, dome skylights, tubular skylights, roof ventilation, turbine ventilator, FRP roof sheets, roof curbs, Dura Plast, RHINO TUFF"
+    },
+    "about": {
+      "title": "About Dura Plast | Skylight & Roofing Manufacturer",
+      "description": "Dura Plast manufactures skylights, polycarbonate and FRP roofing, and roof ventilation products for industrial and commercial projects. Contact us.",
+      "keywords": "dura plast, about dura plast, skylight manufacturer, polycarbonate roofing manufacturer, FRP roofing manufacturer, roof ventilation manufacturer, rhino tuff"
+    },
+    "product": {
+      "title": "Skylights, Roof Ventilators & Roofing Products | Dura Plast",
+      "description": "Browse Dura Plast skylights, polycarbonate sheets, roof curbs, roof ventilators, louvers and FRP roofing for industrial projects. Request a quote.",
+      "keywords": "skylights, polycarbonate sheets, polycarbonate roofing sheets, roof ventilators, turbine ventilators, FRP roof sheets, roof curbs, polycarbonate louvers, industrial roofing products"
+    }
+  },
+  "Hero": {
+    "h1": "Polycarbonate Skylights, Glazing & Roof Ventilation by Dura Plast"
+  },
+  "Home": {
+    "aboutHeading": "About Dura Plast: Skylight and Roof Ventilation Manufacturer",
+    "about": [
+      "Dura Plast is a skylight and roof ventilation design and development company, established in **2010**. We harness sunlight and wind to naturally light and ventilate buildings, using polycarbonate skylights, glazing sheets and roof ventilation systems under our **RHINO TUFF** brand.",
+      "From concept and design to development, delivery and fitment, we provide **tailor-made, turn-key and cost-effective** skylighting and roof ventilation solutions for the global building and construction industry."
+    ],
+    "solutions": {
+      "heading": "World Class Skylighting & Natural Ventilation Solutions",
+      "subheading": "RHINO TUFF products are engineered for the natural lighting and ventilation needs of buildings that are meant to be green, energy efficient, safe and reliable.",
+      "categoryDescriptions": {
+        "Skylighting and Glazing": "Polycarbonate flat, corrugated and multiwall sheets, dome skylights, barrel vaults, thermal insulated skylights, plexiglass domes and tubular skylights.",
+        "Roof Ventilation": "Wind driven turbine ventilators and hybrid ventilators for natural air movement.",
+        "Specialized Industrial Roofing": "FRP roof sheets and FRP rain water gutters.",
+        "Roof Curbs": "FRP roof curbs and transparent polycarbonate roof curbs for mounting skylights and ventilators.",
+        "Light and Air": "Polycarbonate louvers and skylight dome or tubular skylight combos with turbine ventilators."
+      }
+    },
+    "whyUs": {
+      "heading": "Innovation, Technology and Performance in Every Roof",
+      "subheading": "Our skylights and ventilators are designed to reduce dependence on artificial lighting and mechanical ventilation, so buildings stay brighter, fresher and more comfortable with natural light and air."
+    },
+    "projects": {
+      "heading": "Skylight Projects Across Industries and Countries",
+      "subheading": "Dura Plast skylights and ventilation systems are used in hotels, airports, museums, sports courts, schools and commercial and industrial buildings."
+    },
+    "faq": [
+      {
+        "q": "What does Dura Plast manufacture?",
+        "a": "Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings."
+      },
+      {
+        "q": "What is RHINO TUFF?",
+        "a": "RHINO TUFF is the Dura Plast product range. It covers polycarbonate sheets, dome and barrel vault skylights, tubular skylights, roof ventilators, roof curbs, FRP roof sheets and FRP gutters."
+      },
+      {
+        "q": "Which product categories does Dura Plast offer?",
+        "a": "Skylighting and Glazing, Roof Ventilation, Light and Air combos, Roof Curbs, and Specialized Industrial Roofing."
+      },
+      {
+        "q": "Does Dura Plast export outside India?",
+        "a": "Yes. Dura Plast exports its skylights, glazing panels and ventilation systems to buildings worldwide."
+      },
+      {
+        "q": "How do I get a quote or become a distributor?",
+        "a": "Send your requirements through the Request a Quote form, or use the Become a Distributor and Contact Us options on the website. You can also email sales@duraplastindia.com."
+      }
+    ]
+  },
+  "About": {
+    "h1": "About Dura Plast: Skylight, Roofing & Ventilation Manufacturer"
+  },
+  "Pages": {
+    "product": {
+      "h1": "Skylighting, Roof Ventilation & Industrial Roofing Products"
+    }
+  },
+  "Schema": {
+    "home": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://www.duraplastindia.com/#organization",
+        "name": "Dura Plast",
+        "url": "https://www.duraplastindia.com",
+        "email": "sales@duraplastindia.com",
+        "telephone": "+91 85950 60394",
+        "description": "Dura Plast designs, manufactures and exports polycarbonate skylights, glazing panels and roof ventilation systems that bring natural light and air to buildings worldwide."
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://www.duraplastindia.com/#website",
+        "name": "Dura Plast",
+        "url": "https://www.duraplastindia.com",
+        "publisher": {
+          "@id": "https://www.duraplastindia.com/#organization"
+        }
+      }
+    ]
+  }
+}

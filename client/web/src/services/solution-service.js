@@ -33,8 +33,12 @@ export const deleteSolution = async (id) => {
 
 // country: "India" / "Global" ... => that country's content / SEO.
 // Returns null when the slug does not exist.
-export const fetchSolutionBySlug = async (slug, country) => {
-  const query = country ? `?country=${encodeURIComponent(country)}` : "";
+// lang: a language version (e.g. "fr"); null when it does not exist (404)
+export const fetchSolutionBySlug = async (slug, country, lang) => {
+  const params = new URLSearchParams();
+  if (country) params.set("country", country);
+  if (lang) params.set("lang", lang);
+  const query = params.size ? `?${params}` : "";
   try {
     const { data } = await http().get(
       `${endpoints.solutions.getAll}/get-by-slug/${encodeURIComponent(slug)}${query}`,

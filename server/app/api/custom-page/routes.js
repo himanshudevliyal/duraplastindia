@@ -3,7 +3,13 @@ import { multipartPreHandler } from "../middlewares/multipart-prehandler.js";
 import controller from "./controller.js";
 
 // form fields sent as JSON strings in the multipart body
-const JSON_FIELDS = ["city", "faq", "country_seo", "jsonld_schema"];
+const JSON_FIELDS = [
+  "city",
+  "faq",
+  "country_seo",
+  "jsonld_schema",
+  "translations",
+];
 
 export default async function routes(fastify, options) {
   fastify.post(

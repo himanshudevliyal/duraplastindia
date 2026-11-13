@@ -8,6 +8,7 @@ import { newsletterPublicRoutes } from "../../api/newsletters/routes.js";
 import { distributorEnquiryPublicRoutes } from "../../api/distributor-enquiries/routes.js";
 import { customPagePublicRoutes } from "../../api/custom-page/routes.js";
 import { solutionPublicRoutes } from "../../api/solution/routes.js";
+import { languagePublicRoutes } from "../../api/language/routes.js";
 
 export default async function routes(fastify, options) {
   fastify.register(blogPublicRoutes, { prefix: "blogs" });
@@ -22,4 +23,5 @@ export default async function routes(fastify, options) {
   });
   fastify.register(customPagePublicRoutes, { prefix: "custom-pages" });
   fastify.register(solutionPublicRoutes, { prefix: "solutions" });
+  fastify.register(languagePublicRoutes, { prefix: "languages" });
 }

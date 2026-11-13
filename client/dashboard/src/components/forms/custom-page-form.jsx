@@ -34,6 +34,13 @@ import {
   toSeoFormValues,
 } from "./seo-tabs";
 import { StatusField, statusSchema } from "./status-field";
+import {
+  PageLanguagePicker,
+  PageLanguageVersions,
+  fromVersionsForm,
+  toVersionsForm,
+  versionsSchema,
+} from "./language-versions";
 import { fileUrl } from "@/lib/file-url";
 
 // While typing: lowercase, anything except a-z / 0-9 becomes "-".
@@ -62,6 +69,8 @@ const defaultValues = {
   jsonld_schema: "",
   // form-only list of schema boxes [{ value }], saved as jsonld_schema
   schemas: [],
+  // language versions { fr: {...} } — see language-versions.jsx
+  translations: {},
 };
 
 export const schema = z.object({
@@ -87,6 +96,7 @@ export const schema = z.object({
   jsonld_schema: z.any().optional(),
   schemas: schemaListSchema,
   faq: faqListSchema,
+  translations: versionsSchema,
 });
 
 export default function CustomPageForm({ id, type }) {
@@ -127,6 +137,7 @@ export default function CustomPageForm({ id, type }) {
   const onSubmit = (data) => {
     // schema boxes => jsonld_schema
     applySeoPayload(data);
+    data.translations = fromVersionsForm(data.translations);
 
     const formData = new FormData();
     files.pictures.forEach((file) => formData.append("pictures", file));
@@ -168,6 +179,7 @@ export default function CustomPageForm({ id, type }) {
         status: data.status || "active",
         city: data?.city?.[0] ?? "",
         ...toSeoFormValues(data),
+        translations: toVersionsForm(data.translations),
       });
     }
   }, [data, type, reset]);
@@ -307,6 +319,9 @@ export default function CustomPageForm({ id, type }) {
               )}
             </div>
 
+            {/* languages of this page (besides the main English content) */}
+            <PageLanguagePicker />
+
             <StatusField />
 
             {/* description */}
@@ -341,6 +356,9 @@ export default function CustomPageForm({ id, type }) {
 
         {/* seo, faqs & schema */}
         <SeoSection />
+
+        {/* other languages of the selected country (e.g. French) */}
+        <PageLanguageVersions path="" />
 
         {/* errors print */}
         {hasErrors && (

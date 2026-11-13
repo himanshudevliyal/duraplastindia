@@ -20,11 +20,13 @@ import { useCategories } from "@/hooks/use-categories";
 import {
   getCountryFromLocale,
   getLocalePrefix,
+  isCategoryOnSite,
   isProductAvailableInCountry,
   localizeProduct,
 } from "@/utils/country-mapping";
 import { sortCategories, sortProducts } from "@/lib/category-order";
 import LanguageSwitcher from "./ui/language-switcher";
+import PageLanguageSwitcher from "./ui/page-language-switcher";
 
 const SOCIALS = [
   {
@@ -148,6 +150,10 @@ export function SiteHeader() {
           id: category.id,
           title: category.title,
           slug: category.slug,
+          // category page on this site, else the filtered products list
+          href: isCategoryOnSite(category, country)
+            ? `${prefix}/category/${category.slug}`
+            : `${prefix}/product?categories=${category.id}`,
           products: sortProducts(category.title, categoryProducts),
         };
       })
@@ -393,7 +399,7 @@ export function SiteHeader() {
                                   }
                                 >
                                   <Link
-                                    href={`${prefix}/product?categories=${category.id}`}
+                                    href={category.href}
                                     onClick={() => setOpenDropdownId(null)}
                                     className="group/title flex items-center justify-between gap-3 border-b border-gray-200 pb-3"
                                   >
@@ -437,6 +443,7 @@ export function SiteHeader() {
             {/* ================= RIGHT SIDE ================= */}
             <div className="col-start-3 flex items-center justify-end gap-3 lg:gap-4">
               <LanguageSwitcher className="border border-white/40 text-white transition-colors hover:border-white hover:bg-white/10" />
+              <PageLanguageSwitcher className="border border-white/40 text-white transition-colors hover:border-white hover:bg-white/10" />
 
               <Link
                 href={`${prefix}/contact`}
@@ -558,7 +565,7 @@ export function SiteHeader() {
                         >
                           <div className="flex items-center justify-between gap-3 py-3">
                             <Link
-                              href={`${prefix}/product?categories=${category.id}`}
+                              href={category.href}
                               onClick={() => setIsOpen(false)}
                               className="text-[13px] font-bold uppercase tracking-wide text-white sm:text-sm"
                             >

@@ -8,14 +8,16 @@ import {
   isShownInCountry,
 } from "@/utils/country-mapping";
 import { routing } from "@/i18n/routing";
+import { getRequestLang, withLanguages } from "@/lib/lang";
 import { JsonLd } from "@/components/layout/json-ld";
 import { getSchemas } from "@/lib/schemas";
 import FAQSection from "../../product/_components/faq";
 
 // One API call per request, shared by generateMetadata and the page.
 // A blog belongs to one site (Global or a country); elsewhere => 404.
-const getBlog = cache(async (slug, locale) => {
-  const blog = await fetchBlogBySlug(slug, getSeoCountry(locale));
+// lang: language version (/<country>/<lang>/blog/<slug>), null = default
+const getBlog = cache(async (slug, locale, lang) => {
+  const blog = await fetchBlogBySlug(slug, getSeoCountry(locale), lang);
   if (!blog || !isShownInCountry(blog.city, getCountryFromLocale(locale))) {
     return null;
   }
@@ -63,7 +65,8 @@ function estimateReadMinutes(html) {
 
 export default async function BlogDetailPage({ params }) {
   const { slug, locale } = await params;
-  const blog = await getBlog(slug, locale);
+  const lang = await getRequestLang();
+  const blog = await getBlog(slug, locale, lang);
 
   if (!blog) {
     notFound();
@@ -246,12 +249,23 @@ export default async function BlogDetailPage({ params }) {
 
 export async function generateMetadata({ params }) {
   const { slug, locale } = await params;
-  const blog = await getBlog(slug, locale);
+  const lang = await getRequestLang();
+  const blog = await getBlog(slug, locale, lang);
   if (!blog) return {};
   return {
     title: blog.meta_title || blog.title,
     description: blog.meta_description || blog.description,
     keywords: blog.meta_keywords || undefined,
-    alternates: canonical(locale, `/blog/${slug}`, blogLocales(blog)),
+    alternates: await withLanguages(
+      canonical(locale, `/blog/${blog.base_slug || blog.slug}`, blogLocales(blog)),
+      {
+        locale,
+        lang,
+        path: `/blog/${blog.slug}`,
+        versions: Object.fromEntries(
+          Object.entries(blog.translation_slugs || {}).map(([code, s]) => [code, `/blog/${s}`]),
+        ),
+      },
+    ),
   };
 }

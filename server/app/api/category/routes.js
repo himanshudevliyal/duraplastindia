@@ -2,12 +2,21 @@
 import { multipartPreHandler } from "../middlewares/multipart-prehandler.js";
 import controller from "./controller.js";
 
+// form fields sent as JSON strings in the multipart body
+const JSON_FIELDS = [
+  "packages",
+  "city",
+  "country_content",
+  "faq",
+  "jsonld_schema",
+];
+
 export default async function routes(fastify, options) {
   fastify.post(
     "/",
     {
       preHandler: async (req, res) =>
-        multipartPreHandler(req, res, ["packages"]),
+        multipartPreHandler(req, res, JSON_FIELDS),
     },
     controller.create,
   );
@@ -15,7 +24,7 @@ export default async function routes(fastify, options) {
     "/:id",
     {
       preHandler: async (req, res) =>
-        multipartPreHandler(req, res, ["packages", "picture_urls"]),
+        multipartPreHandler(req, res, [...JSON_FIELDS, "picture_urls"]),
     },
     controller.updateById,
   );
@@ -25,5 +34,7 @@ export default async function routes(fastify, options) {
 
 export async function categoryPublicRoutes(fastify, opt) {
   fastify.get("/", {}, controller.get);
+  // category page: ?country=<name or URL code>&lang=<language code>
+  fastify.get("/get-by-slug/:slug", {}, controller.getBySlug);
   fastify.get("/:id/related-products", {}, controller.getRelatedProducts);
 }

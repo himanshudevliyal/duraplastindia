@@ -24,6 +24,7 @@ import {
   Globe,
   ImageIcon,
   ImagePlus,
+  Languages,
   LayoutGrid,
   Plus,
   Search,
@@ -57,6 +58,12 @@ import {
   schemaListSchema,
   toSchemaList,
 } from "./seo-tabs";
+import {
+  LanguageVersions,
+  fromVersionsForm,
+  toVersionsForm,
+  versionsSchema,
+} from "./language-versions";
 
 // ================= Data helpers =================
 // While typing: lowercase, anything except a-z / 0-9 becomes "-".
@@ -100,6 +107,8 @@ export const emptyTab = () => ({
   meta_keywords: "",
   schemas: [],
   faq: [],
+  // language versions { fr: {...} } — see language-versions.jsx
+  translations: {},
 });
 
 const sectionOf = (value, withUid) => ({
@@ -143,6 +152,7 @@ export const toTabFormValues = (tab = {}, base = {}) => ({
   meta_keywords: tab.meta_keywords ?? "",
   schemas: toSchemaList(tab.jsonld_schema),
   faq: (tab.faq ?? []).map((f) => ({ q: f.q ?? "", a: f.a ?? "" })),
+  translations: toVersionsForm(tab.translations),
 });
 
 // Copy of a tab for a newly added country (new image uids, same images)
@@ -152,9 +162,10 @@ export const copyTab = (tab) =>
   );
 
 // form values => API tab (schema boxes => jsonld_schema)
-export const fromTabFormValues = ({ schemas, ...tab }) => ({
+export const fromTabFormValues = ({ schemas, translations, ...tab }) => ({
   ...tab,
   jsonld_schema: fromSchemaList(schemas),
+  translations: fromVersionsForm(translations),
 });
 
 // ================= Validation =================
@@ -206,6 +217,7 @@ export const countryTabSchema = z.object({
   meta_keywords: z.string().optional().nullable(),
   schemas: schemaListSchema,
   faq: faqListSchema,
+  translations: versionsSchema,
 });
 
 // ================= Tabs =================
@@ -698,6 +710,23 @@ function TabContent({
           </div>
           <FaqFields name={`${prefix}faq`} />
         </div>
+      </Section>
+
+      {/* ================= Other languages of this country ================= */}
+      <Section
+        icon={Languages}
+        title="Language versions"
+        summary="Other languages of this country (e.g. French)"
+      >
+        <LanguageVersions
+          country={country}
+          prefix={`${prefix}translations.`}
+          kind="product"
+          withPicker
+          urlFor={(lang, slug) =>
+            productUrl(country, slug).replace("/product/", `/${lang}/product/`)
+          }
+        />
       </Section>
     </div>
   );

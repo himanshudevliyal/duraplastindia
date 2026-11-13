@@ -21,7 +21,7 @@ import { JsonLd } from "@/components/layout/json-ld";
 import FAQSection from "../product/_components/faq";
 import { getMessages } from "next-intl/server";
 import { buildSchemas } from "@/lib/messages";
-import { canonical } from "@/lib/seo";
+import { SITE_URL, canonical, localePath } from "@/lib/seo";
 import { optimizedImageUrl } from "@/lib/optimized-image";
 
 export async function generateMetadata({ params }) {
@@ -47,7 +47,7 @@ export default async function About({ params }) {
   const schemas = buildSchemas(
     messages.Schema?.about,
     about.faq,
-    `https://duraplastindia.com/${locale}/about#faq`,
+    `${SITE_URL}${localePath(locale, "/about")}#faq`,
   );
 
   const regions = [

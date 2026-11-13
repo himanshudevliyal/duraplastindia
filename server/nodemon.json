@@ -1,0 +1,6 @@
+{
+  "watch": ["index.js", "server.js", "app", "migrations", "seeders", "scripts"],
+  "ext": "js,mjs,cjs,json",
+  "ignore": ["public/**", "node_modules/**"],
+  "delay": 1000
+}

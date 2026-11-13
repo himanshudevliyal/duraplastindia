@@ -20,6 +20,7 @@ export const endpoints = {
   customPages: { getAll: "/custom-pages" },
   cityBlogs: { getAll: "/city-blogs" },
   categories: { getAll: "/categories" },
+  languages: { getAll: "/languages" },
   productPages: { getAll: "/product-pages" },
   channelPartners: { getAll: "/channel-partners" },
   enquiries: { getAll: "/enquiries" },
