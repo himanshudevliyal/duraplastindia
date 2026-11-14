@@ -56,7 +56,19 @@ import {
 } from "./language-versions";
 import { fileUrl } from "@/lib/file-url";
 
+
+// URL slug: while typing, lowercase and anything except a-z / 0-9 becomes
+// "-"; trailing "-" removed on save. Empty slug => made from the title.
+const toSlugInput = (value = "") =>
+  value
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+/, "");
+const toSlug = (value = "") => toSlugInput(value).replace(/-+$/g, "");
+
 const defaultValues = {
+  slug: "",
   pictures: [],
   title: "",
   description: "",
@@ -78,6 +90,12 @@ const defaultValues = {
 
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),
+  // optional: empty => made from the title (also on the server)
+  slug: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((value) => toSlug(value || "")),
   description: z.string().optional(),
   date: z.coerce.date().optional().nullish(),
   content: z.string().optional(),
@@ -102,6 +120,8 @@ export const schema = z.object({
 
 export default function BlogForm({ id, type }) {
   const router = useRouter();
+  // the slug follows the title until it is edited by hand
+  const [slugEdited, setSlugEdited] = useState(type === "edit");
 
   const [files, setFiles] = useState({
     pictures: [],
@@ -120,6 +140,7 @@ export default function BlogForm({ id, type }) {
     formState: { errors },
     reset,
     watch,
+    setValue,
     setError,
     control,
   } = methods;
@@ -286,13 +307,42 @@ export default function BlogForm({ id, type }) {
               <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
-                {...register("title")}
+                {...register("title", {
+                  onChange: (e) => {
+                    if (!slugEdited) setValue("slug", toSlug(e.target.value));
+                  },
+                })}
                 className={cn({ "border-red-500": errors.title })}
                 placeholder="Enter title"
               />
               {errors?.title && (
                 <span className="text-xs text-red-500">
                   {errors.title?.message}
+                </span>
+              )}
+            </div>
+
+            {/* slug */}
+            <div className="space-y-2">
+              <Label htmlFor="slug">URL slug</Label>
+              <Input
+                id="slug"
+                {...register("slug", {
+                  onChange: (e) => {
+                    setSlugEdited(true);
+                    setValue("slug", toSlugInput(e.target.value));
+                  },
+                })}
+                className={cn({ "border-red-500": errors.slug })}
+                placeholder="Empty = made from the title"
+              />
+              <p className="text-muted-foreground text-xs break-all">
+                /blog/{toSlug(watch("slug") || watch("title") || "") || "your-slug"}
+                {type === "edit" && " · changing it changes the live URL"}
+              </p>
+              {errors?.slug && (
+                <span className="text-xs text-red-500">
+                  {errors.slug?.message}
                 </span>
               )}
             </div>

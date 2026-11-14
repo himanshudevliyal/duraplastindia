@@ -14,6 +14,22 @@ import {
   findSlugClashes,
 } from "../../helpers/translations.js";
 
+// URL slug from the form, or from the title when left empty
+const normalizeSlug = (body) =>
+  slugify(String(body.slug || body.title || ""), { lower: true, strict: true });
+
+// another blog already uses this slug?
+const slugTaken = async (slug, ownId) => {
+  const [rows] = await sequelize.query(
+    `SELECT id FROM "${constants.models.BLOG_TABLE}"
+      WHERE slug = :slug AND (CAST(:ownId AS uuid) IS NULL OR id <> CAST(:ownId AS uuid))
+      LIMIT 1`,
+    { replacements: { slug, ownId: ownId ?? null } },
+  );
+  return rows.length > 0;
+};
+const SLUG_TAKEN = { message: "Another blog already uses this URL slug." };
+
 // language versions: clean them; null when fine, else the clash message
 const checkTranslations = async (req, ownId) => {
   req.body.translations = cleanTranslations(req.body.translations);
@@ -73,8 +89,13 @@ export const schema = z.object({
 
 const create = async (req, res) => {
   try {
-    let slug = slugify(req.body.title, { lower: true });
-    req.body.slug = slug;
+    req.body.slug = normalizeSlug(req.body);
+    if (!req.body.slug) {
+      return res.code(StatusCodes.BAD_REQUEST).send({ message: "Slug is required." });
+    }
+    if (await slugTaken(req.body.slug)) {
+      return res.code(StatusCodes.CONFLICT).send(SLUG_TAKEN);
+    }
 
     const validateData = schema.parse(req.body);
 
@@ -101,8 +122,15 @@ const updateById = async (req, res) => {
         .send({ message: "Blog not found!" });
     }
 
-    let slug = slugify(req.body.title, { lower: true, strict: true });
-    req.body.slug = slug;
+    req.body.slug = normalizeSlug(req.body);
+    if (!req.body.slug) {
+      await transaction.rollback();
+      return res.code(StatusCodes.BAD_REQUEST).send({ message: "Slug is required." });
+    }
+    if (await slugTaken(req.body.slug, record.id)) {
+      await transaction.rollback();
+      return res.code(StatusCodes.CONFLICT).send(SLUG_TAKEN);
+    }
 
     // one site per blog (full schema is only applied on create)
     schema.pick({ city: true }).parse(req.body);

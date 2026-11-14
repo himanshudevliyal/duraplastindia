@@ -75,10 +75,12 @@ const defaultValues = {
 
 export const schema = z.object({
   title: z.string().trim().min(1, "Title is required"),
+  // optional: empty => made from the title (also on the server)
   slug: z
     .string()
-    .transform(toSlug)
-    .pipe(z.string().min(1, "Slug is required")),
+    .optional()
+    .nullable()
+    .transform((value) => toSlug(value || "")),
   description: z.string().optional().nullable(),
   content: z.string().optional().nullable(),
   meta_title: z.string().optional().nullable(),
@@ -270,7 +272,7 @@ export default function CustomPageForm({ id, type }) {
 
             {/* slug */}
             <div className="space-y-2">
-              <Label htmlFor="slug">URL slug *</Label>
+              <Label htmlFor="slug">URL slug</Label>
               <Input
                 id="slug"
                 {...register("slug", {
@@ -280,11 +282,11 @@ export default function CustomPageForm({ id, type }) {
                   },
                 })}
                 className={cn({ "border-red-500": errors.slug })}
-                placeholder="my-page"
+                placeholder="Empty = made from the title"
               />
               <p className="text-muted-foreground text-xs">
-                Page URL: /{toSlug(slugValue) || "your-slug"} (country sites: /in/
-                {toSlug(slugValue) || "your-slug"} …)
+                Page URL: /{toSlug(slugValue || watch("title") || "") || "your-slug"} (country sites: /in/
+                {toSlug(slugValue || watch("title") || "") || "your-slug"} …)
               </p>
               {errors?.slug && (
                 <span className="text-xs text-red-500">
